@@ -1,0 +1,496 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Soft Skills — Data Analyst</title>
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --bg: #ffffff;
+    --bg-secondary: #f7f6f3;
+    --bg-info: #e6f1fb;
+    --bg-warning: #faeeda;
+    --bg-danger: #fcebeb;
+    --bg-success: #eaf3de;
+    --text-primary: #1a1a1a;
+    --text-secondary: #5a5a5a;
+    --text-tertiary: #999;
+    --text-info: #185fa5;
+    --text-warning: #854f0b;
+    --text-danger: #a32d2d;
+    --text-success: #3b6d11;
+    --border: rgba(0,0,0,0.10);
+    --border-md: rgba(0,0,0,0.18);
+    --radius: 8px;
+    --radius-lg: 12px;
+  }
+
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --bg: #1e1e1e;
+      --bg-secondary: #262626;
+      --bg-info: #0c2a45;
+      --bg-warning: #3a2005;
+      --bg-danger: #3a1010;
+      --bg-success: #122408;
+      --text-primary: #e8e8e8;
+      --text-secondary: #aaa;
+      --text-tertiary: #666;
+      --text-info: #85b7eb;
+      --text-warning: #fac775;
+      --text-danger: #f09595;
+      --text-success: #97c459;
+      --border: rgba(255,255,255,0.10);
+      --border-md: rgba(255,255,255,0.20);
+    }
+  }
+
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    background: var(--bg-secondary);
+    color: var(--text-primary);
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 32px 16px 64px;
+  }
+
+  header {
+    width: 100%;
+    max-width: 900px;
+    margin-bottom: 24px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 12px;
+  }
+
+  .site-title {
+    font-size: 13px;
+    font-weight: 500;
+    color: var(--text-tertiary);
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+  }
+
+  .lang-toggle {
+    display: flex;
+    border: 0.5px solid var(--border-md);
+    border-radius: 8px;
+    overflow: hidden;
+  }
+
+  .lang-btn {
+    font-size: 12px;
+    font-weight: 500;
+    padding: 5px 14px;
+    cursor: pointer;
+    color: var(--text-secondary);
+    background: transparent;
+    border: none;
+    transition: background 0.15s, color 0.15s;
+    font-family: inherit;
+  }
+
+  .lang-btn.active {
+    background: var(--bg);
+    color: var(--text-primary);
+  }
+
+  .page {
+    display: flex;
+    width: 100%;
+    max-width: 900px;
+    border: 0.5px solid var(--border);
+    border-radius: var(--radius-lg);
+    overflow: hidden;
+    background: var(--bg);
+    min-height: 580px;
+  }
+
+  .sidebar {
+    width: 230px;
+    flex-shrink: 0;
+    border-right: 0.5px solid var(--border);
+    background: var(--bg-secondary);
+    display: flex;
+    flex-direction: column;
+  }
+
+  .sidebar-header {
+    padding: 14px;
+    border-bottom: 0.5px solid var(--border);
+    font-size: 11px;
+    font-weight: 500;
+    color: var(--text-tertiary);
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+  }
+
+  .nav-list { padding: 8px 0; }
+
+  .nav-item {
+    display: flex;
+    align-items: flex-start;
+    gap: 10px;
+    padding: 10px 14px;
+    cursor: pointer;
+    border-left: 3px solid transparent;
+    transition: background 0.15s;
+  }
+
+  .nav-item:hover { background: var(--bg); }
+  .nav-item.active { background: var(--bg); border-left-color: var(--text-primary); }
+
+  .nav-icon {
+    width: 28px;
+    height: 28px;
+    border-radius: var(--radius);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    margin-top: 1px;
+    font-size: 16px;
+  }
+
+  .nav-label { font-size: 13px; font-weight: 500; color: var(--text-primary); line-height: 1.35; }
+  .nav-tag { font-size: 11px; color: var(--text-tertiary); margin-top: 2px; }
+
+  .content {
+    flex: 1;
+    overflow-y: auto;
+    padding: 32px 36px;
+  }
+
+  .article-tag {
+    display: inline-block;
+    font-size: 11px;
+    font-weight: 500;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+    padding: 3px 10px;
+    border-radius: 20px;
+    margin-bottom: 14px;
+    background: var(--bg-secondary);
+    color: var(--text-secondary);
+    border: 0.5px solid var(--border);
+  }
+
+  h1 { font-size: 22px; font-weight: 500; color: var(--text-primary); line-height: 1.3; margin-bottom: 10px; }
+
+  .lead {
+    font-size: 15px;
+    color: var(--text-secondary);
+    line-height: 1.7;
+    margin-bottom: 24px;
+    padding-bottom: 20px;
+    border-bottom: 0.5px solid var(--border);
+  }
+
+  h2 { font-size: 14px; font-weight: 500; color: var(--text-primary); margin: 20px 0 8px; }
+
+  p { font-size: 14px; color: var(--text-secondary); line-height: 1.75; margin-bottom: 12px; }
+
+  .checklist { list-style: none; margin-bottom: 16px; }
+  .checklist li {
+    font-size: 14px;
+    color: var(--text-secondary);
+    line-height: 1.65;
+    padding: 4px 0 4px 24px;
+    position: relative;
+  }
+  .checklist li::before {
+    content: "✔";
+    position: absolute;
+    left: 0;
+    color: var(--text-success);
+    font-size: 12px;
+    top: 5px;
+  }
+
+  .tip-box {
+    background: var(--bg-secondary);
+    border-left: 3px solid var(--border-md);
+    padding: 12px 16px;
+    margin: 16px 0;
+  }
+  .tip-box p { margin: 0; font-size: 13px; font-style: italic; }
+
+  .step { display: flex; gap: 14px; margin-bottom: 14px; }
+  .step-num {
+    width: 24px; height: 24px;
+    border-radius: 50%;
+    border: 0.5px solid var(--border-md);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 12px; font-weight: 500;
+    color: var(--text-secondary);
+    flex-shrink: 0; margin-top: 1px;
+  }
+  .step-title { font-size: 14px; font-weight: 500; color: var(--text-primary); margin-bottom: 3px; }
+  .step-desc { font-size: 13px; color: var(--text-secondary); line-height: 1.65; }
+
+  .example-block {
+    background: var(--bg-secondary);
+    border: 0.5px solid var(--border);
+    border-radius: var(--radius);
+    padding: 14px 16px;
+    margin: 14px 0;
+  }
+  .example-label {
+    font-size: 11px; font-weight: 500;
+    color: var(--text-tertiary);
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    margin-bottom: 8px;
+  }
+  .dialog-line { display: flex; gap: 8px; margin-bottom: 6px; font-size: 13px; line-height: 1.55; }
+  .dialog-who { font-weight: 500; color: var(--text-primary); min-width: 90px; }
+  .dialog-text { color: var(--text-secondary); }
+  .dialog-line.good .dialog-who { color: var(--text-success); }
+  .dialog-line.bad .dialog-who { color: var(--text-danger); }
+
+  @media (max-width: 640px) {
+    .page { flex-direction: column; }
+    .sidebar { width: 100%; border-right: none; border-bottom: 0.5px solid var(--border); }
+    .nav-list { display: flex; overflow-x: auto; padding: 8px; gap: 6px; }
+    .nav-item { flex-direction: column; align-items: center; min-width: 80px; padding: 8px; border-left: none; border-bottom: 3px solid transparent; text-align: center; }
+    .nav-item.active { border-left-color: transparent; border-bottom-color: var(--text-primary); }
+    .nav-tag { display: none; }
+    .content { padding: 24px 20px; }
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="site-title" id="site-label">Мягкие навыки аналитика</div>
+  <div class="lang-toggle">
+    <button class="lang-btn active" onclick="setLang('ru')">RU</button>
+    <button class="lang-btn" onclick="setLang('en')">EN</button>
+  </div>
+</header>
+
+<div class="page">
+  <div class="sidebar">
+    <div class="sidebar-header" id="sidebar-title">Софт скиллы</div>
+    <div class="nav-list" id="nav"></div>
+  </div>
+  <div class="content" id="content"></div>
+</div>
+
+<script>
+var currentLang = 'ru';
+var currentArticle = 0;
+
+var nav = [
+  { icon: '🔍', bg: 'var(--bg-info)', color: 'var(--text-info)',
+    ru: { label: 'Ошибка выжившего', tag: 'Критическое мышление' },
+    en: { label: 'Survivorship Bias', tag: 'Critical thinking' } },
+  { icon: '💸', bg: 'var(--bg-warning)', color: 'var(--text-warning)',
+    ru: { label: 'Ошибка невозвратных затрат', tag: 'Когнитивные искажения' },
+    en: { label: 'Sunk Cost Fallacy', tag: 'Cognitive biases' } },
+  { icon: '⚠️', bg: 'var(--bg-danger)', color: 'var(--text-danger)',
+    ru: { label: 'Цена ошибки', tag: 'Ответственность' },
+    en: { label: 'The Cost of Mistakes', tag: 'Accountability' } },
+  { icon: '📋', bg: 'var(--bg-success)', color: 'var(--text-success)',
+    ru: { label: 'Сбор требований', tag: 'Коммуникация с заказчиком' },
+    en: { label: 'Gathering Requirements', tag: 'Stakeholder communication' } },
+  { icon: '❓', bg: 'var(--bg-secondary)', color: 'var(--text-secondary)',
+    ru: { label: 'Как задавать вопросы', tag: 'Продуктовое мышление' },
+    en: { label: 'How to Ask Questions', tag: 'Product thinking' } },
+  { icon: '📊', bg: 'var(--bg-info)', color: 'var(--text-info)',
+    ru: { label: 'Как делать презентацию', tag: 'Представление результатов' },
+    en: { label: 'How to Present Results', tag: 'Presentation skills' } },
+  { icon: '💡', bg: 'var(--bg-warning)', color: 'var(--text-warning)',
+    ru: { label: 'Продуктовое мышление', tag: 'Роль аналитика' },
+    en: { label: 'Product Thinking', tag: "Analyst's role" } }
+];
+
+var articles = {
+  ru: [
+    { tag: 'Критическое мышление', title: 'Ошибка выжившего',
+      lead: 'Одно из самых частых искажений в аналитике. Мы анализируем только тех, кто «выжил», и делаем выводы, не замечая всех остальных.',
+      body: `<h2>Как это выглядит на практике</h2>
+<p>Допустим, вы анализируете только активных пользователей продукта и делаете вывод, что интерфейс удобен. Но те, кто бросил сервис из-за неудобного сайта, просто не попали в выборку.</p>
+<div class="tip-box"><p>Классический пример: во Вторую Мировую армия США изучала пробоины на вернувшихся самолётах и планировала укреплять именно эти места. Математик Абрахам Вальд указал: нужно укреплять места без пробоин, потому что самолёты с повреждениями там просто не вернулись.</p></div>
+<h2>Как не попасть в ловушку</h2>
+<ul class="checklist"><li>Всегда думайте о том, какие данные отсутствуют или не представлены</li><li>Сравнивайте «выживших» и «не выживших»</li><li>Анализируйте причины отказов, а не только успехи</li></ul>` },
+
+    { tag: 'Когнитивные искажения', title: 'Ошибка невозвратных затрат',
+      lead: 'Мы продолжаем делать что-то убыточное только потому, что уже вложили время, деньги или усилия. Это называют ещё «Эффектом Конкорда».',
+      body: `<h2>Что такое невозвратные затраты</h2>
+<p>Это ресурсы, которые уже потрачены и которые невозможно вернуть. Рациональное решение — оценивать только будущие затраты и выгоды. Но человеческий мозг устроен иначе.</p>
+<h2>Примеры из работы аналитика</h2>
+<p>Неделю писали дашборд, а потом выяснилось, что бизнесу нужно совсем другое. Вместо того чтобы начать заново, вы пытаетесь «допилить» старую версию, хотя проще сделать с нуля.</p>
+<h2>Как избежать</h2>
+<ul class="checklist"><li>Спрашивайте себя: если бы начинал сегодня, принял бы то же решение?</li><li>Разделяйте прошлое и будущее. Прошлые вложения не изменятся</li><li>Фиксируйте критерии успеха заранее, до начала проекта</li><li>Просите мнение коллег со стороны — они видят объективнее</li></ul>
+<div class="tip-box"><p>Лучше потратить 2 дня и понять, что идёшь не туда, чем потратить 2 недели и попасть в ловушку «ну я же столько сделал».</p></div>` },
+
+    { tag: 'Ответственность', title: 'Цена ошибки и ответственность',
+      lead: 'Аналитика — это не только SQL и дашборды. Это про влияние. На ваши цифры смотрят продакты, маркетологи и C-level. На основе них принимаются решения и бюджеты.',
+      body: `<h2>Культура работы с ошибками</h2>
+<div class="step"><div class="step-num">1</div><div class="step-body"><div class="step-title">Не бойтесь признавать</div><div class="step-desc">Самый плохой сценарий — заметить ошибку и промолчать. Почти всегда увидят. И будет гораздо хуже, если неверные данные уйдут в работу.</div></div></div>
+<div class="step"><div class="step-num">2</div><div class="step-body"><div class="step-title">Сообщайте первыми</div><div class="step-desc">Нашли косяк — пишите заказчику сами: «Тут неточность, сейчас перепроверю и пришлю апдейт». Это вызывает уважение, а не слабость.</div></div></div>
+<div class="step"><div class="step-num">3</div><div class="step-body"><div class="step-title">Делайте выводы</div><div class="step-desc">Поняли, где ошиблись? Запишите, добавьте проверку в код, настройте алерт — чтобы на эти грабли не наступить снова.</div></div></div>` },
+
+    { tag: 'Коммуникация с заказчиком', title: 'Сбор требований для отчёта',
+      lead: 'Нередко вам будут поступать абстрактные задачи: «построй отчёт по продажам». Главная ошибка — спросить «что хотите видеть?» и получить список из 50 колонок.',
+      body: `<h2>Вопросы для заказчика</h2>
+<div class="step"><div class="step-num">1</div><div class="step-body"><div class="step-title">Кто будет смотреть этот отчёт?</div><div class="step-desc">CEO или менеджеры — вид подачи кардинально разный. Для CEO меньше деталей, для менеджеров — гибкий инструмент с фильтрами.</div></div></div>
+<div class="step"><div class="step-num">2</div><div class="step-body"><div class="step-title">Какие решения принимаются на основе этого дашборда?</div><div class="step-desc">Визуал должен помогать принимать конкретные решения: «перераспределить бюджет», «назначить встречу с клиентом».</div></div></div>
+<div class="step"><div class="step-num">3</div><div class="step-body"><div class="step-title">Как именно рассчитывается каждый показатель?</div><div class="step-desc">«Прибыль» у бухгалтера и у маркетолога часто считается по-разному. Нужны конкретные формулы.</div></div></div>
+<div class="tip-box"><p>Проверочный вопрос к любому графику: «Представьте, что это показывает падение на 20%. Что вы сделаете?» Если ответа нет — график бесполезен.</p></div>` },
+
+    { tag: 'Продуктовое мышление', title: 'Как задавать вопросы',
+      lead: 'Не спешите бросаться в задачу с головой. Заказчики часто не знают чего хотят, или то, что они просят, не решает их настоящую проблему.',
+      body: `<h2>Техника «5 почему»</h2>
+<div class="example-block"><div class="example-label">Без вопросов</div>
+<div class="dialog-line bad"><div class="dialog-who">Менеджер:</div><div class="dialog-text">Нужна визуализация продаж</div></div>
+<div class="dialog-line bad"><div class="dialog-who">Аналитик:</div><div class="dialog-text">Хорошо, сделаю → делает красивый график, который никто не использует</div></div></div>
+<div class="example-block"><div class="example-label">С техникой «5 почему»</div>
+<div class="dialog-line good"><div class="dialog-who">Нужен отчёт</div><div class="dialog-text">Почему? — Продажи упали</div></div>
+<div class="dialog-line good"><div class="dialog-who">Продажи упали</div><div class="dialog-text">Что хотят понять? — Какие регионы проседают</div></div>
+<div class="dialog-line good"><div class="dialog-who">Регионы</div><div class="dialog-text">Что с этим сделают? — Перераспределят бюджет</div></div></div>
+<h2>Чеклист здорового скептицизма</h2>
+<ul class="checklist"><li>Логично ли это с точки зрения бизнеса?</li><li>Нет ли аномалий в данных (выбросы, пропуски, дубли)?</li><li>Правильно ли собраны данные?</li><li>Нет ли смещения в выборке?</li><li>Корреляция или причинно-следственная связь?</li></ul>` },
+
+    { tag: 'Представление результатов', title: 'Как делать презентацию',
+      lead: 'Даже самый крутой анализ может оказаться никому не нужным, если не суметь представить результаты. Презентация — это не про слайды, это про аргументы.',
+      body: `<h2>Алгоритм подготовки</h2>
+<div class="step"><div class="step-num">1</div><div class="step-body"><div class="step-title">Сначала план, потом слайды</div><div class="step-desc">Определите цель: что вы хотите, чтобы аудитория сделала после презентации? Определите аудиторию: что ей уже известно, какие страхи и возражения у неё есть?</div></div></div>
+<div class="step"><div class="step-num">2</div><div class="step-body"><div class="step-title">Длинные говорящие заголовки</div><div class="step-desc">«Расходы на логистику съели весь прирост выручки за квартал» — это заголовок слайда. «Динамика расходов» — нет.</div></div></div>
+<div class="step"><div class="step-num">3</div><div class="step-body"><div class="step-title">Техника «И ЧО»</div><div class="step-desc">Напишите заголовок и задайте этот вопрос. Заголовок должен быть таким, чтобы было очевидно, почему это важно для вашей аудитории.</div></div></div>
+<div class="tip-box"><p>Грамотный слайд — это говорящий заголовок плюс визуальное доказательство. Никакого текста ради текста.</p></div>` },
+
+    { tag: 'Роль аналитика', title: 'Продуктовое мышление аналитика',
+      lead: 'Стандартная ситуация: бизнес говорит «выгрузи мне конверсию за март». Ты выгружаешь, отдаёшь табличку. Но в этой схеме ты не аналитик, а оператор SQL-консоли.',
+      body: `<h2>Аналитик-исполнитель vs аналитик-партнёр</h2>
+<div class="example-block"><div class="example-label">Исполнитель</div>
+<div class="dialog-line bad"><div class="dialog-who">Аналитик:</div><div class="dialog-text">Вот, 12%. Что-то ещё?</div></div></div>
+<div class="example-block"><div class="example-label">Партнёр</div>
+<div class="dialog-line good"><div class="dialog-who">Аналитик:</div><div class="dialog-text">Конверсия упала с 15% до 12%, но только в мобильном вебе. В приложении стабильно. Похоже на баг в последнем релизе. Вот разбивка по платформам.</div></div></div>
+<h2>Три привычки, которые стоит выработать</h2>
+<ul class="checklist"><li>Спрашивай «зачем» перед «как» — не открывай SQL сразу</li><li>Приноси гипотезы, а не таблицы — объясняй, что видишь</li><li>Следи за продуктом как пользователь — пользуйся им сам</li></ul>
+<div class="tip-box"><p>Тест: если убрать тебя из команды — бизнес потеряет «руки для выгрузок» или потеряет человека, который помогает принимать решения?</p></div>` }
+  ],
+
+  en: [
+    { tag: 'Critical thinking', title: 'Survivorship Bias',
+      lead: "One of the most common distortions in analytics. We analyze only those who \"survived\" and draw conclusions without noticing everyone else.",
+      body: `<h2>What it looks like in practice</h2>
+<p>Say you analyze only active product users and conclude the interface is convenient. But those who abandoned the service because of a bad UX never made it into your sample.</p>
+<div class="tip-box"><p>The classic example: during WWII, the US Army studied bullet holes in planes that returned and planned to reinforce those spots. Mathematician Abraham Wald pointed out: reinforce where there are no holes — planes with damage there simply never came back.</p></div>
+<h2>How to avoid the trap</h2>
+<ul class="checklist"><li>Always ask yourself: what data is missing or not represented?</li><li>Compare survivors and non-survivors</li><li>Analyze reasons for drop-off, not just successes</li></ul>` },
+
+    { tag: 'Cognitive biases', title: 'Sunk Cost Fallacy',
+      lead: "We keep doing something unprofitable simply because we've already invested time, money, or effort. Also known as the \"Concorde Effect\".",
+      body: `<h2>What are sunk costs</h2>
+<p>Resources already spent that cannot be recovered, no matter what we do next. The rational decision is to evaluate only future costs and benefits. But the human brain doesn't work that way.</p>
+<h2>Examples from an analyst's work</h2>
+<p>You spent a week building a dashboard, then realized the business needs something completely different. Instead of starting over, you try to "patch" the old version — even though a fresh start would be faster.</p>
+<h2>How to avoid it</h2>
+<ul class="checklist"><li>Ask yourself: if I were starting today, would I make the same decision?</li><li>Separate past from future — past investments won't change</li><li>Define success criteria upfront, before the project begins</li><li>Ask a colleague outside the project — they see it more objectively</li></ul>
+<div class="tip-box"><p>Better to spend 2 days realizing you're heading the wrong way than 2 weeks trapped thinking "but I've already done so much."</p></div>` },
+
+    { tag: 'Accountability', title: 'The Cost of Mistakes',
+      lead: "Analytics isn't just SQL and dashboards. It's about impact. PMs, marketers, and C-level executives look at your numbers. Budgets and strategies are built on what you find.",
+      body: `<h2>A healthy error culture</h2>
+<div class="step"><div class="step-num">1</div><div class="step-body"><div class="step-title">Don't be afraid to admit mistakes</div><div class="step-desc">The worst scenario is spotting an error and staying quiet. Someone almost always notices. And it's far worse if bad data has already been acted on.</div></div></div>
+<div class="step"><div class="step-num">2</div><div class="step-body"><div class="step-title">Speak up first</div><div class="step-desc">Found an issue in your report? Write to the stakeholder yourself: "There's an inaccuracy here — I'll recheck and send an update." This earns respect, not judgment.</div></div></div>
+<div class="step"><div class="step-num">3</div><div class="step-body"><div class="step-title">Learn from it</div><div class="step-desc">Understand where you went wrong. Write it down, add a check to your code, set up an alert — so you don't step on the same rake again.</div></div></div>` },
+
+    { tag: 'Stakeholder communication', title: 'Gathering Requirements',
+      lead: "You'll often receive vague requests like \"build a sales report.\" The biggest mistake: asking \"what do you want to see?\" and getting a list of 50 columns nobody will ever read.",
+      body: `<h2>Questions to ask your stakeholder</h2>
+<div class="step"><div class="step-num">1</div><div class="step-body"><div class="step-title">Who will actually open this report?</div><div class="step-desc">A CEO needs fewer details. A team of account managers needs a flexible tool with lots of filters and drill-downs.</div></div></div>
+<div class="step"><div class="step-num">2</div><div class="step-body"><div class="step-title">What decisions will this dashboard drive?</div><div class="step-desc">The visuals should help make specific decisions: "reallocate budget," "call this client," "fire this manager."</div></div></div>
+<div class="step"><div class="step-num">3</div><div class="step-body"><div class="step-title">How exactly is each metric calculated?</div><div class="step-desc">"Profit" means different things to a CFO and a marketer. Always ask for the exact formula.</div></div></div>
+<div class="tip-box"><p>A useful gut-check for any chart: "Imagine this shows a 20% drop. What would you do?" If there's no answer — the chart is probably useless.</p></div>` },
+
+    { tag: 'Product thinking', title: 'How to Ask Questions',
+      lead: "Don't rush into a task headfirst. Stakeholders often don't know what they really want — or what they're asking for doesn't actually solve their underlying problem.",
+      body: `<h2>The "5 Whys" technique</h2>
+<div class="example-block"><div class="example-label">Without questions</div>
+<div class="dialog-line bad"><div class="dialog-who">Manager:</div><div class="dialog-text">I need a sales visualization</div></div>
+<div class="dialog-line bad"><div class="dialog-who">Analyst:</div><div class="dialog-text">Sure, on it → builds a beautiful chart nobody ever uses</div></div></div>
+<div class="example-block"><div class="example-label">With the 5 Whys</div>
+<div class="dialog-line good"><div class="dialog-who">Need a report</div><div class="dialog-text">Why? — Sales dropped</div></div>
+<div class="dialog-line good"><div class="dialog-who">Sales dropped</div><div class="dialog-text">What do you want to understand? — Which regions are underperforming</div></div>
+<div class="dialog-line good"><div class="dialog-who">Regions</div><div class="dialog-text">What will you do with this? — Reallocate the marketing budget</div></div></div>
+<h2>Healthy skepticism checklist</h2>
+<ul class="checklist"><li>Does this make sense from a business perspective?</li><li>Are there any anomalies in the data (outliers, missing values, duplicates)?</li><li>Was the data collected correctly?</li><li>Is there any sampling bias?</li><li>Is this correlation or causation?</li></ul>` },
+
+    { tag: 'Presentation skills', title: 'How to Present Results',
+      lead: "Even the best analysis can go to waste if you can't communicate the findings. A presentation is not about slides — it's about arguments.",
+      body: `<h2>Preparation algorithm</h2>
+<div class="step"><div class="step-num">1</div><div class="step-body"><div class="step-title">Plan first, slides second</div><div class="step-desc">Define the goal: what do you want the audience to do after the presentation? Define the audience: what do they already know, what objections or fears might they have?</div></div></div>
+<div class="step"><div class="step-num">2</div><div class="step-body"><div class="step-title">Use long, meaningful slide titles</div><div class="step-desc">"Logistics costs ate all of the revenue growth this quarter" is a slide title. "Cost dynamics" is not.</div></div></div>
+<div class="step"><div class="step-num">3</div><div class="step-body"><div class="step-title">The "So what?" test</div><div class="step-desc">Write your slide title, then ask "So what?" The title should make it obvious why this matters to your audience.</div></div></div>
+<div class="tip-box"><p>A good slide is a meaningful title plus a visual proof. No text for the sake of text.</p></div>` },
+
+    { tag: "Analyst's role", title: 'Product Thinking for Analysts',
+      lead: "Common scenario: the business says \"pull the March conversion rate.\" You pull it, hand over the table, call it done. But in this setup you're not an analyst — you're a SQL query executor.",
+      body: `<h2>Executor vs. partner</h2>
+<div class="example-block"><div class="example-label">Executor</div>
+<div class="dialog-line bad"><div class="dialog-who">Analyst:</div><div class="dialog-text">Here it is, 12%. Anything else?</div></div></div>
+<div class="example-block"><div class="example-label">Partner</div>
+<div class="dialog-line good"><div class="dialog-who">Analyst:</div><div class="dialog-text">Conversion dropped from 15% to 12%, but only in mobile web. The app is stable. Looks like a bug from the last release. Here's the breakdown by platform.</div></div></div>
+<h2>Three habits worth building</h2>
+<ul class="checklist"><li>Ask "why" before "how" — don't open SQL right away</li><li>Bring hypotheses, not tables — explain what you see</li><li>Use the product like a real user — experience it yourself</li></ul>
+<div class="tip-box"><p>The test: if you were removed from the team — would the business lose "hands for data pulls" or lose someone who helps make better decisions?</p></div>` }
+  ]
+};
+
+function renderNav() {
+  var el = document.getElementById('nav');
+  el.innerHTML = '';
+  nav.forEach(function(item, i) {
+    var d = item[currentLang];
+    var div = document.createElement('div');
+    div.className = 'nav-item' + (i === currentArticle ? ' active' : '');
+    div.onclick = (function(idx){ return function(){ showArticle(idx); }; })(i);
+    div.innerHTML =
+      '<div class="nav-icon" style="background:' + item.bg + ';color:' + item.color + '">' + item.icon + '</div>' +
+      '<div><div class="nav-label">' + d.label + '</div><div class="nav-tag">' + d.tag + '</div></div>';
+    el.appendChild(div);
+  });
+}
+
+function renderArticle() {
+  var a = articles[currentLang][currentArticle];
+  document.getElementById('content').innerHTML =
+    '<div class="article-tag">' + a.tag + '</div>' +
+    '<h1>' + a.title + '</h1>' +
+    '<p class="lead">' + a.lead + '</p>' +
+    a.body;
+  document.documentElement.lang = currentLang;
+}
+
+function showArticle(id) {
+  currentArticle = id;
+  renderNav();
+  renderArticle();
+}
+
+function setLang(lang) {
+  currentLang = lang;
+  document.getElementById('sidebar-title').textContent = lang === 'ru' ? 'Софт скиллы' : 'Soft skills';
+  document.getElementById('site-label').textContent = lang === 'ru' ? 'Мягкие навыки аналитика' : 'Data Analyst Soft Skills';
+  document.querySelectorAll('.lang-btn').forEach(function(b) {
+    b.classList.toggle('active', b.textContent === lang.toUpperCase());
+  });
+  renderNav();
+  renderArticle();
+}
+
+renderNav();
+renderArticle();
+</script>
+</body>
+</html>
