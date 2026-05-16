@@ -316,134 +316,234 @@ var articles = {
     { tag: 'Критическое мышление', title: 'Ошибка выжившего',
       lead: 'Одно из самых частых искажений в аналитике. Мы анализируем только тех, кто «выжил», и делаем выводы, не замечая всех остальных.',
       body: `<h2>Как это выглядит на практике</h2>
-<p>Допустим, вы анализируете только активных пользователей продукта и делаете вывод, что интерфейс удобен. Но те, кто бросил сервис из-за неудобного сайта, просто не попали в выборку.</p>
-<div class="tip-box"><p>Классический пример: во Вторую Мировую армия США изучала пробоины на вернувшихся самолётах и планировала укреплять именно эти места. Математик Абрахам Вальд указал: нужно укреплять места без пробоин, потому что самолёты с повреждениями там просто не вернулись.</p></div>
+<p>Допустим, вы анализируете только активных пользователей продукта и делаете вывод, что интерфейс удобен. Но те, кто бросил сервис из-за неудобного сайта или приложения, просто не представлены в исследовании. Это приведёт к некорректным выводам.</p>
+<p>Ошибка выжившего искажает результаты, потому что мы игнорируем часть данных — часто значительную.</p>
+<div class="tip-box"><p>Классический пример из Второй Мировой войны: армия США изучала пробоины на вернувшихся самолётах и планировала укреплять именно эти места. Математик Абрахам Вальд указал: нужно укреплять места без пробоин, потому что самолёты с повреждениями там просто не вернулись.</p></div>
 <h2>Как не попасть в ловушку</h2>
-<ul class="checklist"><li>Всегда думайте о том, какие данные отсутствуют или не представлены</li><li>Сравнивайте «выживших» и «не выживших»</li><li>Анализируйте причины отказов, а не только успехи</li></ul>` },
+<ul class="checklist"><li>Всегда думайте о том, какие данные отсутствуют или не представлены в выборке</li><li>Сравнивайте «выживших» и «не выживших»</li><li>Анализируйте причины отказов и потерь, а не только успехи</li></ul>
+<p>Подробнее с примерами можно почитать в статье на Википедии: <a href="https://ru.wikipedia.org/wiki/%D0%A1%D0%B8%D1%81%D1%82%D0%B5%D0%BC%D0%B0%D1%82%D0%B8%D1%87%D0%B5%D1%81%D0%BA%D0%B0%D1%8F_%D0%BE%D1%88%D0%B8%D0%B1%D0%BA%D0%B0_%D0%B2%D1%8B%D0%B6%D0%B8%D0%B2%D1%88%D0%B5%D0%B3%D0%BE" target="_blank">Систематическая ошибка выжившего</a></p>` },
 
     { tag: 'Когнитивные искажения', title: 'Ошибка невозвратных затрат',
       lead: 'Мы продолжаем делать что-то убыточное только потому, что уже вложили время, деньги или усилия. Это называют ещё «Эффектом Конкорда».',
-      body: `<h2>Что такое невозвратные затраты</h2>
-<p>Это ресурсы, которые уже потрачены и которые невозможно вернуть. Рациональное решение это оценивать только будущие затраты и выгоды. Но человеческий мозг устроен иначе.</p>
+      body: `<h2>Что это такое</h2>
+<p>Представьте: вы купили билет в кино за 500 рублей. Через 20 минут понимаете, что фильм абсолютно не интересный. Но продолжаете сидеть до конца, потому что «жалко потраченных денег». Знакомо?</p>
+<p>Это и есть ловушка невозвратных затрат: мы продолжаем делать что-то убыточное или бесполезное только потому, что уже вложили в это ресурсы.</p>
+<h2>Откуда название «Эффект Конкорда»</h2>
+<p>В 1962 году Великобритания и Франция начали проект сверхзвукового самолёта Concorde с бюджетом 130 млн долларов. Уже через несколько лет стало ясно, что проект убыточный: самолёт получился слишком дорогим в производстве и эксплуатации. Итоговые затраты составили 2.8 млрд долларов — в 20 раз больше плана. Несмотря на это, проект продолжали финансировать ещё три десятилетия, потому что «уже столько вложено». В 2003 году Concorde вывели из эксплуатации, так и не окупив проект.</p>
+<h2>Почему мы попадаем в эту ловушку</h2>
+<ul class="checklist"><li>Страх признать ошибку: никому не хочется чувствовать себя неудачником</li><li>Неприятие потерь: психологи Канеман и Тверски показали, что потери воспринимаются острее, чем равная по размеру прибыль</li><li>Эффект владения: мы переоцениваем то, во что уже вложили ресурсы</li><li>Социальное давление: боязнь выглядеть в дурном свете в глазах других</li></ul>
 <h2>Примеры из работы аналитика</h2>
-<p>Неделю писали дашборд, а потом выяснилось, что бизнесу нужно совсем другое. Вместо того чтобы начать заново, вы пытаетесь «допилить» старую версию, хотя проще сделать с нуля.</p>
+<p>Вы неделю писали сложный дашборд, а потом выясняется, что бизнесу нужно совсем другое. Вместо того чтобы начать заново, вы пытаетесь «допилить» старую версию, хотя проще сделать с нуля.</p>
+<p>Потратили два дня на построение модели, которая показывает плохие результаты. Вместо того чтобы попробовать другой подход, продолжаете её «улучшать». Или собираете огромный отчёт, который никто не читает, но продолжаете его обновлять, потому что «раньше же делали».</p>
 <h2>Как избежать</h2>
-<ul class="checklist"><li>Спрашивайте себя: если бы начинал сегодня, принял бы то же решение?</li><li>Разделяйте прошлое и будущее. Прошлые вложения не изменятся</li><li>Фиксируйте критерии успеха заранее, до начала проекта</li><li>Просите мнение коллег со стороны, они видят объективнее</li></ul>
-<div class="tip-box"><p>Лучше потратить 2 дня и понять, что идёшь не туда, чем потратить 2 недели и попасть в ловушку «ну я же столько сделал».</p></div>` },
+<ul class="checklist"><li>Спрашивайте себя: если бы я начинал это сегодня, зная то, что знаю сейчас, принял бы то же решение?</li><li>Разделяйте прошлое и будущее. Прошлые вложения уже сделаны и не изменятся. Оценивайте только будущие затраты и выгоды</li><li>Фиксируйте критерии успеха заранее, до начала проекта. «Если через 3 месяца метрика X не выросла на Y% — проект сворачиваем»</li><li>Просите мнение коллег со стороны. Люди, не вовлечённые в проект эмоционально, видят ситуацию объективнее</li><li>Нормализуйте ошибки. Признать ошибку и минимизировать потери лучше, чем упорствовать и терять ещё больше</li></ul>
+<div class="tip-box"><p>Практический совет: показывайте черновик или прототип заказчику через пару дней, а не через неделю. Лучше потратить 2 дня и понять, что идёшь не туда, чем потратить 2 недели и попасть в ловушку «ну я же столько сделал».</p></div>
+<p>Хорошая статья с примерами на всех уровнях: <a href="https://habr.com/ru/companies/gazprombank/articles/805627/" target="_blank">Ошибка невозвратных затрат на Хабре</a></p>` },
 
     { tag: 'Ответственность', title: 'Цена ошибки и ответственность',
-      lead: 'Аналитика это не только SQL и дашборды. Это про влияние. На ваши цифры смотрят продакты, маркетологи и C-level. На основе них принимаются решения и бюджеты.',
-      body: `<h2>Культура работы с ошибками</h2>
-<div class="step"><div class="step-num">1</div><div class="step-body"><div class="step-title">Не бойтесь признавать</div><div class="step-desc">Самый плохой сценарий это заметить ошибку и промолчать. Почти всегда увидят. И будет гораздо хуже, если неверные данные уйдут в работу.</div></div></div>
-<div class="step"><div class="step-num">2</div><div class="step-body"><div class="step-title">Сообщайте первыми</div><div class="step-desc">Нашли косяк —> пишите заказчику сами: «Тут неточность, сейчас перепроверю и пришлю апдейт». Это вызывает уважение, а не слабость.</div></div></div>
-<div class="step"><div class="step-num">3</div><div class="step-body"><div class="step-title">Делайте выводы</div><div class="step-desc">Поняли, где ошиблись? Запишите, добавьте проверку в код, настройте алерт чтобы на эти грабли не наступить снова.</div></div></div>` },
+      lead: 'Аналитика это не только SQL, Python и красивые дашборды. Это про влияние. На наши цифры, графики и выводы смотрят коллеги из бизнеса, и на основе них принимаются решения, бюджеты и стратегии.',
+      body: `<h2>Почему это важно</h2>
+<p>Некоторые уже могли догадаться, кто-то уже столкнулся с этим на практике, а кому-то ещё предстоит осознать: дата-аналитика это про влияние. Неверная метрика, баг в расчётах, перепутанные 0 и 1 — и бизнес пошёл не в ту сторону.</p>
+<p>Ошибаться нормально. Ошибаются джуны, ошибаются сеньоры. Данные — сложная среда, и человеческий фактор никто не отменял. Важна культура работы с ошибками.</p>
+<h2>Культура работы с ошибками</h2>
+<div class="step"><div class="step-num">1</div><div class="step-body"><div class="step-title">Не бойтесь признавать</div><div class="step-desc">Самый плохой сценарий: заметить ошибку и промолчать, надеясь что «никто не увидит» или «пронесёт». Почти всегда увидят. И будет гораздо хуже, если неверные данные уйдут в работу.</div></div></div>
+<div class="step"><div class="step-num">2</div><div class="step-body"><div class="step-title">Сообщайте первыми</div><div class="step-desc">Если нашли косяк в своём отчёте, смело пишите заказчику: «Ребята, тут в расчётах неточность, сейчас перепроверю и пришлю апдейт». Это вызывает уважение и показывает вашу ответственность, а не слабость.</div></div></div>
+<div class="step"><div class="step-num">3</div><div class="step-body"><div class="step-title">Делайте выводы</div><div class="step-desc">На ошибках учатся. Поняли, где ошиблись? Запишите, сделайте документацию, добавьте проверку в код, настройте алерт, чтобы в следующий раз на эти грабли не наступить.</div></div></div>
+<div class="tip-box"><p>Не прятать ошибки, а учиться на них и открыто о них говорить — это показатель зрелости аналитика.</p></div>` },
 
     { tag: 'Коммуникация с заказчиком', title: 'Сбор требований для отчёта',
-      lead: 'Нередко вам будут поступать абстрактные задачи: «построй отчёт по продажам». Главная ошибка — спросить «что хотите видеть?» и получить список из 50 колонок.',
-      body: `<h2>Вопросы для заказчика</h2>
-<div class="step"><div class="step-num">1</div><div class="step-body"><div class="step-title">Кто будет смотреть этот отчёт?</div><div class="step-desc">CEO или менеджеры — вид подачи кардинально разный. Для CEO меньше деталей, для менеджеров — гибкий инструмент с фильтрами.</div></div></div>
-<div class="step"><div class="step-num">2</div><div class="step-body"><div class="step-title">Какие решения принимаются на основе этого дашборда?</div><div class="step-desc">Визуал должен помогать принимать конкретные решения: «перераспределить бюджет», «назначить встречу с клиентом».</div></div></div>
-<div class="step"><div class="step-num">3</div><div class="step-body"><div class="step-title">Как именно рассчитывается каждый показатель?</div><div class="step-desc">«Прибыль» у бухгалтера и у маркетолога часто считается по-разному. Нужны конкретные формулы.</div></div></div>
-<div class="tip-box"><p>Проверочный вопрос к любому графику: «Представьте, что это показывает падение на 20%. Что вы сделаете?» Если ответа нет — график бесполезен.</p></div>` },
+      lead: 'Нередко вам будут поступать абстрактные задачи: «построй отчёт по продажам», «сделай удобный отчёт по клиентским менеджерам». Самая частая ошибка: просто спросить «что вы хотите видеть?» и получить список из 50 колонок, которые никто не будет анализировать.',
+      body: `<h2>Блок 1. Цели и пользователи</h2>
+<div class="step"><div class="step-num">1</div><div class="step-body"><div class="step-title">Кто будет открывать этот отчёт каждый день?</div><div class="step-desc">CEO, коммерческий директор или менеджеры — вид отчёта и способ подачи информации сильно зависит от аудитории. Для CEO нужно меньше деталей. Клиентским менеджерам может понадобиться гибкий инструмент со множеством фильтров и настроек.</div></div></div>
+<div class="step"><div class="step-num">2</div><div class="step-body"><div class="step-title">Какие решения принимаются на основе этого дашборда?</div><div class="step-desc">Например: «уволить менеджера», «закупить товар», «перераспределить бюджет на рекламу», «назначить встречу с клиентом». Визуал и информация должны помогать принимать именно эти решения.</div></div></div>
+<h2>Блок 2. Метрики и логика</h2>
+<div class="step"><div class="step-num">3</div><div class="step-body"><div class="step-title">Как именно рассчитывается каждый показатель?</div><div class="step-desc">Нужны конкретные формулы, потому что «Прибыль» у бухгалтера и у маркетолога часто считается по-разному.</div></div></div>
+<div class="step"><div class="step-num">4</div><div class="step-body"><div class="step-title">С чем сравниваем текущие цифры?</div><div class="step-desc">С прошлым годом, с планом/таргетом или с предыдущим месяцем — это принципиально разные истории.</div></div></div>
+<div class="step"><div class="step-num">5</div><div class="step-body"><div class="step-title">Какие срезы и фильтры обязательны?</div><div class="step-desc">Период, регион, категория товара, менеджер и т.д.</div></div></div>
+<h2>Блок 3. Данные и технологии</h2>
+<div class="step"><div class="step-num">6</div><div class="step-body"><div class="step-title">Где физически хранятся данные?</div><div class="step-desc">База данных, CRM-система, API. Коллеги из бизнеса могут подсказать, в какой системе есть нужные данные, а аналитик уже спросит у дата-инженера, где конкретно они лежат.</div></div></div>
+<div class="step"><div class="step-num">7</div><div class="step-body"><div class="step-title">Как часто должны обновляться данные?</div><div class="step-desc">Раз в сутки утром, каждый час или в реальном времени — это влияет на архитектуру решения.</div></div></div>
+<div class="step"><div class="step-num">8</div><div class="step-body"><div class="step-title">Нужно ли ограничивать права доступа?</div><div class="step-desc">Например: менеджер из Казани не должен видеть продажи Москвы.</div></div></div>
+<h2>Блок 4. Визуализация и дизайн</h2>
+<div class="step"><div class="step-num">9</div><div class="step-body"><div class="step-title">Есть ли брендбук или предпочтительные цвета?</div><div class="step-desc">На каком устройстве чаще всего будут смотреть отчёт: ноутбук, большой экран в офисе или мобильный телефон?</div></div></div>
+<div class="step"><div class="step-num">10</div><div class="step-body"><div class="step-title">Подготовьте и согласуйте макет</div><div class="step-desc">Подберите подходящие визуализации, расположите информацию правильно. Так как мы читаем слева направо, самая главная информация должна быть наверху слева.</div></div></div>
+<div class="tip-box"><p>Проверочный вопрос к любому графику: «Представьте, что это показывает падение на 20%. Что вы сделаете?» Если ответа нет — график, скорее всего, бесполезен и будет только перегружать визуал отчёта.</p></div>` },
 
     { tag: 'Продуктовое мышление', title: 'Как задавать вопросы',
-      lead: 'Не спешите бросаться в задачу с головой. Заказчики часто не знают чего хотят, или то, что они просят, не решает их настоящую проблему.',
-      body: `<h2>Техника «5 почему»</h2>
-<div class="example-block"><div class="example-label">Без вопросов</div>
+      lead: 'Не спешите бросаться в задачу с головой. Заказчики часто сами не знают чего хотят, или то что они хотят на самом деле не решает их проблему, либо предложенное ими решение не самое оптимальное.',
+      body: `<h2>Хороший подход против плохого</h2>
+<div class="example-block"><div class="example-label">Плохой подход</div>
 <div class="dialog-line bad"><div class="dialog-who">Менеджер:</div><div class="dialog-text">Нужна визуализация продаж</div></div>
-<div class="dialog-line bad"><div class="dialog-who">Аналитик:</div><div class="dialog-text">Хорошо, сделаю → делает красивый график, который никто не использует</div></div></div>
-<div class="example-block"><div class="example-label">С техникой «5 почему»</div>
-<div class="dialog-line good"><div class="dialog-who">Нужен отчёт</div><div class="dialog-text">Почему? — Продажи упали</div></div>
-<div class="dialog-line good"><div class="dialog-who">Продажи упали</div><div class="dialog-text">Что хотят понять? — Какие регионы проседают</div></div>
-<div class="dialog-line good"><div class="dialog-who">Регионы</div><div class="dialog-text">Что с этим сделают? — Перераспределят бюджет</div></div></div>
+<div class="dialog-line bad"><div class="dialog-who">Аналитик:</div><div class="dialog-text">Хорошо, сделаю. Делает красивый график, который никто не использует.</div></div>
+</div>
+<div class="example-block"><div class="example-label">Хороший подход</div>
+<div class="dialog-line good"><div class="dialog-who">Менеджер:</div><div class="dialog-text">Нужна визуализация продаж</div></div>
+<div class="dialog-line good"><div class="dialog-who">Аналитик:</div><div class="dialog-text">Какую проблему мы пытаемся решить? Почему прямо сейчас это важно? Какие решения будут приниматься на основе этих данных?</div></div>
+</div>
+<h2>Техника «5 почему»</h2>
+<p>Копайте глубже, задавая «почему?» несколько раз подряд:</p>
+<div class="example-block"><div class="example-label">Пример</div>
+<div class="dialog-line"><div class="dialog-who">Шаг 1:</div><div class="dialog-text">«Нужен отчёт по продажам». Почему?</div></div>
+<div class="dialog-line"><div class="dialog-who">Шаг 2:</div><div class="dialog-text">«Продажи упали». Почему это важно сейчас?</div></div>
+<div class="dialog-line"><div class="dialog-who">Шаг 3:</div><div class="dialog-text">«Руководство требует объяснений». Что они хотят понять?</div></div>
+<div class="dialog-line"><div class="dialog-who">Шаг 4:</div><div class="dialog-text">«Какие регионы проседают». Что будут делать с этой информацией?</div></div>
+<div class="dialog-line good"><div class="dialog-who">Шаг 5:</div><div class="dialog-text">«Перераспределять маркетинговый бюджет». Вот настоящая задача!</div></div>
+</div>
+<p>На этом этапе уже можно предложить комплексное решение: добавить данные по регионам, показать как распределены бюджеты, посчитать куда и как их можно перераспределить. Такое решение будет намного ценнее, чем просто отчёт по продажам.</p>
 <h2>Чеклист здорового скептицизма</h2>
-<ul class="checklist"><li>Логично ли это с точки зрения бизнеса?</li><li>Нет ли аномалий в данных (выбросы, пропуски, дубли)?</li><li>Правильно ли собраны данные?</li><li>Нет ли смещения в выборке?</li><li>Корреляция или причинно-следственная связь?</li></ul>` },
+<p>Аналитик — человек с критическим мышлением. Не верьте данным слепо: в ETL может быть ошибка, сервер мог моргнуть, использовали устаревший скрипт. Всегда задавайтесь вопросом: «А может ли полученный результат быть ошибкой?»</p>
+<ul class="checklist"><li>Логично ли это с точки зрения бизнеса?</li><li>Нет ли аномалий в данных (выбросы, пропуски, дубли)?</li><li>Правильно ли собраны данные?</li><li>Нет ли смещения в выборке?</li><li>Корреляция или причинно-следственная связь?</li><li>Не случайное ли это совпадение?</li></ul>` },
 
     { tag: 'Представление результатов', title: 'Как делать презентацию',
-      lead: 'Даже самый крутой анализ может оказаться никому не нужным, если не суметь представить результаты. Презентация — это не про слайды, это про аргументы.',
-      body: `<h2>Алгоритм подготовки</h2>
-<div class="step"><div class="step-num">1</div><div class="step-body"><div class="step-title">Сначала план, потом слайды</div><div class="step-desc">Определите цель: что вы хотите, чтобы аудитория сделала после презентации? Определите аудиторию: что ей уже известно, какие страхи и возражения у неё есть?</div></div></div>
-<div class="step"><div class="step-num">2</div><div class="step-body"><div class="step-title">Длинные говорящие заголовки</div><div class="step-desc">«Расходы на логистику съели весь прирост выручки за квартал» — это заголовок слайда. «Динамика расходов» — нет.</div></div></div>
-<div class="step"><div class="step-num">3</div><div class="step-body"><div class="step-title">Техника «И ЧО»</div><div class="step-desc">Напишите заголовок и задайте этот вопрос. Заголовок должен быть таким, чтобы было очевидно, почему это важно для вашей аудитории.</div></div></div>
-<div class="tip-box"><p>Грамотный слайд — это говорящий заголовок плюс визуальное доказательство. Никакого текста ради текста.</p></div>` },
+      lead: 'Не устану повторять: важный навык аналитика — умение представить результаты работы. Даже самый крутой анализ может оказаться никому не нужным, если не суметь его представить.',
+      body: `<h2>Шаг 1. Сначала план, потом презентация</h2>
+<div class="step"><div class="step-num">1</div><div class="step-body"><div class="step-title">Определите цель</div><div class="step-desc">Какова ваша личная мотивация делать эту презентацию? Что вы хотите, чтобы ваши зрители сделали после неё?</div></div></div>
+<div class="step"><div class="step-num">2</div><div class="step-body"><div class="step-title">Определите аудиторию</div><div class="step-desc">Почему аудитория вообще должна вас слушать? Какие у неё ожидания и цели? Что ей уже известно по теме? Какие страхи, сомнения или возражения у неё есть? Что мешает ей сделать нужный вам шаг прямо сейчас?</div></div></div>
+<div class="step"><div class="step-num">3</div><div class="step-body"><div class="step-title">Выберите формат</div><div class="step-desc">Хватит ли одной презентации, разосланной по почте? Или лучше сработает что-то более наглядное: инфографика, схемы или даже простая таблица в Excel?</div></div></div>
+<h2>Шаг 2. Говорящие заголовки</h2>
+<p>Не стесняйтесь длинных, но говорящих заголовков. Сравните два варианта:</p>
+<div class="example-block">
+<div class="dialog-line bad"><div class="dialog-who">Плохо:</div><div class="dialog-text">Динамика расходов</div></div>
+<div class="dialog-line good"><div class="dialog-who">Хорошо:</div><div class="dialog-text">Расходы на логистику съели весь прирост выручки за квартал</div></div>
+</div>
+<p>Второй заголовок несёт намного больше смысла и информации. Применяйте технику «И ЧО»: напишите заголовок и задайте этот вопрос. Заголовок должен быть таким, чтобы было очевидно, почему это важно для вашей аудитории.</p>
+<h2>Шаг 3. Содержание слайда</h2>
+<p>Грамотный слайд — это слайд с говорящим заголовком и визуальным доказательством. Чтобы презентация удерживала внимание аудитории, она должна быть как хорошая история. Это про то самое модное слово «сторителлинг».</p>
+<div class="tip-box"><p>Тема обширная и многогранная, навыки презентации стоит совершенствовать годами. Чем раньше начнёте, тем лучше.</p></div>` },
 
     { tag: 'Роль аналитика', title: 'Продуктовое мышление аналитика',
-      lead: 'Стандартная ситуация: бизнес говорит «выгрузи мне конверсию за март». Ты выгружаешь, отдаёшь табличку. Но в этой схеме ты не аналитик, а оператор SQL-консоли.',
-      body: `<h2>Аналитик-исполнитель vs аналитик-партнёр</h2>
+      lead: 'Стандартная ситуация: бизнес приходит и говорит «выгрузи мне конверсию за март». Ты выгружаешь, отдаёшь табличку, идёшь дальше. Задача закрыта. Но в этой схеме ты не аналитик, а оператор SQL-консоли.',
+      body: `<h2>Два типа аналитиков</h2>
+<p>Аналитик-исполнитель получает запрос, выгружает данные, отдаёт результат. Аналитик-партнёр получает запрос, задаёт вопросы, находит настоящую проблему и предлагает решение.</p>
 <div class="example-block"><div class="example-label">Исполнитель</div>
-<div class="dialog-line bad"><div class="dialog-who">Аналитик:</div><div class="dialog-text">Вот, 12%. Что-то ещё?</div></div></div>
+<div class="dialog-line"><div class="dialog-who">Продакт:</div><div class="dialog-text">Дай конверсию из регистрации в первую покупку за последний месяц</div></div>
+<div class="dialog-line bad"><div class="dialog-who">Аналитик:</div><div class="dialog-text">Вот, 12%. Что-то ещё?</div></div>
+</div>
 <div class="example-block"><div class="example-label">Партнёр</div>
-<div class="dialog-line good"><div class="dialog-who">Аналитик:</div><div class="dialog-text">Конверсия упала с 15% до 12%, но только в мобильном вебе. В приложении стабильно. Похоже на баг в последнем релизе. Вот разбивка по платформам.</div></div></div>
+<div class="dialog-line"><div class="dialog-who">Продакт:</div><div class="dialog-text">Дай конверсию из регистрации в первую покупку за последний месяц</div></div>
+<div class="dialog-line good"><div class="dialog-who">Аналитик:</div><div class="dialog-text">А почему именно эти данные? Ты смотришь общую конверсию или по когортам? Общая может скрывать сдвиг в миксе каналов. Я посмотрел — конверсия упала с 15% до 12%, но только в мобильном вебе. В приложении стабильно. Возможно, дело в последнем релизе. Вот разбивка по платформам и датам.</div></div>
+</div>
 <h2>Три привычки, которые стоит выработать</h2>
-<ul class="checklist"><li>Спрашивай «зачем» перед «как» — не открывай SQL сразу</li><li>Приноси гипотезы, а не таблицы — объясняй, что видишь</li><li>Следи за продуктом как пользователь — пользуйся им сам</li></ul>
-<div class="tip-box"><p>Тест: если убрать тебя из команды — бизнес потеряет «руки для выгрузок» или потеряет человека, который помогает принимать решения?</p></div>` }
+<div class="step"><div class="step-num">1</div><div class="step-body"><div class="step-title">Спрашивай «зачем» перед «как»</div><div class="step-desc">Когда приходит запрос на выгрузку, не открывайте SQL сразу. Спросите: «Какое решение ты хочешь принять на основе этих данных?» Часто выясняется, что нужны совсем другие цифры.</div></div></div>
+<div class="step"><div class="step-num">2</div><div class="step-body"><div class="step-title">Приноси гипотезы, а не таблицы</div><div class="step-desc">Вместо «вот данные» попробуй: «Я вижу, что метрика просела. Скорее всего, причина в X, потому что Y. Вот данные, которые это подтверждают. Предлагаю проверить Z». Это переводит тебя из роли обслуживания в роль влияния.</div></div></div>
+<div class="step"><div class="step-num">3</div><div class="step-body"><div class="step-title">Следи за продуктом как пользователь</div><div class="step-desc">Пользуйся продуктом сам. Проходи воронку. Смотри, что бесит, где теряешься. Аналитик, который знает продукт изнутри, задаёт вопросы, которые никто не догадался задать.</div></div></div>
+<div class="tip-box"><p>Тест: если убрать тебя из команды — бизнес потеряет «руки для выгрузок» или потеряет человека, который помогает принимать решения? ИИ развивается очень быстро, и в первом варианте тебя заменит ChatGPT с доступом к базе данных. Второй — нет.</p></div>` }
   ],
 
   en: [
     { tag: 'Critical thinking', title: 'Survivorship Bias',
-      lead: "One of the most common distortions in analytics. We analyze only those who \"survived\" and draw conclusions without noticing everyone else.",
+      lead: 'One of the most common distortions in analytics. We analyze only those who "survived" and draw conclusions without noticing everyone else.',
       body: `<h2>What it looks like in practice</h2>
-<p>Say you analyze only active product users and conclude the interface is convenient. But those who abandoned the service because of a bad UX never made it into your sample.</p>
-<div class="tip-box"><p>The classic example: during WWII, the US Army studied bullet holes in planes that returned and planned to reinforce those spots. Mathematician Abraham Wald pointed out: reinforce where there are no holes — planes with damage there simply never came back.</p></div>
+<p>Say you analyze only active product users and conclude the interface is convenient. But those who abandoned the service because of a bad UX never made it into your sample. That leads to incorrect conclusions.</p>
+<p>Survivorship bias distorts results because we ignore a significant portion of the data.</p>
+<div class="tip-box"><p>The classic WWII example: the US Army studied bullet holes in planes that returned and planned to reinforce those spots. Mathematician Abraham Wald pointed out: reinforce where there are no holes — planes with damage there simply never came back.</p></div>
 <h2>How to avoid the trap</h2>
-<ul class="checklist"><li>Always ask yourself: what data is missing or not represented?</li><li>Compare survivors and non-survivors</li><li>Analyze reasons for drop-off, not just successes</li></ul>` },
+<ul class="checklist"><li>Always ask yourself: what data is missing or not represented in the sample?</li><li>Compare survivors and non-survivors</li><li>Analyze reasons for drop-off and churn, not just successes</li></ul>
+<p>More examples on Wikipedia: <a href="https://en.wikipedia.org/wiki/Survivorship_bias" target="_blank">Survivorship bias</a></p>` },
 
     { tag: 'Cognitive biases', title: 'Sunk Cost Fallacy',
-      lead: "We keep doing something unprofitable simply because we've already invested time, money, or effort. Also known as the \"Concorde Effect\".",
-      body: `<h2>What are sunk costs</h2>
-<p>Resources already spent that cannot be recovered, no matter what we do next. The rational decision is to evaluate only future costs and benefits. But the human brain doesn't work that way.</p>
+      lead: 'We keep doing something unprofitable simply because we\'ve already invested time, money, or effort. Also known as the "Concorde Effect".',
+      body: `<h2>What is it</h2>
+<p>Imagine you bought a movie ticket for $10. Twenty minutes in, you realize the film is terrible. But you stay until the end because "the money is already spent." Sound familiar?</p>
+<p>That's the sunk cost trap: we keep doing something wasteful simply because we've already put resources into it.</p>
+<h2>Where the name "Concorde Effect" comes from</h2>
+<p>In 1962, the UK and France launched a supersonic aircraft project with a budget of $130 million. Within a few years it became clear the project was unprofitable — the plane was too expensive to build and operate. Final costs reached $2.8 billion, 20 times the original estimate. Despite this, funding continued for three more decades because "so much has already been invested." Concorde was retired in 2003 without ever turning a profit.</p>
+<h2>Why we fall into this trap</h2>
+<ul class="checklist"><li>Fear of admitting a mistake: nobody wants to feel like a failure</li><li>Loss aversion: Kahneman and Tversky showed that losses feel more painful than equivalent gains feel good</li><li>The endowment effect: we overvalue things we've already invested in</li><li>Social pressure: fear of looking bad in front of others</li></ul>
 <h2>Examples from an analyst's work</h2>
-<p>You spent a week building a dashboard, then realized the business needs something completely different. Instead of starting over, you try to "patch" the old version — even though a fresh start would be faster.</p>
+<p>You spent a week building a complex dashboard, then learned the business needs something completely different. Instead of starting over, you try to patch the old version — even though a fresh start would be faster and better.</p>
+<p>Or you built a model that performs poorly, but keep "improving" it instead of trying a different approach. Or you keep updating a report nobody reads, just because you always have.</p>
 <h2>How to avoid it</h2>
-<ul class="checklist"><li>Ask yourself: if I were starting today, would I make the same decision?</li><li>Separate past from future — past investments won't change</li><li>Define success criteria upfront, before the project begins</li><li>Ask a colleague outside the project — they see it more objectively</li></ul>
-<div class="tip-box"><p>Better to spend 2 days realizing you're heading the wrong way than 2 weeks trapped thinking "but I've already done so much."</p></div>` },
+<ul class="checklist"><li>Ask yourself: if I were starting this today with what I know now, would I make the same decision?</li><li>Separate past from future. Past investments are done and won't change. Evaluate only future costs and benefits</li><li>Define success criteria upfront: "If metric X doesn't grow by Y% in 3 months, we shut the project down"</li><li>Ask colleagues not emotionally invested in the project. Outside perspective is more objective</li><li>Normalize mistakes. Admitting a mistake and cutting losses is better than persisting and losing more</li></ul>
+<div class="tip-box"><p>Practical tip: show a draft or prototype to the stakeholder after a couple of days, not a week. Better to spend 2 days heading the wrong way than 2 weeks stuck thinking "but I've already done so much."</p></div>` },
 
     { tag: 'Accountability', title: 'The Cost of Mistakes',
-      lead: "Analytics isn't just SQL and dashboards. It's about impact. PMs, marketers, and C-level executives look at your numbers. Budgets and strategies are built on what you find.",
-      body: `<h2>A healthy error culture</h2>
-<div class="step"><div class="step-num">1</div><div class="step-body"><div class="step-title">Don't be afraid to admit mistakes</div><div class="step-desc">The worst scenario is spotting an error and staying quiet. Someone almost always notices. And it's far worse if bad data has already been acted on.</div></div></div>
-<div class="step"><div class="step-num">2</div><div class="step-body"><div class="step-title">Speak up first</div><div class="step-desc">Found an issue in your report? Write to the stakeholder yourself: "There's an inaccuracy here — I'll recheck and send an update." This earns respect, not judgment.</div></div></div>
-<div class="step"><div class="step-num">3</div><div class="step-body"><div class="step-title">Learn from it</div><div class="step-desc">Understand where you went wrong. Write it down, add a check to your code, set up an alert — so you don't step on the same rake again.</div></div></div>` },
+      lead: 'Analytics isn\'t just SQL, Python, and dashboards. It\'s about impact. PMs, marketers, and C-level executives look at your numbers. Budgets and strategies are built on what you find.',
+      body: `<h2>Why this matters</h2>
+<p>A wrong metric, a bug in calculations, swapped 0s and 1s — and the business heads in the wrong direction. Mistakes happen to junior analysts and senior ones alike. Data is a complex environment and the human factor never goes away. What matters is the culture around mistakes.</p>
+<h2>A healthy error culture</h2>
+<div class="step"><div class="step-num">1</div><div class="step-body"><div class="step-title">Don't be afraid to admit mistakes</div><div class="step-desc">The worst scenario: spotting an error and staying quiet, hoping nobody notices. Someone almost always does. And it's far worse if bad data has already been acted on.</div></div></div>
+<div class="step"><div class="step-num">2</div><div class="step-body"><div class="step-title">Speak up first</div><div class="step-desc">Found an issue in your report? Write to the stakeholder yourself: "There's an inaccuracy here — I'll recheck and send an update." This earns respect and shows accountability, not weakness.</div></div></div>
+<div class="step"><div class="step-num">3</div><div class="step-body"><div class="step-title">Learn from it</div><div class="step-desc">Understand where you went wrong. Document it, add a check to your code, set up an alert — so you don't make the same mistake again.</div></div></div>
+<div class="tip-box"><p>Don't hide mistakes — learn from them and talk about them openly. That's a sign of a mature analyst.</p></div>` },
 
     { tag: 'Stakeholder communication', title: 'Gathering Requirements',
-      lead: "You'll often receive vague requests like \"build a sales report.\" The biggest mistake: asking \"what do you want to see?\" and getting a list of 50 columns nobody will ever read.",
-      body: `<h2>Questions to ask your stakeholder</h2>
-<div class="step"><div class="step-num">1</div><div class="step-body"><div class="step-title">Who will actually open this report?</div><div class="step-desc">A CEO needs fewer details. A team of account managers needs a flexible tool with lots of filters and drill-downs.</div></div></div>
-<div class="step"><div class="step-num">2</div><div class="step-body"><div class="step-title">What decisions will this dashboard drive?</div><div class="step-desc">The visuals should help make specific decisions: "reallocate budget," "call this client," "fire this manager."</div></div></div>
-<div class="step"><div class="step-num">3</div><div class="step-body"><div class="step-title">How exactly is each metric calculated?</div><div class="step-desc">"Profit" means different things to a CFO and a marketer. Always ask for the exact formula.</div></div></div>
-<div class="tip-box"><p>A useful gut-check for any chart: "Imagine this shows a 20% drop. What would you do?" If there's no answer — the chart is probably useless.</p></div>` },
+      lead: 'You\'ll often receive vague requests like "build a sales report" or "make a convenient report for account managers." The most common mistake: asking "what do you want to see?" and getting a list of 50 columns nobody will ever read.',
+      body: `<h2>Block 1. Goals and users</h2>
+<div class="step"><div class="step-num">1</div><div class="step-body"><div class="step-title">Who will open this report every day?</div><div class="step-desc">CEO, commercial director, or account managers? The format and depth of information depend heavily on the audience. A CEO needs fewer details. Account managers may need a flexible tool with lots of filters and settings.</div></div></div>
+<div class="step"><div class="step-num">2</div><div class="step-body"><div class="step-title">What decisions will be made based on this dashboard?</div><div class="step-desc">For example: "fire a manager," "restock inventory," "reallocate ad budget," "schedule a client call." The visuals and data should help make exactly these decisions.</div></div></div>
+<h2>Block 2. Metrics and logic</h2>
+<div class="step"><div class="step-num">3</div><div class="step-body"><div class="step-title">How exactly is each metric calculated?</div><div class="step-desc">You need specific formulas, because "profit" means different things to an accountant and a marketer.</div></div></div>
+<div class="step"><div class="step-num">4</div><div class="step-body"><div class="step-title">What are we comparing current numbers against?</div><div class="step-desc">Last year, plan/target, or previous month — these tell completely different stories.</div></div></div>
+<div class="step"><div class="step-num">5</div><div class="step-body"><div class="step-title">Which slices and filters are required?</div><div class="step-desc">Time period, region, product category, manager, etc.</div></div></div>
+<h2>Block 3. Data and technology</h2>
+<div class="step"><div class="step-num">6</div><div class="step-body"><div class="step-title">Where does the data physically live?</div><div class="step-desc">Database, CRM, API. Business colleagues can point to which system has the data; the analyst then asks the data engineer where it's stored.</div></div></div>
+<div class="step"><div class="step-num">7</div><div class="step-body"><div class="step-title">How frequently should data refresh?</div><div class="step-desc">Once a day in the morning, every hour, or in real time — this affects the architecture.</div></div></div>
+<div class="step"><div class="step-num">8</div><div class="step-body"><div class="step-title">Do we need access restrictions?</div><div class="step-desc">For example: a manager in one city shouldn't see another city's sales figures.</div></div></div>
+<h2>Block 4. Visualization and design</h2>
+<div class="step"><div class="step-num">9</div><div class="step-body"><div class="step-title">Is there a brand guide or preferred colors?</div><div class="step-desc">What device will people most often use: laptop, large office screen, or mobile phone?</div></div></div>
+<div class="step"><div class="step-num">10</div><div class="step-body"><div class="step-title">Prepare and align on a layout</div><div class="step-desc">Choose the right chart types and arrange information properly. Since we read left to right, the most important information should go top-left.</div></div></div>
+<div class="tip-box"><p>A useful gut-check for any chart: "Imagine this shows a 20% drop. What would you do?" If there's no answer — the chart is probably useless and will only clutter the report.</p></div>` },
 
     { tag: 'Product thinking', title: 'How to Ask Questions',
-      lead: "Don't rush into a task headfirst. Stakeholders often don't know what they really want — or what they're asking for doesn't actually solve their underlying problem.",
-      body: `<h2>The "5 Whys" technique</h2>
-<div class="example-block"><div class="example-label">Without questions</div>
+      lead: 'Don\'t rush into a task headfirst. Stakeholders often don\'t know what they really want — or what they\'re asking for doesn\'t actually solve their underlying problem, or their proposed solution isn\'t the best one.',
+      body: `<h2>Good approach vs. bad approach</h2>
+<div class="example-block"><div class="example-label">Bad approach</div>
 <div class="dialog-line bad"><div class="dialog-who">Manager:</div><div class="dialog-text">I need a sales visualization</div></div>
-<div class="dialog-line bad"><div class="dialog-who">Analyst:</div><div class="dialog-text">Sure, on it → builds a beautiful chart nobody ever uses</div></div></div>
-<div class="example-block"><div class="example-label">With the 5 Whys</div>
-<div class="dialog-line good"><div class="dialog-who">Need a report</div><div class="dialog-text">Why? — Sales dropped</div></div>
-<div class="dialog-line good"><div class="dialog-who">Sales dropped</div><div class="dialog-text">What do you want to understand? — Which regions are underperforming</div></div>
-<div class="dialog-line good"><div class="dialog-who">Regions</div><div class="dialog-text">What will you do with this? — Reallocate the marketing budget</div></div></div>
+<div class="dialog-line bad"><div class="dialog-who">Analyst:</div><div class="dialog-text">Sure, on it. Builds a beautiful chart nobody ever uses.</div></div>
+</div>
+<div class="example-block"><div class="example-label">Good approach</div>
+<div class="dialog-line good"><div class="dialog-who">Manager:</div><div class="dialog-text">I need a sales visualization</div></div>
+<div class="dialog-line good"><div class="dialog-who">Analyst:</div><div class="dialog-text">What problem are we trying to solve? Why is this important right now? What decisions will be made based on this data?</div></div>
+</div>
+<h2>The "5 Whys" technique</h2>
+<p>Dig deeper by asking "why?" several times in a row:</p>
+<div class="example-block"><div class="example-label">Example</div>
+<div class="dialog-line"><div class="dialog-who">Step 1:</div><div class="dialog-text">"We need a sales report." Why?</div></div>
+<div class="dialog-line"><div class="dialog-who">Step 2:</div><div class="dialog-text">"Sales dropped." Why does that matter right now?</div></div>
+<div class="dialog-line"><div class="dialog-who">Step 3:</div><div class="dialog-text">"Management is asking for explanations." What do they want to understand?</div></div>
+<div class="dialog-line"><div class="dialog-who">Step 4:</div><div class="dialog-text">"Which regions are underperforming." What will they do with that information?</div></div>
+<div class="dialog-line good"><div class="dialog-who">Step 5:</div><div class="dialog-text">"Reallocate the marketing budget." There's the real task!</div></div>
+</div>
+<p>Now you can propose a comprehensive solution: add regional data, show how budgets are distributed, calculate how to reallocate. That's far more valuable than a simple sales report.</p>
 <h2>Healthy skepticism checklist</h2>
-<ul class="checklist"><li>Does this make sense from a business perspective?</li><li>Are there any anomalies in the data (outliers, missing values, duplicates)?</li><li>Was the data collected correctly?</li><li>Is there any sampling bias?</li><li>Is this correlation or causation?</li></ul>` },
+<p>A good analyst has critical thinking. Don't trust data blindly — ETL can have bugs, servers can hiccup, someone may have used an outdated script. Always ask: "Could this result be an error?"</p>
+<ul class="checklist"><li>Does this make sense from a business perspective?</li><li>Are there any anomalies (outliers, missing values, duplicates)?</li><li>Was the data collected correctly?</li><li>Is there any sampling bias?</li><li>Is this correlation or causation?</li><li>Could this be a coincidence?</li></ul>` },
 
     { tag: 'Presentation skills', title: 'How to Present Results',
-      lead: "Even the best analysis can go to waste if you can't communicate the findings. A presentation is not about slides — it's about arguments.",
-      body: `<h2>Preparation algorithm</h2>
-<div class="step"><div class="step-num">1</div><div class="step-body"><div class="step-title">Plan first, slides second</div><div class="step-desc">Define the goal: what do you want the audience to do after the presentation? Define the audience: what do they already know, what objections or fears might they have?</div></div></div>
-<div class="step"><div class="step-num">2</div><div class="step-body"><div class="step-title">Use long, meaningful slide titles</div><div class="step-desc">"Logistics costs ate all of the revenue growth this quarter" is a slide title. "Cost dynamics" is not.</div></div></div>
-<div class="step"><div class="step-num">3</div><div class="step-body"><div class="step-title">The "So what?" test</div><div class="step-desc">Write your slide title, then ask "So what?" The title should make it obvious why this matters to your audience.</div></div></div>
-<div class="tip-box"><p>A good slide is a meaningful title plus a visual proof. No text for the sake of text.</p></div>` },
+      lead: 'A key analyst skill: presenting results. Even the best analysis can go to waste if you can\'t communicate the findings. There are many ways to present your work — one of the most popular is a presentation.',
+      body: `<h2>Step 1. Plan first, build slides second</h2>
+<div class="step"><div class="step-num">1</div><div class="step-body"><div class="step-title">Define your goal</div><div class="step-desc">What's your personal motivation for this presentation? What do you want your audience to do after seeing it?</div></div></div>
+<div class="step"><div class="step-num">2</div><div class="step-body"><div class="step-title">Define your audience</div><div class="step-desc">Why should the audience listen to you at all? What are their expectations and goals? What do they already know about the topic? What fears, doubts, or objections might they have? What's stopping them from taking the action you need right now?</div></div></div>
+<div class="step"><div class="step-num">3</div><div class="step-body"><div class="step-title">Choose the right format</div><div class="step-desc">Will a presentation sent by email be enough? Or would something more visual work better — an infographic, a diagram, or even a simple table?</div></div></div>
+<h2>Step 2. Use long, meaningful titles</h2>
+<p>Don't be afraid of long slide titles — they work. Compare these two options:</p>
+<div class="example-block">
+<div class="dialog-line bad"><div class="dialog-who">Weak:</div><div class="dialog-text">Cost dynamics</div></div>
+<div class="dialog-line good"><div class="dialog-who">Strong:</div><div class="dialog-text">Logistics costs ate all of the revenue growth this quarter</div></div>
+</div>
+<p>The second title carries far more meaning. Apply the "So what?" test: write your slide title and ask that question. The title should make it obvious why this matters to your audience.</p>
+<h2>Step 3. Slide content</h2>
+<p>A good slide is a meaningful title plus a visual proof. For a presentation to hold the audience's attention, it needs to tell a story — that's what "storytelling" actually means in practice.</p>
+<div class="tip-box"><p>This is a broad topic and one worth developing over years. The sooner you start, the better.</p></div>` },
 
     { tag: "Analyst's role", title: 'Product Thinking for Analysts',
-      lead: "Common scenario: the business says \"pull the March conversion rate.\" You pull it, hand over the table, call it done. But in this setup you're not an analyst — you're a SQL query executor.",
-      body: `<h2>Executor vs. partner</h2>
+      lead: 'Common scenario: the business says "pull the March conversion rate." You pull it, hand over the table, call it done. But in this setup you\'re not an analyst — you\'re a SQL query executor.',
+      body: `<h2>Two types of analysts</h2>
+<p>An executor receives a request, pulls the data, delivers the result. A partner receives a request, asks questions, finds the real problem, and proposes a solution.</p>
 <div class="example-block"><div class="example-label">Executor</div>
-<div class="dialog-line bad"><div class="dialog-who">Analyst:</div><div class="dialog-text">Here it is, 12%. Anything else?</div></div></div>
+<div class="dialog-line"><div class="dialog-who">PM:</div><div class="dialog-text">Give me the registration-to-first-purchase conversion for last month</div></div>
+<div class="dialog-line bad"><div class="dialog-who">Analyst:</div><div class="dialog-text">Here it is, 12%. Anything else?</div></div>
+</div>
 <div class="example-block"><div class="example-label">Partner</div>
-<div class="dialog-line good"><div class="dialog-who">Analyst:</div><div class="dialog-text">Conversion dropped from 15% to 12%, but only in mobile web. The app is stable. Looks like a bug from the last release. Here's the breakdown by platform.</div></div></div>
+<div class="dialog-line"><div class="dialog-who">PM:</div><div class="dialog-text">Give me the registration-to-first-purchase conversion for last month</div></div>
+<div class="dialog-line good"><div class="dialog-who">Analyst:</div><div class="dialog-text">Why these specific numbers? Are you looking at overall conversion or by cohort? The overall figure might hide a channel mix shift. I checked — conversion dropped from 15% to 12%, but only in mobile web. The app is stable. Possibly the last release. Here's the breakdown by platform and date.</div></div>
+</div>
 <h2>Three habits worth building</h2>
-<ul class="checklist"><li>Ask "why" before "how" — don't open SQL right away</li><li>Bring hypotheses, not tables — explain what you see</li><li>Use the product like a real user — experience it yourself</li></ul>
-<div class="tip-box"><p>The test: if you were removed from the team — would the business lose "hands for data pulls" or lose someone who helps make better decisions?</p></div>` }
+<div class="step"><div class="step-num">1</div><div class="step-body"><div class="step-title">Ask "why" before "how"</div><div class="step-desc">When a request comes in, don't open SQL right away. Ask: "What decision do you want to make with this data?" Often you'll find the actual need is completely different.</div></div></div>
+<div class="step"><div class="step-num">2</div><div class="step-body"><div class="step-title">Bring hypotheses, not tables</div><div class="step-desc">Instead of "here's the data," try: "I see the metric dropped. Most likely the cause is X, because Y. Here's data that supports it. I suggest we test Z." This shifts you from a support role to an influencer role.</div></div></div>
+<div class="step"><div class="step-num">3</div><div class="step-body"><div class="step-title">Use the product like a real user</div><div class="step-desc">Go through the funnel yourself. Notice what's frustrating, where you get lost. An analyst who knows the product from the inside asks questions nobody else thought to ask.</div></div></div>
+<div class="tip-box"><p>The test: if you were removed from the team — would the business lose "hands for data pulls" or lose someone who helps make better decisions? AI is advancing fast, and the first type will be replaced by ChatGPT with database access. The second type won't.</p></div>` }
   ]
 };
 
