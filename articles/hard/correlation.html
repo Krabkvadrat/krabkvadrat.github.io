@@ -27,6 +27,7 @@ print(df.corr())</code></pre>
 <h2>What is correlation</h2>
 <p>Correlation is a statistical relationship between two or more variables, where a change in one accompanies a change in the other. Measured by a coefficient from -1 to 1.</p>
 <ul class="checklist"><li>Positive: variables move in the same direction (height and weight)</li><li>Negative: variables move in opposite directions (temperature and heating costs)</li><li>Zero: variables are not related</li></ul>
+<p>In pandas, correlation is computed with <code>.corr()</code>:</p>
 <pre><code>import pandas as pd
 
 d = {"A": [10, 20, 30], "B": [15, 25, 35]}
@@ -36,5 +37,7 @@ print(df.corr())</code></pre>
 <h2>Causation</h2>
 <p>A causal relationship means one event directly causes another. There's directionality: changing the cause changes the effect.</p>
 <div class="tip-box"><p>Correlation only shows that a relationship exists — not why. For example, there's a surprisingly strong correlation between the distance from Uranus to Earth and the number of slot machines in Nevada. Seriously: <a href="https://tylervigen.com/spurious/correlation/1184_the-distance-between-uranus-and-earth_correlates-with_number-of-slot-machines-in-nevada" target="_blank">see the chart</a>.</p></div>
-<p>Fun examples of spurious correlations: <a href="https://tylervigen.com/spurious-correlations" target="_blank">tylervigen.com</a></p>
+<p>Fun examples of spurious correlations: <a href="https://tylervigen.com/spurious-correlations" target="_blank">Spurious Correlations</a> — hundreds of absurd but statistically significant relationships.</p>
+<h2>Bottom line</h2>
+<p>For an analyst, correlation is a starting point for investigation, not a final conclusion. When you find a strong correlation between metrics, ask yourself: is there causation here, or a third confounding factor? Could this just be a coincidence?</p>
 </section>
