@@ -366,20 +366,22 @@ function loadManifest() {
     return r.json();
   }).then(function(m) {
     manifest = m;
-    sections = {
-      soft: { ru: { label: m.sections.soft.ru }, en: { label: m.sections.soft.en } },
-      hard: { ru: { label: m.sections.hard.ru }, en: { label: m.sections.hard.en } }
-    };
-    sectionOpen = { soft: !!m.sections.soft.defaultOpen, hard: !!m.sections.hard.defaultOpen };
-    navData = { soft: [], hard: [] };
+    sections = {};
+    sectionOpen = {};
+    navData = {};
+    Object.keys(m.sections).forEach(function(key) {
+      sections[key] = { ru: { label: m.sections[key].ru }, en: { label: m.sections[key].en } };
+      sectionOpen[key] = !!m.sections[key].defaultOpen;
+      navData[key] = [];
+    });
     m.articles.forEach(function(a) {
       navData[a.section].push({
         slug: a.slug, icon: a.icon, bg: a.bg, color: a.color,
         ru: a.ru, en: a.en
       });
     });
-    // default open section becomes the current section
-    currentSection = sectionOpen.hard ? 'hard' : (sectionOpen.soft ? 'soft' : 'soft');
+    var firstOpen = Object.keys(sectionOpen).find(function(k) { return sectionOpen[k]; });
+    currentSection = firstOpen || Object.keys(sections)[0];
   });
 }
 
@@ -406,7 +408,7 @@ function loadArticle(section, idx) {
 function renderNav() {
   var el = document.getElementById('nav');
   el.innerHTML = '';
-  ['soft', 'hard'].forEach(function(sec) {
+  Object.keys(sections).forEach(function(sec) {
     var s = sections[sec][currentLang];
     var open = sectionOpen[sec];
     var items = navData[sec];

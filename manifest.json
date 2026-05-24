@@ -9,6 +9,11 @@
       "ru": "Хард скиллы",
       "en": "Hard Skills",
       "defaultOpen": true
+    },
+    "about": {
+      "ru": "Об авторе",
+      "en": "About",
+      "defaultOpen": false
     }
   },
   "articles": [
@@ -235,6 +240,21 @@
       "en": {
         "label": "A/B Test Design",
         "tag": "Monte Carlo / Python"
+      }
+    },
+    {
+      "section": "about",
+      "slug": "me",
+      "icon": "👤",
+      "bg": "var(--bg-secondary)",
+      "color": "var(--text-secondary)",
+      "ru": {
+        "label": "Александр Грудинин",
+        "tag": "Lead Data Analyst"
+      },
+      "en": {
+        "label": "Alexandr Grudinin",
+        "tag": "Lead Data Analyst"
       }
     }
   ]
