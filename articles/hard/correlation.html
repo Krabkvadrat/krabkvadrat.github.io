@@ -1,0 +1,40 @@
+<section data-lang="ru">
+<div class="article-tag">Статистика</div>
+<h1>Корреляция и причинно-следственная связь</h1>
+<p class="lead">Очень важно отличать одно от другого. Непонимание этих терминов может привести к конкретным ошибкам в анализе.</p>
+<h2>Что такое корреляция</h2>
+<p>Корреляция — статистическая взаимосвязь между двумя или более переменными, при которой изменение одной переменной сопровождается изменением другой. Измеряется коэффициентом от -1 до 1.</p>
+<ul class="checklist"><li>Положительная: переменные изменяются в одном направлении (рост и вес человека)</li><li>Отрицательная: переменные изменяются в противоположных направлениях (температура воздуха и расходы на отопление)</li><li>Нулевая: переменные не связаны между собой</li></ul>
+<p>В pandas корреляция считается методом <code>.corr()</code>:</p>
+<pre><code>import pandas as pd
+
+d = {"A": [10, 20, 30], "B": [15, 25, 35]}
+df = pd.DataFrame(d)
+print(df.corr())</code></pre>
+<p>Документация: <a href="https://www.geeksforgeeks.org/pandas/python-pandas-dataframe-corr/" target="_blank">pandas DataFrame.corr()</a></p>
+<h2>Причинно-следственная связь</h2>
+<p>Это отношение между явлениями, при котором одно явление непосредственно вызывает другое. Здесь есть направленность: изменение причины приводит к изменению следствия.</p>
+<div class="tip-box"><p>Корреляция говорит только о наличии связи, но не о её природе. Например, есть вполне устойчивая корреляция между расстоянием от Урана до Земли и количеством игровых автоматов в Неваде. Серьёзно: <a href="https://tylervigen.com/spurious/correlation/1184_the-distance-between-uranus-and-earth_correlates-with_number-of-slot-machines-in-nevada" target="_blank">посмотреть график</a>.</p></div>
+<p>Наглядные примеры ложных корреляций: <a href="https://tylervigen.com/spurious-correlations" target="_blank">Spurious Correlations</a> — там собраны сотни абсурдных, но статистически значимых зависимостей.</p>
+<h2>Главный вывод</h2>
+<p>В работе аналитика корреляция — это отправная точка для исследования, а не финальный вывод. Когда вы находите сильную корреляцию между метриками, задайте себе вопросы: есть ли здесь причинно-следственная связь, или это влияние третьего фактора? Может ли это быть случайным совпадением?</p>
+</section>
+
+<section data-lang="en">
+<div class="article-tag">Statistics</div>
+<h1>Correlation and Causation</h1>
+<p class="lead">It's crucial to tell these apart. Misunderstanding these concepts leads to concrete errors in analysis.</p>
+<h2>What is correlation</h2>
+<p>Correlation is a statistical relationship between two or more variables, where a change in one accompanies a change in the other. Measured by a coefficient from -1 to 1.</p>
+<ul class="checklist"><li>Positive: variables move in the same direction (height and weight)</li><li>Negative: variables move in opposite directions (temperature and heating costs)</li><li>Zero: variables are not related</li></ul>
+<pre><code>import pandas as pd
+
+d = {"A": [10, 20, 30], "B": [15, 25, 35]}
+df = pd.DataFrame(d)
+print(df.corr())</code></pre>
+<p>Docs: <a href="https://www.geeksforgeeks.org/pandas/python-pandas-dataframe-corr/" target="_blank">pandas DataFrame.corr()</a></p>
+<h2>Causation</h2>
+<p>A causal relationship means one event directly causes another. There's directionality: changing the cause changes the effect.</p>
+<div class="tip-box"><p>Correlation only shows that a relationship exists — not why. For example, there's a surprisingly strong correlation between the distance from Uranus to Earth and the number of slot machines in Nevada. Seriously: <a href="https://tylervigen.com/spurious/correlation/1184_the-distance-between-uranus-and-earth_correlates-with_number-of-slot-machines-in-nevada" target="_blank">see the chart</a>.</p></div>
+<p>Fun examples of spurious correlations: <a href="https://tylervigen.com/spurious-correlations" target="_blank">tylervigen.com</a></p>
+</section>

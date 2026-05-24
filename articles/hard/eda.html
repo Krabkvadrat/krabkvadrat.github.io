@@ -1,0 +1,30 @@
+<section data-lang="ru">
+<div class="article-tag">Python / Pandas</div>
+<h1>EDA — разведочный анализ данных</h1>
+<p class="lead">EDA (Exploratory Data Analysis) — это первый шаг при работе с любым датасетом. Прежде чем строить модели или делать выводы, нужно понять, что вообще находится в данных.</p>
+<h2>Автоматические инструменты EDA</h2>
+<p>Помимо ручного анализа через pandas, существуют библиотеки, которые за несколько строк кода генерируют полный отчёт по данным.</p>
+<p><strong>ydata-profiling</strong> — наиболее популярная библиотека. Автоматически создаёт детальный отчёт, который включает анализ типов данных, основные статистики, базовые визуализации, выявляет проблемы в данных и помогает сравнивать датафреймы. <a href="https://github.com/ydataai/ydata-profiling" target="_blank">GitHub</a></p>
+<pre><code>pip install ydata-profiling</code></pre>
+<pre><code>from ydata_profiling import ProfileReport
+profile = ProfileReport(df, title="EDA")
+profile.to_file("report.html")</code></pre>
+<p>Похожим образом работают <a href="https://github.com/fbdesignpro/sweetviz" target="_blank">sweetviz</a> и <a href="https://github.com/man-group/dtale" target="_blank">d-tale</a>. На практике они более продвинутые, но и ресурсов потребуют больше. На больших объёмах данных может не хватать памяти. В pandas profiling есть гайд для работы с большими данными: <a href="https://docs.profiling.ydata.ai/latest/features/big_data/" target="_blank">Big Data guide</a></p>
+<h2>Чеклист базового EDA</h2>
+<ul class="checklist"><li>Типы данных</li><li>Пропущенные значения</li><li>Дубликаты</li><li>Количество элементов</li><li>Диапазоны значений</li><li>Выбросы</li><li>Формы распределения значений</li><li>Наличие недопустимых значений</li><li>Согласованность между столбцами</li></ul>
+</section>
+
+<section data-lang="en">
+<div class="article-tag">Python / Pandas</div>
+<h1>EDA — Exploratory Data Analysis</h1>
+<p class="lead">EDA is the first step when working with any dataset. Before building models or drawing conclusions, you need to understand what's actually in the data.</p>
+<h2>Automated EDA tools</h2>
+<p><strong>ydata-profiling</strong> is the most popular library. A few lines of code generate a full report: data types, statistics, visualizations, anomaly detection, and dataframe comparison. <a href="https://github.com/ydataai/ydata-profiling" target="_blank">GitHub</a></p>
+<pre><code>pip install ydata-profiling</code></pre>
+<pre><code>from ydata_profiling import ProfileReport
+profile = ProfileReport(df, title="EDA")
+profile.to_file("report.html")</code></pre>
+<p>Similar tools: <a href="https://github.com/fbdesignpro/sweetviz" target="_blank">sweetviz</a> and <a href="https://github.com/man-group/dtale" target="_blank">d-tale</a>. More powerful, but also more resource-heavy. On large datasets, memory may run out. pandas profiling has a <a href="https://docs.profiling.ydata.ai/latest/features/big_data/" target="_blank">Big Data guide</a>.</p>
+<h2>Basic EDA checklist</h2>
+<ul class="checklist"><li>Data types</li><li>Missing values</li><li>Duplicates</li><li>Row counts</li><li>Value ranges</li><li>Outliers</li><li>Distribution shapes</li><li>Invalid values</li><li>Cross-column consistency</li></ul>
+</section>

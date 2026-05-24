@@ -1,0 +1,241 @@
+{
+  "sections": {
+    "soft": {
+      "ru": "Софт скиллы",
+      "en": "Soft Skills",
+      "defaultOpen": false
+    },
+    "hard": {
+      "ru": "Хард скиллы",
+      "en": "Hard Skills",
+      "defaultOpen": true
+    }
+  },
+  "articles": [
+    {
+      "section": "soft",
+      "slug": "survivorship-bias",
+      "icon": "🔍",
+      "bg": "var(--bg-info)",
+      "color": "var(--text-info)",
+      "ru": {
+        "label": "Ошибка выжившего",
+        "tag": "Критическое мышление"
+      },
+      "en": {
+        "label": "Survivorship Bias",
+        "tag": "Critical thinking"
+      }
+    },
+    {
+      "section": "soft",
+      "slug": "sunk-cost-fallacy",
+      "icon": "💸",
+      "bg": "var(--bg-warning)",
+      "color": "var(--text-warning)",
+      "ru": {
+        "label": "Ошибка невозвратных затрат",
+        "tag": "Когнитивные искажения"
+      },
+      "en": {
+        "label": "Sunk Cost Fallacy",
+        "tag": "Cognitive biases"
+      }
+    },
+    {
+      "section": "soft",
+      "slug": "cost-of-mistakes",
+      "icon": "⚠️",
+      "bg": "var(--bg-danger)",
+      "color": "var(--text-danger)",
+      "ru": {
+        "label": "Цена ошибки",
+        "tag": "Ответственность"
+      },
+      "en": {
+        "label": "The Cost of Mistakes",
+        "tag": "Accountability"
+      }
+    },
+    {
+      "section": "soft",
+      "slug": "gathering-requirements",
+      "icon": "📋",
+      "bg": "var(--bg-success)",
+      "color": "var(--text-success)",
+      "ru": {
+        "label": "Сбор требований",
+        "tag": "Коммуникация с заказчиком"
+      },
+      "en": {
+        "label": "Gathering Requirements",
+        "tag": "Stakeholder communication"
+      }
+    },
+    {
+      "section": "soft",
+      "slug": "asking-questions",
+      "icon": "❓",
+      "bg": "var(--bg-secondary)",
+      "color": "var(--text-secondary)",
+      "ru": {
+        "label": "Как задавать вопросы",
+        "tag": "Продуктовое мышление"
+      },
+      "en": {
+        "label": "How to Ask Questions",
+        "tag": "Product thinking"
+      }
+    },
+    {
+      "section": "soft",
+      "slug": "presenting-results",
+      "icon": "📊",
+      "bg": "var(--bg-info)",
+      "color": "var(--text-info)",
+      "ru": {
+        "label": "Как делать презентацию",
+        "tag": "Представление результатов"
+      },
+      "en": {
+        "label": "How to Present Results",
+        "tag": "Presentation skills"
+      }
+    },
+    {
+      "section": "soft",
+      "slug": "product-thinking",
+      "icon": "💡",
+      "bg": "var(--bg-warning)",
+      "color": "var(--text-warning)",
+      "ru": {
+        "label": "Продуктовое мышление",
+        "tag": "Роль аналитика"
+      },
+      "en": {
+        "label": "Product Thinking",
+        "tag": "Analyst's role"
+      }
+    },
+    {
+      "section": "hard",
+      "slug": "eda",
+      "icon": "🔬",
+      "bg": "var(--bg-info)",
+      "color": "var(--text-info)",
+      "ru": {
+        "label": "EDA",
+        "tag": "Python / Pandas"
+      },
+      "en": {
+        "label": "EDA",
+        "tag": "Python / Pandas"
+      }
+    },
+    {
+      "section": "hard",
+      "slug": "correlation",
+      "icon": "📈",
+      "bg": "var(--bg-success)",
+      "color": "var(--text-success)",
+      "ru": {
+        "label": "Корреляция",
+        "tag": "Статистика"
+      },
+      "en": {
+        "label": "Correlation",
+        "tag": "Statistics"
+      }
+    },
+    {
+      "section": "hard",
+      "slug": "cohort-analysis",
+      "icon": "👥",
+      "bg": "var(--bg-warning)",
+      "color": "var(--text-warning)",
+      "ru": {
+        "label": "Когортный анализ",
+        "tag": "SQL / Python"
+      },
+      "en": {
+        "label": "Cohort Analysis",
+        "tag": "SQL / Python"
+      }
+    },
+    {
+      "section": "hard",
+      "slug": "time-series",
+      "icon": "📅",
+      "bg": "var(--bg-danger)",
+      "color": "var(--text-danger)",
+      "ru": {
+        "label": "Временные ряды",
+        "tag": "SQL / Python"
+      },
+      "en": {
+        "label": "Time Series",
+        "tag": "SQL / Python"
+      }
+    },
+    {
+      "section": "hard",
+      "slug": "working-with-dates",
+      "icon": "🕐",
+      "bg": "var(--bg-secondary)",
+      "color": "var(--text-secondary)",
+      "ru": {
+        "label": "Работа с датами",
+        "tag": "SQL / Python"
+      },
+      "en": {
+        "label": "Working with Dates",
+        "tag": "SQL / Python"
+      }
+    },
+    {
+      "section": "hard",
+      "slug": "monte-carlo",
+      "icon": "🎲",
+      "bg": "var(--bg-info)",
+      "color": "var(--text-info)",
+      "ru": {
+        "label": "Метод Монте-Карло",
+        "tag": "Статистика / Python"
+      },
+      "en": {
+        "label": "Monte Carlo Method",
+        "tag": "Statistics / Python"
+      }
+    },
+    {
+      "section": "hard",
+      "slug": "confusion-matrix",
+      "icon": "🧩",
+      "bg": "var(--bg-danger)",
+      "color": "var(--text-danger)",
+      "ru": {
+        "label": "Confusion Matrix",
+        "tag": "ML / Статистика"
+      },
+      "en": {
+        "label": "Confusion Matrix",
+        "tag": "ML / Statistics"
+      }
+    },
+    {
+      "section": "hard",
+      "slug": "ab-test-design",
+      "icon": "⚗️",
+      "bg": "var(--bg-warning)",
+      "color": "var(--text-warning)",
+      "ru": {
+        "label": "Дизайн А/Б теста",
+        "tag": "Монте-Карло / Python"
+      },
+      "en": {
+        "label": "A/B Test Design",
+        "tag": "Monte Carlo / Python"
+      }
+    }
+  ]
+}
