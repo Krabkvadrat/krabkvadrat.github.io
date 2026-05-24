@@ -133,11 +133,36 @@
 
   .nav-list { padding: 8px 0; }
 
+  .nav-section-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 8px 14px 6px;
+    cursor: pointer;
+    user-select: none;
+  }
+  .nav-section-header:hover { background: rgba(0,0,0,0.03); }
+  .nav-section-title {
+    font-size: 10px;
+    font-weight: 600;
+    letter-spacing: 0.07em;
+    text-transform: uppercase;
+    color: var(--text-tertiary);
+  }
+  .nav-section-arrow {
+    font-size: 10px;
+    color: var(--text-tertiary);
+    transition: transform 0.2s;
+    display: inline-block;
+  }
+  .nav-section-arrow.open { transform: rotate(180deg); }
+  .nav-section-items { overflow: hidden; transition: max-height 0.28s ease; }
+
   .nav-item {
     display: flex;
     align-items: flex-start;
     gap: 10px;
-    padding: 10px 14px;
+    padding: 9px 14px;
     cursor: pointer;
     border-left: 3px solid transparent;
     transition: background 0.15s;
@@ -147,19 +172,43 @@
   .nav-item.active { background: var(--bg); border-left-color: var(--text-primary); }
 
   .nav-icon {
-    width: 28px;
-    height: 28px;
+    width: 26px;
+    height: 26px;
     border-radius: var(--radius);
     display: flex;
     align-items: center;
     justify-content: center;
     flex-shrink: 0;
     margin-top: 1px;
-    font-size: 16px;
+    font-size: 14px;
   }
 
-  .nav-label { font-size: 13px; font-weight: 500; color: var(--text-primary); line-height: 1.35; }
+  .nav-label { font-size: 12px; font-weight: 500; color: var(--text-primary); line-height: 1.35; }
   .nav-tag { font-size: 11px; color: var(--text-tertiary); margin-top: 2px; }
+
+  pre {
+    background: var(--bg-secondary);
+    border: 0.5px solid var(--border);
+    border-radius: var(--radius);
+    padding: 12px 14px;
+    overflow-x: auto;
+    margin: 12px 0;
+  }
+  code {
+    font-family: 'JetBrains Mono', 'Fira Code', 'Cascadia Code', monospace;
+    font-size: 12.5px;
+    line-height: 1.65;
+    color: var(--text-primary);
+  }
+  p code, li code {
+    background: var(--bg-secondary);
+    padding: 1px 5px;
+    border-radius: 4px;
+    font-size: 12px;
+    border: 0.5px solid var(--border);
+  }
+  a { color: var(--text-info); text-decoration: none; }
+  a:hover { text-decoration: underline; }
 
   .content {
     flex: 1;
@@ -277,7 +326,7 @@
 
 <div class="page">
   <div class="sidebar">
-    <div class="sidebar-header" id="sidebar-title">Софт скиллы</div>
+    <div class="sidebar-header" id="sidebar-title">Навигация</div>
     <div class="nav-list" id="nav"></div>
   </div>
   <div class="content" id="content"></div>
@@ -285,83 +334,121 @@
 
 <script>
 var currentLang = 'ru';
+var currentSection = 'soft';
 var currentArticle = 0;
 
-var nav = [
-  { icon: '🔍', bg: 'var(--bg-info)', color: 'var(--text-info)',
-    ru: { label: 'Ошибка выжившего', tag: 'Критическое мышление' },
-    en: { label: 'Survivorship Bias', tag: 'Critical thinking' } },
-  { icon: '💸', bg: 'var(--bg-warning)', color: 'var(--text-warning)',
-    ru: { label: 'Ошибка невозвратных затрат', tag: 'Когнитивные искажения' },
-    en: { label: 'Sunk Cost Fallacy', tag: 'Cognitive biases' } },
-  { icon: '⚠️', bg: 'var(--bg-danger)', color: 'var(--text-danger)',
-    ru: { label: 'Цена ошибки', tag: 'Ответственность' },
-    en: { label: 'The Cost of Mistakes', tag: 'Accountability' } },
-  { icon: '📋', bg: 'var(--bg-success)', color: 'var(--text-success)',
-    ru: { label: 'Сбор требований', tag: 'Коммуникация с заказчиком' },
-    en: { label: 'Gathering Requirements', tag: 'Stakeholder communication' } },
-  { icon: '❓', bg: 'var(--bg-secondary)', color: 'var(--text-secondary)',
-    ru: { label: 'Как задавать вопросы', tag: 'Продуктовое мышление' },
-    en: { label: 'How to Ask Questions', tag: 'Product thinking' } },
-  { icon: '📊', bg: 'var(--bg-info)', color: 'var(--text-info)',
-    ru: { label: 'Как делать презентацию', tag: 'Представление результатов' },
-    en: { label: 'How to Present Results', tag: 'Presentation skills' } },
-  { icon: '💡', bg: 'var(--bg-warning)', color: 'var(--text-warning)',
-    ru: { label: 'Продуктовое мышление', tag: 'Роль аналитика' },
-    en: { label: 'Product Thinking', tag: "Analyst's role" } }
-];
+var sections = {
+  soft: {
+    ru: { label: 'Софт скиллы', open: false },
+    en: { label: 'Soft Skills', open: false }
+  },
+  hard: {
+    ru: { label: 'Хард скиллы', open: true },
+    en: { label: 'Hard Skills', open: true }
+  }
+};
+
+var navData = {
+  soft: [
+    { icon: '🔍', bg: 'var(--bg-info)', color: 'var(--text-info)',
+      ru: { label: 'Ошибка выжившего', tag: 'Критическое мышление' },
+      en: { label: 'Survivorship Bias', tag: 'Critical thinking' } },
+    { icon: '💸', bg: 'var(--bg-warning)', color: 'var(--text-warning)',
+      ru: { label: 'Ошибка невозвратных затрат', tag: 'Когнитивные искажения' },
+      en: { label: 'Sunk Cost Fallacy', tag: 'Cognitive biases' } },
+    { icon: '⚠️', bg: 'var(--bg-danger)', color: 'var(--text-danger)',
+      ru: { label: 'Цена ошибки', tag: 'Ответственность' },
+      en: { label: 'The Cost of Mistakes', tag: 'Accountability' } },
+    { icon: '📋', bg: 'var(--bg-success)', color: 'var(--text-success)',
+      ru: { label: 'Сбор требований', tag: 'Коммуникация с заказчиком' },
+      en: { label: 'Gathering Requirements', tag: 'Stakeholder communication' } },
+    { icon: '❓', bg: 'var(--bg-secondary)', color: 'var(--text-secondary)',
+      ru: { label: 'Как задавать вопросы', tag: 'Продуктовое мышление' },
+      en: { label: 'How to Ask Questions', tag: 'Product thinking' } },
+    { icon: '📊', bg: 'var(--bg-info)', color: 'var(--text-info)',
+      ru: { label: 'Как делать презентацию', tag: 'Представление результатов' },
+      en: { label: 'How to Present Results', tag: 'Presentation skills' } },
+    { icon: '💡', bg: 'var(--bg-warning)', color: 'var(--text-warning)',
+      ru: { label: 'Продуктовое мышление', tag: 'Роль аналитика' },
+      en: { label: 'Product Thinking', tag: "Analyst's role" } }
+  ],
+  hard: [
+    { icon: '🔬', bg: 'var(--bg-info)', color: 'var(--text-info)',
+      ru: { label: 'EDA', tag: 'Python / Pandas' },
+      en: { label: 'EDA', tag: 'Python / Pandas' } },
+    { icon: '📈', bg: 'var(--bg-success)', color: 'var(--text-success)',
+      ru: { label: 'Корреляция', tag: 'Статистика' },
+      en: { label: 'Correlation', tag: 'Statistics' } },
+    { icon: '👥', bg: 'var(--bg-warning)', color: 'var(--text-warning)',
+      ru: { label: 'Когортный анализ', tag: 'SQL / Python' },
+      en: { label: 'Cohort Analysis', tag: 'SQL / Python' } },
+    { icon: '📅', bg: 'var(--bg-danger)', color: 'var(--text-danger)',
+      ru: { label: 'Временные ряды', tag: 'SQL / Python' },
+      en: { label: 'Time Series', tag: 'SQL / Python' } },
+    { icon: '🕐', bg: 'var(--bg-secondary)', color: 'var(--text-secondary)',
+      ru: { label: 'Работа с датами', tag: 'SQL / Python' },
+      en: { label: 'Working with Dates', tag: 'SQL / Python' } },
+    { icon: '🎲', bg: 'var(--bg-info)', color: 'var(--text-info)',
+      ru: { label: 'Метод Монте-Карло', tag: 'Статистика / Python' },
+      en: { label: 'Monte Carlo Method', tag: 'Statistics / Python' } },
+    { icon: '🧩', bg: 'var(--bg-danger)', color: 'var(--text-danger)',
+      ru: { label: 'Confusion Matrix', tag: 'ML / Статистика' },
+      en: { label: 'Confusion Matrix', tag: 'ML / Statistics' } },
+    { icon: '⚗️', bg: 'var(--bg-warning)', color: 'var(--text-warning)',
+      ru: { label: 'Дизайн А/Б теста', tag: 'Монте-Карло / Python' },
+      en: { label: 'A/B Test Design', tag: 'Monte Carlo / Python' } }
+  ]
+};
 
 var articles = {
-  ru: [
-    { tag: 'Критическое мышление', title: 'Ошибка выжившего',
-      lead: 'Одно из самых частых искажений в аналитике. Мы анализируем только тех, кто «выжил», и делаем выводы, не замечая всех остальных.',
-      body: `<h2>Как это выглядит на практике</h2>
-<p>Допустим, вы анализируете только активных пользователей продукта и делаете вывод, что интерфейс удобен. Но те, кто бросил сервис из-за неудобного сайта или приложения, просто не представлены в исследовании. Это приведёт к некорректным выводам.</p>
+  soft: {
+    ru: [
+      { tag: 'Критическое мышление', title: 'Ошибка выжившего',
+        lead: 'Одно из самых частых искажений в аналитике. Мы анализируем только тех, кто «выжил», и делаем выводы, не замечая всех остальных.',
+        body: `<h2>Как это выглядит на практике</h2>
+<p>Допустим, вы анализируете только активных пользователей продукта и делаете вывод, что интерфейс удобен. Но те, кто бросил сервис из-за неудобного сайта или приложения, просто не представлены в исследовании. Это приводит к некорректным выводам.</p>
 <p>Ошибка выжившего искажает результаты, потому что мы игнорируем часть данных — часто значительную.</p>
-<div class="tip-box"><p>Классический пример из Второй Мировой войны: армия США изучала пробоины на вернувшихся самолётах и планировала укреплять именно эти места. Математик Абрахам Вальд указал: нужно укреплять места без пробоин, потому что самолёты с повреждениями там просто не вернулись.</p></div>
+<div class="tip-box"><p>Классический пример из Второй Мировой: армия США изучала пробоины на вернувшихся самолётах и планировала укреплять именно эти места. Математик Абрахам Вальд указал: нужно укреплять места без пробоин, потому что самолёты с повреждениями там просто не вернулись.</p></div>
 <h2>Как не попасть в ловушку</h2>
 <ul class="checklist"><li>Всегда думайте о том, какие данные отсутствуют или не представлены в выборке</li><li>Сравнивайте «выживших» и «не выживших»</li><li>Анализируйте причины отказов и потерь, а не только успехи</li></ul>
-<p>Подробнее с примерами можно почитать в статье на Википедии: <a href="https://ru.wikipedia.org/wiki/%D0%A1%D0%B8%D1%81%D1%82%D0%B5%D0%BC%D0%B0%D1%82%D0%B8%D1%87%D0%B5%D1%81%D0%BA%D0%B0%D1%8F_%D0%BE%D1%88%D0%B8%D0%B1%D0%BA%D0%B0_%D0%B2%D1%8B%D0%B6%D0%B8%D0%B2%D1%88%D0%B5%D0%B3%D0%BE" target="_blank">Систематическая ошибка выжившего</a></p>` },
+<p>Подробнее с примерами: <a href="https://ru.wikipedia.org/wiki/%D0%A1%D0%B8%D1%81%D1%82%D0%B5%D0%BC%D0%B0%D1%82%D0%B8%D1%87%D0%B5%D1%81%D0%BA%D0%B0%D1%8F_%D0%BE%D1%88%D0%B8%D0%B1%D0%BA%D0%B0_%D0%B2%D1%8B%D0%B6%D0%B8%D0%B2%D1%88%D0%B5%D0%B3%D0%BE" target="_blank">Систематическая ошибка выжившего — Википедия</a></p>` },
 
-    { tag: 'Когнитивные искажения', title: 'Ошибка невозвратных затрат',
-      lead: 'Мы продолжаем делать что-то убыточное только потому, что уже вложили время, деньги или усилия. Это называют ещё «Эффектом Конкорда».',
-      body: `<h2>Что это такое</h2>
-<p>Представьте: вы купили билет в кино за 500 рублей. Через 20 минут понимаете, что фильм абсолютно не интересный. Но продолжаете сидеть до конца, потому что «жалко потраченных денег». Знакомо?</p>
-<p>Это и есть ловушка невозвратных затрат: мы продолжаем делать что-то убыточное или бесполезное только потому, что уже вложили в это ресурсы.</p>
+      { tag: 'Когнитивные искажения', title: 'Ошибка невозвратных затрат',
+        lead: 'Мы продолжаем делать что-то убыточное только потому, что уже вложили время, деньги или усилия. Это называют ещё «Эффектом Конкорда».',
+        body: `<h2>Что это такое</h2>
+<p>Представьте: вы купили билет в кино за 500 рублей. Через 20 минут понимаете, что фильм скучный. Но продолжаете сидеть до конца, потому что «жалко потраченных денег». Это и есть ловушка невозвратных затрат.</p>
 <h2>Откуда название «Эффект Конкорда»</h2>
-<p>В 1962 году Великобритания и Франция начали проект сверхзвукового самолёта Concorde с бюджетом 130 млн долларов. Уже через несколько лет стало ясно, что проект убыточный: самолёт получился слишком дорогим в производстве и эксплуатации. Итоговые затраты составили 2.8 млрд долларов — в 20 раз больше плана. Несмотря на это, проект продолжали финансировать ещё три десятилетия, потому что «уже столько вложено». В 2003 году Concorde вывели из эксплуатации, так и не окупив проект.</p>
+<p>В 1962 году Великобритания и Франция начали проект сверхзвукового самолёта с бюджетом 130 млн долларов. Уже через несколько лет стало ясно, что проект убыточный. Итоговые затраты составили 2.8 млрд — в 20 раз больше плана. Несмотря на это, финансирование продолжали ещё три десятилетия. Concorde вывели из эксплуатации в 2003 году, так и не окупив проект.</p>
 <h2>Почему мы попадаем в эту ловушку</h2>
 <ul class="checklist"><li>Страх признать ошибку: никому не хочется чувствовать себя неудачником</li><li>Неприятие потерь: психологи Канеман и Тверски показали, что потери воспринимаются острее, чем равная по размеру прибыль</li><li>Эффект владения: мы переоцениваем то, во что уже вложили ресурсы</li><li>Социальное давление: боязнь выглядеть в дурном свете в глазах других</li></ul>
 <h2>Примеры из работы аналитика</h2>
-<p>Вы неделю писали сложный дашборд, а потом выясняется, что бизнесу нужно совсем другое. Вместо того чтобы начать заново, вы пытаетесь «допилить» старую версию, хотя проще сделать с нуля.</p>
-<p>Потратили два дня на построение модели, которая показывает плохие результаты. Вместо того чтобы попробовать другой подход, продолжаете её «улучшать». Или собираете огромный отчёт, который никто не читает, но продолжаете его обновлять, потому что «раньше же делали».</p>
+<p>Неделю писали дашборд, а потом выяснилось, что бизнесу нужно совсем другое. Вместо того чтобы начать заново, пытаетесь «допилить» старую версию, хотя проще сделать с нуля. Или потратили два дня на модель с плохими результатами, но продолжаете её «улучшать».</p>
 <h2>Как избежать</h2>
-<ul class="checklist"><li>Спрашивайте себя: если бы я начинал это сегодня, зная то, что знаю сейчас, принял бы то же решение?</li><li>Разделяйте прошлое и будущее. Прошлые вложения уже сделаны и не изменятся. Оценивайте только будущие затраты и выгоды</li><li>Фиксируйте критерии успеха заранее, до начала проекта. «Если через 3 месяца метрика X не выросла на Y% — проект сворачиваем»</li><li>Просите мнение коллег со стороны. Люди, не вовлечённые в проект эмоционально, видят ситуацию объективнее</li><li>Нормализуйте ошибки. Признать ошибку и минимизировать потери лучше, чем упорствовать и терять ещё больше</li></ul>
-<div class="tip-box"><p>Практический совет: показывайте черновик или прототип заказчику через пару дней, а не через неделю. Лучше потратить 2 дня и понять, что идёшь не туда, чем потратить 2 недели и попасть в ловушку «ну я же столько сделал».</p></div>
-<p>Хорошая статья с примерами на всех уровнях: <a href="https://habr.com/ru/companies/gazprombank/articles/805627/" target="_blank">Ошибка невозвратных затрат на Хабре</a></p>` },
+<ul class="checklist"><li>Спрашивайте себя: если бы начинал сегодня, зная то, что знаю сейчас, принял бы то же решение?</li><li>Разделяйте прошлое и будущее. Оценивайте только будущие затраты и выгоды</li><li>Фиксируйте критерии успеха заранее: «если через 3 месяца метрика X не выросла на Y% — проект сворачиваем»</li><li>Просите мнение коллег со стороны. Они видят ситуацию объективнее</li></ul>
+<div class="tip-box"><p>Показывайте черновик заказчику через пару дней, а не через неделю. Лучше потратить 2 дня и понять, что идёшь не туда, чем потратить 2 недели и попасть в ловушку «ну я же столько сделал».</p></div>
+<p>Статья с примерами: <a href="https://habr.com/ru/companies/gazprombank/articles/805627/" target="_blank">Ошибка невозвратных затрат на Хабре</a></p>` },
 
-    { tag: 'Ответственность', title: 'Цена ошибки и ответственность',
-      lead: 'Аналитика это не только SQL, Python и красивые дашборды. Это про влияние. На наши цифры, графики и выводы смотрят коллеги из бизнеса, и на основе них принимаются решения, бюджеты и стратегии.',
-      body: `<h2>Почему это важно</h2>
-<p>Некоторые уже могли догадаться, кто-то уже столкнулся с этим на практике, а кому-то ещё предстоит осознать: дата-аналитика это про влияние. Неверная метрика, баг в расчётах, перепутанные 0 и 1 — и бизнес пошёл не в ту сторону.</p>
-<p>Ошибаться нормально. Ошибаются джуны, ошибаются сеньоры. Данные — сложная среда, и человеческий фактор никто не отменял. Важна культура работы с ошибками.</p>
+      { tag: 'Ответственность', title: 'Цена ошибки и ответственность',
+        lead: 'Аналитика это не только SQL, Python и красивые дашборды. Это про влияние. На наши цифры смотрят коллеги из бизнеса, и на основе них принимаются решения, бюджеты и стратегии.',
+        body: `<h2>Почему это важно</h2>
+<p>Неверная метрика, баг в расчётах, перепутанные 0 и 1 — и бизнес пошёл не в ту сторону. Ошибаться нормально. Ошибаются джуны, ошибаются сеньоры. Данные — сложная среда, и человеческий фактор никто не отменял. Важна культура работы с ошибками.</p>
 <h2>Культура работы с ошибками</h2>
-<div class="step"><div class="step-num">1</div><div class="step-body"><div class="step-title">Не бойтесь признавать</div><div class="step-desc">Самый плохой сценарий: заметить ошибку и промолчать, надеясь что «никто не увидит» или «пронесёт». Почти всегда увидят. И будет гораздо хуже, если неверные данные уйдут в работу.</div></div></div>
-<div class="step"><div class="step-num">2</div><div class="step-body"><div class="step-title">Сообщайте первыми</div><div class="step-desc">Если нашли косяк в своём отчёте, смело пишите заказчику: «Ребята, тут в расчётах неточность, сейчас перепроверю и пришлю апдейт». Это вызывает уважение и показывает вашу ответственность, а не слабость.</div></div></div>
-<div class="step"><div class="step-num">3</div><div class="step-body"><div class="step-title">Делайте выводы</div><div class="step-desc">На ошибках учатся. Поняли, где ошиблись? Запишите, сделайте документацию, добавьте проверку в код, настройте алерт, чтобы в следующий раз на эти грабли не наступить.</div></div></div>
+<div class="step"><div class="step-num">1</div><div class="step-body"><div class="step-title">Не бойтесь признавать</div><div class="step-desc">Самый плохой сценарий: заметить ошибку и промолчать, надеясь что «никто не увидит». Почти всегда увидят. И будет гораздо хуже, если неверные данные уйдут в работу.</div></div></div>
+<div class="step"><div class="step-num">2</div><div class="step-body"><div class="step-title">Сообщайте первыми</div><div class="step-desc">Нашли косяк в своём отчёте — смело пишите заказчику: «Ребята, тут в расчётах неточность, сейчас перепроверю и пришлю апдейт». Это вызывает уважение и показывает вашу ответственность, а не слабость.</div></div></div>
+<div class="step"><div class="step-num">3</div><div class="step-body"><div class="step-title">Делайте выводы</div><div class="step-desc">На ошибках учатся. Поняли, где ошиблись? Запишите, добавьте проверку в код, настройте алерт, чтобы в следующий раз на эти грабли не наступить.</div></div></div>
 <div class="tip-box"><p>Не прятать ошибки, а учиться на них и открыто о них говорить — это показатель зрелости аналитика.</p></div>` },
 
-    { tag: 'Коммуникация с заказчиком', title: 'Сбор требований для отчёта',
-      lead: 'Нередко вам будут поступать абстрактные задачи: «построй отчёт по продажам», «сделай удобный отчёт по клиентским менеджерам». Самая частая ошибка: просто спросить «что вы хотите видеть?» и получить список из 50 колонок, которые никто не будет анализировать.',
-      body: `<h2>Блок 1. Цели и пользователи</h2>
-<div class="step"><div class="step-num">1</div><div class="step-body"><div class="step-title">Кто будет открывать этот отчёт каждый день?</div><div class="step-desc">CEO, коммерческий директор или менеджеры — вид отчёта и способ подачи информации сильно зависит от аудитории. Для CEO нужно меньше деталей. Клиентским менеджерам может понадобиться гибкий инструмент со множеством фильтров и настроек.</div></div></div>
+      { tag: 'Коммуникация с заказчиком', title: 'Сбор требований для отчёта',
+        lead: 'Нередко вам будут поступать абстрактные задачи: «построй отчёт по продажам». Самая частая ошибка: просто спросить «что вы хотите видеть?» и получить список из 50 колонок, которые никто не будет анализировать.',
+        body: `<h2>Блок 1. Цели и пользователи</h2>
+<div class="step"><div class="step-num">1</div><div class="step-body"><div class="step-title">Кто будет открывать этот отчёт каждый день?</div><div class="step-desc">CEO, коммерческий директор или менеджеры — вид отчёта и способ подачи информации сильно зависит от аудитории. Для CEO нужно меньше деталей. Клиентским менеджерам может понадобиться гибкий инструмент со множеством фильтров.</div></div></div>
 <div class="step"><div class="step-num">2</div><div class="step-body"><div class="step-title">Какие решения принимаются на основе этого дашборда?</div><div class="step-desc">Например: «уволить менеджера», «закупить товар», «перераспределить бюджет на рекламу», «назначить встречу с клиентом». Визуал и информация должны помогать принимать именно эти решения.</div></div></div>
 <h2>Блок 2. Метрики и логика</h2>
 <div class="step"><div class="step-num">3</div><div class="step-body"><div class="step-title">Как именно рассчитывается каждый показатель?</div><div class="step-desc">Нужны конкретные формулы, потому что «Прибыль» у бухгалтера и у маркетолога часто считается по-разному.</div></div></div>
 <div class="step"><div class="step-num">4</div><div class="step-body"><div class="step-title">С чем сравниваем текущие цифры?</div><div class="step-desc">С прошлым годом, с планом/таргетом или с предыдущим месяцем — это принципиально разные истории.</div></div></div>
 <div class="step"><div class="step-num">5</div><div class="step-body"><div class="step-title">Какие срезы и фильтры обязательны?</div><div class="step-desc">Период, регион, категория товара, менеджер и т.д.</div></div></div>
 <h2>Блок 3. Данные и технологии</h2>
-<div class="step"><div class="step-num">6</div><div class="step-body"><div class="step-title">Где физически хранятся данные?</div><div class="step-desc">База данных, CRM-система, API. Коллеги из бизнеса могут подсказать, в какой системе есть нужные данные, а аналитик уже спросит у дата-инженера, где конкретно они лежат.</div></div></div>
+<div class="step"><div class="step-num">6</div><div class="step-body"><div class="step-title">Где физически хранятся данные?</div><div class="step-desc">База данных, CRM-система, API. Коллеги из бизнеса могут подсказать систему, а аналитик уже уточнит у дата-инженера, где конкретно лежат данные.</div></div></div>
 <div class="step"><div class="step-num">7</div><div class="step-body"><div class="step-title">Как часто должны обновляться данные?</div><div class="step-desc">Раз в сутки утром, каждый час или в реальном времени — это влияет на архитектуру решения.</div></div></div>
 <div class="step"><div class="step-num">8</div><div class="step-body"><div class="step-title">Нужно ли ограничивать права доступа?</div><div class="step-desc">Например: менеджер из Казани не должен видеть продажи Москвы.</div></div></div>
 <h2>Блок 4. Визуализация и дизайн</h2>
@@ -369,9 +456,9 @@ var articles = {
 <div class="step"><div class="step-num">10</div><div class="step-body"><div class="step-title">Подготовьте и согласуйте макет</div><div class="step-desc">Подберите подходящие визуализации, расположите информацию правильно. Так как мы читаем слева направо, самая главная информация должна быть наверху слева.</div></div></div>
 <div class="tip-box"><p>Проверочный вопрос к любому графику: «Представьте, что это показывает падение на 20%. Что вы сделаете?» Если ответа нет — график, скорее всего, бесполезен и будет только перегружать визуал отчёта.</p></div>` },
 
-    { tag: 'Продуктовое мышление', title: 'Как задавать вопросы',
-      lead: 'Не спешите бросаться в задачу с головой. Заказчики часто сами не знают чего хотят, или то что они хотят на самом деле не решает их проблему, либо предложенное ими решение не самое оптимальное.',
-      body: `<h2>Хороший подход против плохого</h2>
+      { tag: 'Продуктовое мышление', title: 'Как задавать вопросы',
+        lead: 'Не спешите бросаться в задачу с головой. Заказчики часто сами не знают чего хотят, или то что они хотят на самом деле не решает их проблему, либо предложенное ими решение не самое оптимальное.',
+        body: `<h2>Хороший подход против плохого</h2>
 <div class="example-block"><div class="example-label">Плохой подход</div>
 <div class="dialog-line bad"><div class="dialog-who">Менеджер:</div><div class="dialog-text">Нужна визуализация продаж</div></div>
 <div class="dialog-line bad"><div class="dialog-who">Аналитик:</div><div class="dialog-text">Хорошо, сделаю. Делает красивый график, который никто не использует.</div></div>
@@ -389,181 +476,697 @@ var articles = {
 <div class="dialog-line"><div class="dialog-who">Шаг 4:</div><div class="dialog-text">«Какие регионы проседают». Что будут делать с этой информацией?</div></div>
 <div class="dialog-line good"><div class="dialog-who">Шаг 5:</div><div class="dialog-text">«Перераспределять маркетинговый бюджет». Вот настоящая задача!</div></div>
 </div>
-<p>На этом этапе уже можно предложить комплексное решение: добавить данные по регионам, показать как распределены бюджеты, посчитать куда и как их можно перераспределить. Такое решение будет намного ценнее, чем просто отчёт по продажам.</p>
+<p>На этом этапе уже можно предложить комплексное решение: добавить данные по регионам, показать как распределены бюджеты, посчитать куда и как их можно перераспределить.</p>
 <h2>Чеклист здорового скептицизма</h2>
-<p>Аналитик — человек с критическим мышлением. Не верьте данным слепо: в ETL может быть ошибка, сервер мог моргнуть, использовали устаревший скрипт. Всегда задавайтесь вопросом: «А может ли полученный результат быть ошибкой?»</p>
 <ul class="checklist"><li>Логично ли это с точки зрения бизнеса?</li><li>Нет ли аномалий в данных (выбросы, пропуски, дубли)?</li><li>Правильно ли собраны данные?</li><li>Нет ли смещения в выборке?</li><li>Корреляция или причинно-следственная связь?</li><li>Не случайное ли это совпадение?</li></ul>` },
 
-    { tag: 'Представление результатов', title: 'Как делать презентацию',
-      lead: 'Не устану повторять: важный навык аналитика — умение представить результаты работы. Даже самый крутой анализ может оказаться никому не нужным, если не суметь его представить.',
-      body: `<h2>Шаг 1. Сначала план, потом презентация</h2>
+      { tag: 'Представление результатов', title: 'Как делать презентацию',
+        lead: 'Не устану повторять: важный навык аналитика — умение представить результаты работы. Даже самый крутой анализ может оказаться никому не нужным, если не суметь его представить.',
+        body: `<h2>Шаг 1. Сначала план, потом презентация</h2>
 <div class="step"><div class="step-num">1</div><div class="step-body"><div class="step-title">Определите цель</div><div class="step-desc">Какова ваша личная мотивация делать эту презентацию? Что вы хотите, чтобы ваши зрители сделали после неё?</div></div></div>
-<div class="step"><div class="step-num">2</div><div class="step-body"><div class="step-title">Определите аудиторию</div><div class="step-desc">Почему аудитория вообще должна вас слушать? Какие у неё ожидания и цели? Что ей уже известно по теме? Какие страхи, сомнения или возражения у неё есть? Что мешает ей сделать нужный вам шаг прямо сейчас?</div></div></div>
+<div class="step"><div class="step-num">2</div><div class="step-body"><div class="step-title">Определите аудиторию</div><div class="step-desc">Почему аудитория вообще должна вас слушать? Какие у неё ожидания и цели? Что ей уже известно? Какие страхи, сомнения или возражения у неё есть? Что мешает ей сделать нужный вам шаг прямо сейчас?</div></div></div>
 <div class="step"><div class="step-num">3</div><div class="step-body"><div class="step-title">Выберите формат</div><div class="step-desc">Хватит ли одной презентации, разосланной по почте? Или лучше сработает что-то более наглядное: инфографика, схемы или даже простая таблица в Excel?</div></div></div>
 <h2>Шаг 2. Говорящие заголовки</h2>
 <p>Не стесняйтесь длинных, но говорящих заголовков. Сравните два варианта:</p>
 <div class="example-block">
-<div class="dialog-line bad"><div class="dialog-who">Плохо:</div><div class="dialog-text">Динамика расходов</div></div>
-<div class="dialog-line good"><div class="dialog-who">Хорошо:</div><div class="dialog-text">Расходы на логистику съели весь прирост выручки за квартал</div></div>
+<div class="dialog-line bad"><div class="dialog-who">Слабо:</div><div class="dialog-text">Динамика расходов</div></div>
+<div class="dialog-line good"><div class="dialog-who">Сильно:</div><div class="dialog-text">Расходы на логистику съели весь прирост выручки за квартал</div></div>
 </div>
-<p>Второй заголовок несёт намного больше смысла и информации. Применяйте технику «И ЧО»: напишите заголовок и задайте этот вопрос. Заголовок должен быть таким, чтобы было очевидно, почему это важно для вашей аудитории.</p>
+<p>Второй заголовок несёт намного больше смысла. Применяйте технику «И ЧО»: напишите заголовок и задайте этот вопрос. Заголовок должен быть таким, чтобы было очевидно, почему это важно для вашей аудитории.</p>
 <h2>Шаг 3. Содержание слайда</h2>
-<p>Грамотный слайд — это слайд с говорящим заголовком и визуальным доказательством. Чтобы презентация удерживала внимание аудитории, она должна быть как хорошая история. Это про то самое модное слово «сторителлинг».</p>
+<p>Грамотный слайд — это слайд с говорящим заголовком и визуальным доказательством. Чтобы презентация удерживала внимание аудитории, она должна быть как хорошая история — это про сторителлинг.</p>
 <div class="tip-box"><p>Тема обширная и многогранная, навыки презентации стоит совершенствовать годами. Чем раньше начнёте, тем лучше.</p></div>` },
 
-    { tag: 'Роль аналитика', title: 'Продуктовое мышление аналитика',
-      lead: 'Стандартная ситуация: бизнес приходит и говорит «выгрузи мне конверсию за март». Ты выгружаешь, отдаёшь табличку, идёшь дальше. Задача закрыта. Но в этой схеме ты не аналитик, а оператор SQL-консоли.',
-      body: `<h2>Два типа аналитиков</h2>
-<p>Аналитик-исполнитель получает запрос, выгружает данные, отдаёт результат. Аналитик-партнёр получает запрос, задаёт вопросы, находит настоящую проблему и предлагает решение.</p>
+      { tag: 'Роль аналитика', title: 'Продуктовое мышление аналитика',
+        lead: 'Стандартная ситуация: бизнес приходит и говорит «выгрузи мне конверсию за март». Ты выгружаешь, отдаёшь табличку, идёшь дальше. Но в этой схеме ты не аналитик, а оператор SQL-консоли.',
+        body: `<h2>Два типа аналитиков</h2>
 <div class="example-block"><div class="example-label">Исполнитель</div>
 <div class="dialog-line"><div class="dialog-who">Продакт:</div><div class="dialog-text">Дай конверсию из регистрации в первую покупку за последний месяц</div></div>
 <div class="dialog-line bad"><div class="dialog-who">Аналитик:</div><div class="dialog-text">Вот, 12%. Что-то ещё?</div></div>
 </div>
 <div class="example-block"><div class="example-label">Партнёр</div>
 <div class="dialog-line"><div class="dialog-who">Продакт:</div><div class="dialog-text">Дай конверсию из регистрации в первую покупку за последний месяц</div></div>
-<div class="dialog-line good"><div class="dialog-who">Аналитик:</div><div class="dialog-text">А почему именно эти данные? Ты смотришь общую конверсию или по когортам? Общая может скрывать сдвиг в миксе каналов. Я посмотрел — конверсия упала с 15% до 12%, но только в мобильном вебе. В приложении стабильно. Возможно, дело в последнем релизе. Вот разбивка по платформам и датам.</div></div>
+<div class="dialog-line good"><div class="dialog-who">Аналитик:</div><div class="dialog-text">А почему именно эти данные? Ты смотришь общую конверсию или по когортам? Я посмотрел — конверсия упала с 15% до 12%, но только в мобильном вебе. В приложении стабильно. Возможно, дело в последнем релизе. Вот разбивка по платформам и датам.</div></div>
 </div>
 <h2>Три привычки, которые стоит выработать</h2>
 <div class="step"><div class="step-num">1</div><div class="step-body"><div class="step-title">Спрашивай «зачем» перед «как»</div><div class="step-desc">Когда приходит запрос на выгрузку, не открывайте SQL сразу. Спросите: «Какое решение ты хочешь принять на основе этих данных?» Часто выясняется, что нужны совсем другие цифры.</div></div></div>
-<div class="step"><div class="step-num">2</div><div class="step-body"><div class="step-title">Приноси гипотезы, а не таблицы</div><div class="step-desc">Вместо «вот данные» попробуй: «Я вижу, что метрика просела. Скорее всего, причина в X, потому что Y. Вот данные, которые это подтверждают. Предлагаю проверить Z». Это переводит тебя из роли обслуживания в роль влияния.</div></div></div>
+<div class="step"><div class="step-num">2</div><div class="step-body"><div class="step-title">Приноси гипотезы, а не таблицы</div><div class="step-desc">Вместо «вот данные» попробуй: «Я вижу, что метрика просела. Скорее всего, причина в X, потому что Y. Вот данные, которые это подтверждают. Предлагаю проверить Z».</div></div></div>
 <div class="step"><div class="step-num">3</div><div class="step-body"><div class="step-title">Следи за продуктом как пользователь</div><div class="step-desc">Пользуйся продуктом сам. Проходи воронку. Смотри, что бесит, где теряешься. Аналитик, который знает продукт изнутри, задаёт вопросы, которые никто не догадался задать.</div></div></div>
-<div class="tip-box"><p>Тест: если убрать тебя из команды — бизнес потеряет «руки для выгрузок» или потеряет человека, который помогает принимать решения? ИИ развивается очень быстро, и в первом варианте тебя заменит ChatGPT с доступом к базе данных. Второй — нет.</p></div>` }
-  ],
-
-  en: [
-    { tag: 'Critical thinking', title: 'Survivorship Bias',
-      lead: 'One of the most common distortions in analytics. We analyze only those who "survived" and draw conclusions without noticing everyone else.',
-      body: `<h2>What it looks like in practice</h2>
+<div class="tip-box"><p>Тест: если убрать тебя из команды — бизнес потеряет «руки для выгрузок» или потеряет человека, который помогает принимать решения? ИИ развивается быстро, и первый вариант заменит ChatGPT с доступом к базе данных. Второй — нет.</p></div>` }
+    ],
+    en: [
+      { tag: 'Critical thinking', title: 'Survivorship Bias',
+        lead: 'One of the most common distortions in analytics. We analyze only those who "survived" and draw conclusions without noticing everyone else.',
+        body: `<h2>What it looks like in practice</h2>
 <p>Say you analyze only active product users and conclude the interface is convenient. But those who abandoned the service because of a bad UX never made it into your sample. That leads to incorrect conclusions.</p>
-<p>Survivorship bias distorts results because we ignore a significant portion of the data.</p>
 <div class="tip-box"><p>The classic WWII example: the US Army studied bullet holes in planes that returned and planned to reinforce those spots. Mathematician Abraham Wald pointed out: reinforce where there are no holes — planes with damage there simply never came back.</p></div>
 <h2>How to avoid the trap</h2>
-<ul class="checklist"><li>Always ask yourself: what data is missing or not represented in the sample?</li><li>Compare survivors and non-survivors</li><li>Analyze reasons for drop-off and churn, not just successes</li></ul>
-<p>More examples on Wikipedia: <a href="https://en.wikipedia.org/wiki/Survivorship_bias" target="_blank">Survivorship bias</a></p>` },
+<ul class="checklist"><li>Always ask yourself: what data is missing or not represented?</li><li>Compare survivors and non-survivors</li><li>Analyze reasons for drop-off, not just successes</li></ul>
+<p>More examples: <a href="https://en.wikipedia.org/wiki/Survivorship_bias" target="_blank">Survivorship bias — Wikipedia</a></p>` },
 
-    { tag: 'Cognitive biases', title: 'Sunk Cost Fallacy',
-      lead: 'We keep doing something unprofitable simply because we\'ve already invested time, money, or effort. Also known as the "Concorde Effect".',
-      body: `<h2>What is it</h2>
-<p>Imagine you bought a movie ticket for $10. Twenty minutes in, you realize the film is terrible. But you stay until the end because "the money is already spent." Sound familiar?</p>
-<p>That's the sunk cost trap: we keep doing something wasteful simply because we've already put resources into it.</p>
-<h2>Where the name "Concorde Effect" comes from</h2>
-<p>In 1962, the UK and France launched a supersonic aircraft project with a budget of $130 million. Within a few years it became clear the project was unprofitable — the plane was too expensive to build and operate. Final costs reached $2.8 billion, 20 times the original estimate. Despite this, funding continued for three more decades because "so much has already been invested." Concorde was retired in 2003 without ever turning a profit.</p>
-<h2>Why we fall into this trap</h2>
-<ul class="checklist"><li>Fear of admitting a mistake: nobody wants to feel like a failure</li><li>Loss aversion: Kahneman and Tversky showed that losses feel more painful than equivalent gains feel good</li><li>The endowment effect: we overvalue things we've already invested in</li><li>Social pressure: fear of looking bad in front of others</li></ul>
-<h2>Examples from an analyst's work</h2>
-<p>You spent a week building a complex dashboard, then learned the business needs something completely different. Instead of starting over, you try to patch the old version — even though a fresh start would be faster and better.</p>
-<p>Or you built a model that performs poorly, but keep "improving" it instead of trying a different approach. Or you keep updating a report nobody reads, just because you always have.</p>
+      { tag: 'Cognitive biases', title: 'Sunk Cost Fallacy',
+        lead: 'We keep doing something unprofitable simply because we\'ve already invested time, money, or effort. Also known as the "Concorde Effect".',
+        body: `<h2>What it is</h2>
+<p>You bought a movie ticket. Twenty minutes in, the film is terrible — but you stay until the end because "the money is already spent." That's the sunk cost trap.</p>
+<h2>Where the name comes from</h2>
+<p>In 1962, the UK and France launched the Concorde supersonic aircraft project with a budget of $130 million. Costs reached $2.8 billion — 20x over budget. The project was funded for three more decades anyway, because "so much has already been invested." Concorde retired in 2003 without turning a profit.</p>
 <h2>How to avoid it</h2>
-<ul class="checklist"><li>Ask yourself: if I were starting this today with what I know now, would I make the same decision?</li><li>Separate past from future. Past investments are done and won't change. Evaluate only future costs and benefits</li><li>Define success criteria upfront: "If metric X doesn't grow by Y% in 3 months, we shut the project down"</li><li>Ask colleagues not emotionally invested in the project. Outside perspective is more objective</li><li>Normalize mistakes. Admitting a mistake and cutting losses is better than persisting and losing more</li></ul>
-<div class="tip-box"><p>Practical tip: show a draft or prototype to the stakeholder after a couple of days, not a week. Better to spend 2 days heading the wrong way than 2 weeks stuck thinking "but I've already done so much."</p></div>` },
+<ul class="checklist"><li>Ask: if I were starting today with what I know now, would I make the same decision?</li><li>Separate past from future — evaluate only future costs and benefits</li><li>Define success criteria upfront before the project begins</li><li>Ask colleagues outside the project for an objective view</li></ul>
+<div class="tip-box"><p>Show a draft to your stakeholder after a couple of days, not a week. Better to spend 2 days heading the wrong way than 2 weeks stuck thinking "but I've done so much."</p></div>` },
 
-    { tag: 'Accountability', title: 'The Cost of Mistakes',
-      lead: 'Analytics isn\'t just SQL, Python, and dashboards. It\'s about impact. PMs, marketers, and C-level executives look at your numbers. Budgets and strategies are built on what you find.',
-      body: `<h2>Why this matters</h2>
-<p>A wrong metric, a bug in calculations, swapped 0s and 1s — and the business heads in the wrong direction. Mistakes happen to junior analysts and senior ones alike. Data is a complex environment and the human factor never goes away. What matters is the culture around mistakes.</p>
+      { tag: 'Accountability', title: 'The Cost of Mistakes',
+        lead: 'Analytics isn\'t just SQL, Python, and dashboards. It\'s about impact. PMs, marketers, and C-level look at your numbers. Budgets and strategies are built on what you find.',
+        body: `<h2>Why it matters</h2>
+<p>A wrong metric, a calculation bug, swapped 0s and 1s — and the business heads the wrong direction. Mistakes happen to everyone. What matters is the culture around mistakes.</p>
 <h2>A healthy error culture</h2>
-<div class="step"><div class="step-num">1</div><div class="step-body"><div class="step-title">Don't be afraid to admit mistakes</div><div class="step-desc">The worst scenario: spotting an error and staying quiet, hoping nobody notices. Someone almost always does. And it's far worse if bad data has already been acted on.</div></div></div>
-<div class="step"><div class="step-num">2</div><div class="step-body"><div class="step-title">Speak up first</div><div class="step-desc">Found an issue in your report? Write to the stakeholder yourself: "There's an inaccuracy here — I'll recheck and send an update." This earns respect and shows accountability, not weakness.</div></div></div>
-<div class="step"><div class="step-num">3</div><div class="step-body"><div class="step-title">Learn from it</div><div class="step-desc">Understand where you went wrong. Document it, add a check to your code, set up an alert — so you don't make the same mistake again.</div></div></div>
+<div class="step"><div class="step-num">1</div><div class="step-body"><div class="step-title">Don't be afraid to admit mistakes</div><div class="step-desc">The worst scenario: noticing an error and staying quiet, hoping nobody notices. Someone almost always does. Far worse if bad data has already been acted on.</div></div></div>
+<div class="step"><div class="step-num">2</div><div class="step-body"><div class="step-title">Speak up first</div><div class="step-desc">Found an issue? Write to the stakeholder yourself: "There's an inaccuracy here — I'll recheck and send an update." This earns respect, not judgment.</div></div></div>
+<div class="step"><div class="step-num">3</div><div class="step-body"><div class="step-title">Learn from it</div><div class="step-desc">Document it, add a check to your code, set up an alert — so you don't make the same mistake again.</div></div></div>
 <div class="tip-box"><p>Don't hide mistakes — learn from them and talk about them openly. That's a sign of a mature analyst.</p></div>` },
 
-    { tag: 'Stakeholder communication', title: 'Gathering Requirements',
-      lead: 'You\'ll often receive vague requests like "build a sales report" or "make a convenient report for account managers." The most common mistake: asking "what do you want to see?" and getting a list of 50 columns nobody will ever read.',
-      body: `<h2>Block 1. Goals and users</h2>
-<div class="step"><div class="step-num">1</div><div class="step-body"><div class="step-title">Who will open this report every day?</div><div class="step-desc">CEO, commercial director, or account managers? The format and depth of information depend heavily on the audience. A CEO needs fewer details. Account managers may need a flexible tool with lots of filters and settings.</div></div></div>
-<div class="step"><div class="step-num">2</div><div class="step-body"><div class="step-title">What decisions will be made based on this dashboard?</div><div class="step-desc">For example: "fire a manager," "restock inventory," "reallocate ad budget," "schedule a client call." The visuals and data should help make exactly these decisions.</div></div></div>
+      { tag: 'Stakeholder communication', title: 'Gathering Requirements',
+        lead: 'You\'ll often receive vague requests like "build a sales report." The most common mistake: asking "what do you want to see?" and getting a list of 50 columns nobody will ever read.',
+        body: `<h2>Block 1. Goals and users</h2>
+<div class="step"><div class="step-num">1</div><div class="step-body"><div class="step-title">Who will open this report every day?</div><div class="step-desc">CEO or account managers? The format depends heavily on the audience. A CEO needs less detail; managers need a flexible tool with filters.</div></div></div>
+<div class="step"><div class="step-num">2</div><div class="step-body"><div class="step-title">What decisions will be made based on this dashboard?</div><div class="step-desc">"Fire a manager," "restock," "reallocate ad budget," "schedule a call" — visuals should help make exactly these decisions.</div></div></div>
 <h2>Block 2. Metrics and logic</h2>
-<div class="step"><div class="step-num">3</div><div class="step-body"><div class="step-title">How exactly is each metric calculated?</div><div class="step-desc">You need specific formulas, because "profit" means different things to an accountant and a marketer.</div></div></div>
-<div class="step"><div class="step-num">4</div><div class="step-body"><div class="step-title">What are we comparing current numbers against?</div><div class="step-desc">Last year, plan/target, or previous month — these tell completely different stories.</div></div></div>
-<div class="step"><div class="step-num">5</div><div class="step-body"><div class="step-title">Which slices and filters are required?</div><div class="step-desc">Time period, region, product category, manager, etc.</div></div></div>
-<h2>Block 3. Data and technology</h2>
-<div class="step"><div class="step-num">6</div><div class="step-body"><div class="step-title">Where does the data physically live?</div><div class="step-desc">Database, CRM, API. Business colleagues can point to which system has the data; the analyst then asks the data engineer where it's stored.</div></div></div>
-<div class="step"><div class="step-num">7</div><div class="step-body"><div class="step-title">How frequently should data refresh?</div><div class="step-desc">Once a day in the morning, every hour, or in real time — this affects the architecture.</div></div></div>
-<div class="step"><div class="step-num">8</div><div class="step-body"><div class="step-title">Do we need access restrictions?</div><div class="step-desc">For example: a manager in one city shouldn't see another city's sales figures.</div></div></div>
-<h2>Block 4. Visualization and design</h2>
-<div class="step"><div class="step-num">9</div><div class="step-body"><div class="step-title">Is there a brand guide or preferred colors?</div><div class="step-desc">What device will people most often use: laptop, large office screen, or mobile phone?</div></div></div>
-<div class="step"><div class="step-num">10</div><div class="step-body"><div class="step-title">Prepare and align on a layout</div><div class="step-desc">Choose the right chart types and arrange information properly. Since we read left to right, the most important information should go top-left.</div></div></div>
-<div class="tip-box"><p>A useful gut-check for any chart: "Imagine this shows a 20% drop. What would you do?" If there's no answer — the chart is probably useless and will only clutter the report.</p></div>` },
+<div class="step"><div class="step-num">3</div><div class="step-body"><div class="step-title">How exactly is each metric calculated?</div><div class="step-desc">Always ask for specific formulas. "Profit" means different things to an accountant and a marketer.</div></div></div>
+<div class="step"><div class="step-num">4</div><div class="step-body"><div class="step-title">What are we comparing against?</div><div class="step-desc">Last year, target, or previous month — these tell completely different stories.</div></div></div>
+<div class="step"><div class="step-num">5</div><div class="step-body"><div class="step-title">Which slices and filters are required?</div><div class="step-desc">Period, region, product category, manager, etc.</div></div></div>
+<h2>Block 3. Data and tech</h2>
+<div class="step"><div class="step-num">6</div><div class="step-body"><div class="step-title">Where does the data live?</div><div class="step-desc">Database, CRM, API. Business colleagues point to the system; the analyst asks the data engineer where exactly it's stored.</div></div></div>
+<div class="step"><div class="step-num">7</div><div class="step-body"><div class="step-title">How frequently should data refresh?</div><div class="step-desc">Daily, hourly, real-time — this affects the architecture.</div></div></div>
+<div class="step"><div class="step-num">8</div><div class="step-body"><div class="step-title">Do we need access restrictions?</div><div class="step-desc">For example, a manager in one city shouldn't see another city's sales figures.</div></div></div>
+<h2>Block 4. Design</h2>
+<div class="step"><div class="step-num">9</div><div class="step-body"><div class="step-title">Is there a brand guide?</div><div class="step-desc">What device will people use most: laptop, large office screen, or mobile phone?</div></div></div>
+<div class="step"><div class="step-num">10</div><div class="step-body"><div class="step-title">Prepare and align on a layout</div><div class="step-desc">Since we read left to right, the most important information should go top-left.</div></div></div>
+<div class="tip-box"><p>Gut-check for any chart: "Imagine this shows a 20% drop. What would you do?" No answer — the chart is probably useless.</p></div>` },
 
-    { tag: 'Product thinking', title: 'How to Ask Questions',
-      lead: 'Don\'t rush into a task headfirst. Stakeholders often don\'t know what they really want — or what they\'re asking for doesn\'t actually solve their underlying problem, or their proposed solution isn\'t the best one.',
-      body: `<h2>Good approach vs. bad approach</h2>
+      { tag: 'Product thinking', title: 'How to Ask Questions',
+        lead: 'Don\'t rush into a task headfirst. Stakeholders often don\'t know what they really want — or what they\'re asking for doesn\'t actually solve their underlying problem.',
+        body: `<h2>Good approach vs. bad approach</h2>
 <div class="example-block"><div class="example-label">Bad approach</div>
 <div class="dialog-line bad"><div class="dialog-who">Manager:</div><div class="dialog-text">I need a sales visualization</div></div>
-<div class="dialog-line bad"><div class="dialog-who">Analyst:</div><div class="dialog-text">Sure, on it. Builds a beautiful chart nobody ever uses.</div></div>
+<div class="dialog-line bad"><div class="dialog-who">Analyst:</div><div class="dialog-text">Sure. Builds a chart nobody ever uses.</div></div>
 </div>
 <div class="example-block"><div class="example-label">Good approach</div>
 <div class="dialog-line good"><div class="dialog-who">Manager:</div><div class="dialog-text">I need a sales visualization</div></div>
 <div class="dialog-line good"><div class="dialog-who">Analyst:</div><div class="dialog-text">What problem are we trying to solve? Why is this important right now? What decisions will be made based on this data?</div></div>
 </div>
 <h2>The "5 Whys" technique</h2>
-<p>Dig deeper by asking "why?" several times in a row:</p>
 <div class="example-block"><div class="example-label">Example</div>
 <div class="dialog-line"><div class="dialog-who">Step 1:</div><div class="dialog-text">"We need a sales report." Why?</div></div>
 <div class="dialog-line"><div class="dialog-who">Step 2:</div><div class="dialog-text">"Sales dropped." Why does that matter right now?</div></div>
 <div class="dialog-line"><div class="dialog-who">Step 3:</div><div class="dialog-text">"Management is asking for explanations." What do they want to understand?</div></div>
-<div class="dialog-line"><div class="dialog-who">Step 4:</div><div class="dialog-text">"Which regions are underperforming." What will they do with that information?</div></div>
+<div class="dialog-line"><div class="dialog-who">Step 4:</div><div class="dialog-text">"Which regions are underperforming." What will they do with that?</div></div>
 <div class="dialog-line good"><div class="dialog-who">Step 5:</div><div class="dialog-text">"Reallocate the marketing budget." There's the real task!</div></div>
 </div>
-<p>Now you can propose a comprehensive solution: add regional data, show how budgets are distributed, calculate how to reallocate. That's far more valuable than a simple sales report.</p>
 <h2>Healthy skepticism checklist</h2>
-<p>A good analyst has critical thinking. Don't trust data blindly — ETL can have bugs, servers can hiccup, someone may have used an outdated script. Always ask: "Could this result be an error?"</p>
-<ul class="checklist"><li>Does this make sense from a business perspective?</li><li>Are there any anomalies (outliers, missing values, duplicates)?</li><li>Was the data collected correctly?</li><li>Is there any sampling bias?</li><li>Is this correlation or causation?</li><li>Could this be a coincidence?</li></ul>` },
+<ul class="checklist"><li>Does this make sense from a business perspective?</li><li>Are there anomalies (outliers, missing values, duplicates)?</li><li>Was the data collected correctly?</li><li>Is there sampling bias?</li><li>Is this correlation or causation?</li><li>Could this be a coincidence?</li></ul>` },
 
-    { tag: 'Presentation skills', title: 'How to Present Results',
-      lead: 'A key analyst skill: presenting results. Even the best analysis can go to waste if you can\'t communicate the findings. There are many ways to present your work — one of the most popular is a presentation.',
-      body: `<h2>Step 1. Plan first, build slides second</h2>
-<div class="step"><div class="step-num">1</div><div class="step-body"><div class="step-title">Define your goal</div><div class="step-desc">What's your personal motivation for this presentation? What do you want your audience to do after seeing it?</div></div></div>
-<div class="step"><div class="step-num">2</div><div class="step-body"><div class="step-title">Define your audience</div><div class="step-desc">Why should the audience listen to you at all? What are their expectations and goals? What do they already know about the topic? What fears, doubts, or objections might they have? What's stopping them from taking the action you need right now?</div></div></div>
-<div class="step"><div class="step-num">3</div><div class="step-body"><div class="step-title">Choose the right format</div><div class="step-desc">Will a presentation sent by email be enough? Or would something more visual work better — an infographic, a diagram, or even a simple table?</div></div></div>
-<h2>Step 2. Use long, meaningful titles</h2>
-<p>Don't be afraid of long slide titles — they work. Compare these two options:</p>
+      { tag: 'Presentation skills', title: 'How to Present Results',
+        lead: 'A key analyst skill: presenting your findings. Even the best analysis can go to waste if you can\'t communicate it. A presentation is not about slides — it\'s about arguments.',
+        body: `<h2>Step 1. Plan first, build slides second</h2>
+<div class="step"><div class="step-num">1</div><div class="step-body"><div class="step-title">Define your goal</div><div class="step-desc">What do you want your audience to do after the presentation?</div></div></div>
+<div class="step"><div class="step-num">2</div><div class="step-body"><div class="step-title">Define your audience</div><div class="step-desc">What do they already know? What fears, doubts, or objections might they have? What's stopping them from taking the action you need?</div></div></div>
+<div class="step"><div class="step-num">3</div><div class="step-body"><div class="step-title">Choose the right format</div><div class="step-desc">Will a presentation sent by email be enough? Or would an infographic, diagram, or simple table work better?</div></div></div>
+<h2>Step 2. Use meaningful titles</h2>
 <div class="example-block">
 <div class="dialog-line bad"><div class="dialog-who">Weak:</div><div class="dialog-text">Cost dynamics</div></div>
 <div class="dialog-line good"><div class="dialog-who">Strong:</div><div class="dialog-text">Logistics costs ate all of the revenue growth this quarter</div></div>
 </div>
-<p>The second title carries far more meaning. Apply the "So what?" test: write your slide title and ask that question. The title should make it obvious why this matters to your audience.</p>
+<p>Apply the "So what?" test: write the title and ask that question. It should make it obvious why this matters to your audience.</p>
 <h2>Step 3. Slide content</h2>
-<p>A good slide is a meaningful title plus a visual proof. For a presentation to hold the audience's attention, it needs to tell a story — that's what "storytelling" actually means in practice.</p>
-<div class="tip-box"><p>This is a broad topic and one worth developing over years. The sooner you start, the better.</p></div>` },
+<p>A good slide is a meaningful title plus a visual proof. For a presentation to hold attention, it needs to tell a story.</p>
+<div class="tip-box"><p>This is a broad skill worth developing for years. The sooner you start, the better.</p></div>` },
 
-    { tag: "Analyst's role", title: 'Product Thinking for Analysts',
-      lead: 'Common scenario: the business says "pull the March conversion rate." You pull it, hand over the table, call it done. But in this setup you\'re not an analyst — you\'re a SQL query executor.',
-      body: `<h2>Two types of analysts</h2>
-<p>An executor receives a request, pulls the data, delivers the result. A partner receives a request, asks questions, finds the real problem, and proposes a solution.</p>
+      { tag: "Analyst's role", title: 'Product Thinking for Analysts',
+        lead: 'Common scenario: the business says "pull the March conversion rate." You pull it, hand over the table, call it done. But in this setup you\'re not an analyst — you\'re a SQL executor.',
+        body: `<h2>Two types of analysts</h2>
 <div class="example-block"><div class="example-label">Executor</div>
-<div class="dialog-line"><div class="dialog-who">PM:</div><div class="dialog-text">Give me the registration-to-first-purchase conversion for last month</div></div>
 <div class="dialog-line bad"><div class="dialog-who">Analyst:</div><div class="dialog-text">Here it is, 12%. Anything else?</div></div>
 </div>
 <div class="example-block"><div class="example-label">Partner</div>
-<div class="dialog-line"><div class="dialog-who">PM:</div><div class="dialog-text">Give me the registration-to-first-purchase conversion for last month</div></div>
-<div class="dialog-line good"><div class="dialog-who">Analyst:</div><div class="dialog-text">Why these specific numbers? Are you looking at overall conversion or by cohort? The overall figure might hide a channel mix shift. I checked — conversion dropped from 15% to 12%, but only in mobile web. The app is stable. Possibly the last release. Here's the breakdown by platform and date.</div></div>
+<div class="dialog-line good"><div class="dialog-who">Analyst:</div><div class="dialog-text">Why these specific numbers? Conversion dropped from 15% to 12%, but only in mobile web. The app is stable. Looks like the last release. Here's the breakdown by platform.</div></div>
 </div>
 <h2>Three habits worth building</h2>
-<div class="step"><div class="step-num">1</div><div class="step-body"><div class="step-title">Ask "why" before "how"</div><div class="step-desc">When a request comes in, don't open SQL right away. Ask: "What decision do you want to make with this data?" Often you'll find the actual need is completely different.</div></div></div>
-<div class="step"><div class="step-num">2</div><div class="step-body"><div class="step-title">Bring hypotheses, not tables</div><div class="step-desc">Instead of "here's the data," try: "I see the metric dropped. Most likely the cause is X, because Y. Here's data that supports it. I suggest we test Z." This shifts you from a support role to an influencer role.</div></div></div>
-<div class="step"><div class="step-num">3</div><div class="step-body"><div class="step-title">Use the product like a real user</div><div class="step-desc">Go through the funnel yourself. Notice what's frustrating, where you get lost. An analyst who knows the product from the inside asks questions nobody else thought to ask.</div></div></div>
-<div class="tip-box"><p>The test: if you were removed from the team — would the business lose "hands for data pulls" or lose someone who helps make better decisions? AI is advancing fast, and the first type will be replaced by ChatGPT with database access. The second type won't.</p></div>` }
-  ]
+<div class="step"><div class="step-num">1</div><div class="step-body"><div class="step-title">Ask "why" before "how"</div><div class="step-desc">Don't open SQL right away. Ask: "What decision do you want to make with this data?"</div></div></div>
+<div class="step"><div class="step-num">2</div><div class="step-body"><div class="step-title">Bring hypotheses, not tables</div><div class="step-desc">Instead of "here's the data," try: "I see the metric dropped. Most likely the cause is X, because Y. Here's supporting data. I suggest testing Z."</div></div></div>
+<div class="step"><div class="step-num">3</div><div class="step-body"><div class="step-title">Use the product like a real user</div><div class="step-desc">Go through the funnel yourself. Notice what's frustrating. An analyst who knows the product asks questions nobody else thought to ask.</div></div></div>
+<div class="tip-box"><p>The test: if you were removed from the team — would the business lose "hands for data pulls" or someone who helps make better decisions? AI will replace the first. Not the second.</p></div>` }
+    ]
+  },
+  hard: {
+    ru: [
+      { tag: 'Python / Pandas', title: 'EDA — разведочный анализ данных',
+        lead: 'EDA (Exploratory Data Analysis) — это первый шаг при работе с любым датасетом. Прежде чем строить модели или делать выводы, нужно понять, что вообще находится в данных.',
+        body: `<h2>Автоматические инструменты EDA</h2>
+<p>Помимо ручного анализа через pandas, существуют библиотеки, которые за несколько строк кода генерируют полный отчёт по данным.</p>
+<p><strong>ydata-profiling</strong> — наиболее популярная библиотека. Автоматически создаёт детальный отчёт, который включает анализ типов данных, основные статистики, базовые визуализации, выявляет проблемы в данных и помогает сравнивать датафреймы. <a href="https://github.com/ydataai/ydata-profiling" target="_blank">GitHub</a></p>
+<pre><code>pip install ydata-profiling</code></pre>
+<pre><code>from ydata_profiling import ProfileReport
+profile = ProfileReport(df, title="EDA")
+profile.to_file("report.html")</code></pre>
+<p>Похожим образом работают <a href="https://github.com/fbdesignpro/sweetviz" target="_blank">sweetviz</a> и <a href="https://github.com/man-group/dtale" target="_blank">d-tale</a>. На практике они более продвинутые, но и ресурсов потребуют больше. На больших объёмах данных может не хватать памяти. В pandas profiling есть гайд для работы с большими данными: <a href="https://docs.profiling.ydata.ai/latest/features/big_data/" target="_blank">Big Data guide</a></p>
+<h2>Чеклист базового EDA</h2>
+<ul class="checklist"><li>Типы данных</li><li>Пропущенные значения</li><li>Дубликаты</li><li>Количество элементов</li><li>Диапазоны значений</li><li>Выбросы</li><li>Формы распределения значений</li><li>Наличие недопустимых значений</li><li>Согласованность между столбцами</li></ul>` },
+
+      { tag: 'Статистика', title: 'Корреляция и причинно-следственная связь',
+        lead: 'Очень важно отличать одно от другого. Непонимание этих терминов может привести к конкретным ошибкам в анализе.',
+        body: `<h2>Что такое корреляция</h2>
+<p>Корреляция — статистическая взаимосвязь между двумя или более переменными, при которой изменение одной переменной сопровождается изменением другой. Измеряется коэффициентом от -1 до 1.</p>
+<ul class="checklist"><li>Положительная: переменные изменяются в одном направлении (рост и вес человека)</li><li>Отрицательная: переменные изменяются в противоположных направлениях (температура воздуха и расходы на отопление)</li><li>Нулевая: переменные не связаны между собой</li></ul>
+<p>В pandas корреляция считается методом <code>.corr()</code>:</p>
+<pre><code>import pandas as pd
+
+d = {"A": [10, 20, 30], "B": [15, 25, 35]}
+df = pd.DataFrame(d)
+print(df.corr())</code></pre>
+<p>Документация: <a href="https://www.geeksforgeeks.org/pandas/python-pandas-dataframe-corr/" target="_blank">pandas DataFrame.corr()</a></p>
+<h2>Причинно-следственная связь</h2>
+<p>Это отношение между явлениями, при котором одно явление непосредственно вызывает другое. Здесь есть направленность: изменение причины приводит к изменению следствия.</p>
+<div class="tip-box"><p>Корреляция говорит только о наличии связи, но не о её природе. Самый банальный пример: продажи мороженого и число утопленников коррелируют (обе растут летом), но мороженое не вызывает утопления — просто обе переменные зависят от сезона.</p></div>
+<p>Наглядные примеры ложных корреляций: <a href="https://tylervigen.com/spurious-correlations" target="_blank">Spurious Correlations</a> — там собраны сотни абсурдных, но статистически значимых зависимостей.</p>
+<h2>Главный вывод</h2>
+<p>В работе аналитика корреляция — это отправная точка для исследования, а не финальный вывод. Когда вы находите сильную корреляцию между метриками, задайте себе вопросы: есть ли здесь причинно-следственная связь, или это влияние третьего фактора? Может ли это быть случайным совпадением?</p>` },
+
+      { tag: 'SQL / Python', title: 'Когортный анализ',
+        lead: 'Когортный анализ — метод изучения поведения пользователей, объединённых в группы (когорты). Чаще всего когорты формируются по дате первого взаимодействия с продуктом.',
+        body: `<h2>Зачем это нужно</h2>
+<p>Когортный анализ помогает ответить на важные вопросы: как меняется удержание пользователей со временем? Какие когорты показывают лучшие результаты? Влияют ли изменения в продукте на поведение пользователей? Окупаются ли затраты на привлечение клиентов?</p>
+<p>На практике через когорты чаще всего анализируют retention и revenue. Часто можно услышать, что когорта «не созрела» — так говорят о когорте, которая ещё может продолжить наполняться.</p>
+<h2>Этапы когортного анализа</h2>
+<div class="step"><div class="step-num">1</div><div class="step-body"><div class="step-title">Определите цель анализа</div><div class="step-desc">Сформулируйте чёткий вопрос. Например: улучшилось ли удержание после редизайна приложения?</div></div></div>
+<div class="step"><div class="step-num">2</div><div class="step-body"><div class="step-title">Выберите критерий формирования когорт</div><div class="step-desc">Дата регистрации (наиболее распространённый вариант), дата первой покупки, источник трафика, версия продукта при первом использовании, географическое положение.</div></div></div>
+<div class="step"><div class="step-num">3</div><div class="step-body"><div class="step-title">Определите временные интервалы</div><div class="step-desc">Выберите период в зависимости от специфики бизнеса: дни, недели, месяцы или комбинированный вариант.</div></div></div>
+<div class="step"><div class="step-num">4</div><div class="step-body"><div class="step-title">Решите, что измерять</div><div class="step-desc">Возвращение в приложение (DAU/WAU/MAU/retention rate), совершение покупки, использование ключевой функции, средний чек или выручка.</div></div></div>
+<div class="step"><div class="step-num">5</div><div class="step-body"><div class="step-title">Соберите данные и постройте таблицу</div><div class="step-desc">Используйте SQL-запросы ниже. На выходе должна получиться матрица когортных удержаний.</div></div></div>
+<div class="step"><div class="step-num">6</div><div class="step-body"><div class="step-title">Интерпретируйте результаты</div><div class="step-desc">Горизонтальные паттерны: если одна когорта сильно отличается — ищите внешние факторы. Вертикальные: падение во всех когортах в одном периоде — возможно проблема с онбордингом. Диагональные: улучшение в поздних когортах — признак развития продукта.</div></div></div>
+<h2>Реализация в SQL</h2>
+<p>Практика на реальных данных: <a href="https://github.com/Krabkvadrat/webinars_data/tree/main/training/sql_metrics" target="_blank">репозиторий с заданиями</a></p>
+<p>Шаг 1 — объединяем пользователей в когорты:</p>
+<pre><code>SELECT
+  user_id,
+  DATE_TRUNC('month', registration_date) AS cohort_month,
+  registration_date
+FROM users</code></pre>
+<p>Шаг 2 — считаем retention по периодам:</p>
+<pre><code>WITH cohorts AS (
+  SELECT
+    user_id,
+    DATE_TRUNC('month', registration_date) AS cohort_month,
+    registration_date
+  FROM users
+),
+cohort_activity AS (
+  SELECT
+    c.cohort_month,
+    COUNT(DISTINCT c.user_id) AS cohort_size,
+    -- Week 2: вернулся в дни 8-14
+    COUNT(DISTINCT CASE
+      WHEN s.session_date BETWEEN c.registration_date + 8
+        AND c.registration_date + 14
+      THEN c.user_id END) AS week_2,
+    -- Week 3-4: вернулся в дни 15-30
+    COUNT(DISTINCT CASE
+      WHEN s.session_date BETWEEN c.registration_date + 15
+        AND c.registration_date + 30
+      THEN c.user_id END) AS week_3_4,
+    -- Month 2: вернулся в дни 31-60
+    COUNT(DISTINCT CASE
+      WHEN s.session_date BETWEEN c.registration_date + 31
+        AND c.registration_date + 60
+      THEN c.user_id END) AS month_2
+  FROM cohorts c
+    LEFT JOIN user_sessions s ON c.user_id = s.user_id
+  GROUP BY c.cohort_month
+)
+SELECT
+  TO_CHAR(cohort_month, 'YYYY-MM') AS cohort,
+  cohort_size,
+  ROUND((week_2::decimal / cohort_size * 100), 2) AS week_2_retention,
+  ROUND((week_3_4::decimal / cohort_size * 100), 2) AS week_3_4_retention,
+  ROUND((month_2::decimal / cohort_size * 100), 2) AS month_2_retention
+FROM cohort_activity
+ORDER BY cohort_month</code></pre>` },
+
+      { tag: 'SQL / Python', title: 'Временные ряды',
+        lead: 'Тема, с которой вы будете сталкиваться практически в любой аналитической задаче. Продажи по дням, DAU по неделям, выручка по месяцам — всё это временные ряды.',
+        body: `<h2>Из чего состоит временной ряд</h2>
+<ul class="checklist"><li>Тренд: долгосрочное направление движения (растёт, падает, стоит на месте)</li><li>Сезонность: повторяющиеся паттерны, связанные с календарём (рост продаж перед НГ, просадка летом)</li><li>Циклические колебания: похожи на сезонность, но не привязаны к календарю жёстко (например, экономические циклы)</li><li>Шум: случайные отклонения, которые не объясняются ничем из вышеперечисленного</li></ul>
+<h2>Самая частая ошибка</h2>
+<p>Перепутать сезонный спад с реальной проблемой. DAU упал на 15% в августе — это катастрофа или просто лето? Чтобы ответить, нужно сравнивать не с предыдущим месяцем, а с аналогичным периодом прошлого года (YoY — year over year).</p>
+<h2>Чеклист при работе с новым временным рядом</h2>
+<ul class="checklist"><li>Есть ли явный тренд?</li><li>Есть ли повторяющиеся паттерны (сезонность)?</li><li>Есть ли аномалии — резкие пики или провалы?</li><li>Нет ли пропусков в данных?</li><li>Равномерны ли временные интервалы?</li></ul>
+<h2>Скользящее среднее</h2>
+<p>Когда на графике много шума, скользящее среднее сглаживает краткосрочные колебания и делает тренд наглядным.</p>
+<p>В pandas — одна строчка:</p>
+<pre><code>df['ma_7'] = df['value'].rolling(window=7).mean()</code></pre>
+<p>В SQL — через оконные функции:</p>
+<pre><code>SELECT
+  date,
+  revenue,
+  AVG(revenue) OVER (
+    ORDER BY date
+    ROWS BETWEEN 6 PRECEDING AND CURRENT ROW
+  ) AS ma_7
+FROM daily_revenue
+ORDER BY date</code></pre>
+<p>Здесь <code>ROWS BETWEEN 6 PRECEDING AND CURRENT ROW</code> означает: возьми текущую строку и 6 предыдущих — итого окно в 7 дней. Для 30-дневного среднего меняете 6 на 29.</p>
+<p>Полезные материалы: <a href="https://habr.com/ru/companies/mvideo/articles/769190/" target="_blank">Работа с временными рядами в pandas — M.Video</a>, <a href="https://pandas.pydata.org/docs/user_guide/timeseries.html" target="_blank">Документация pandas по timeseries</a></p>` },
+
+      { tag: 'SQL / Python', title: 'Работа с датами',
+        lead: 'Тема, которая кажется простой, но входит в топ источников багов в аналитике. Самое неприятное: ошибки с датами сложно заметить — метрика считается, всё выглядит правдоподобно, но цифры неверные.',
+        body: `<h2>DATE vs TIMESTAMP</h2>
+<p><code>DATE</code> — просто календарная дата: <code>2025-03-15</code>. <code>TIMESTAMP</code> — дата плюс время: <code>2025-03-15 14:30:00</code>.</p>
+<p>Классический баг:</p>
+<pre><code>-- Заказ в '2025-03-15 10:30:00' сюда НЕ попадёт!
+WHERE created_at = '2025-03-15'
+
+-- Рабочий вариант 1
+WHERE created_at::date = '2025-03-15'
+
+-- Рабочий вариант 2
+WHERE created_at >= '2025-03-15' AND created_at < '2025-03-16'</code></pre>
+<h2>Часовые пояса</h2>
+<p>Пользователь из Москвы сделал заказ в 1:30 ночи 15 марта. На сервере в UTC это записалось как 14 марта 22:30. Один заказ, два дня. Умножьте на тысячи заказов.</p>
+<pre><code>-- Конвертируем UTC в московское время
+SELECT
+  (created_at AT TIME ZONE 'UTC'
+    AT TIME ZONE 'Europe/Moscow')::date AS order_date,
+  COUNT(1) AS orders_count
+FROM orders
+GROUP BY 1</code></pre>
+<p>В pandas:</p>
+<pre><code># Указываем, что данные в UTC
+df['created_at'] = pd.to_datetime(df['created_at']).dt.tz_localize('UTC')
+# Конвертируем в Москву
+df['created_at_msk'] = df['created_at'].dt.tz_convert('Europe/Moscow')</code></pre>
+<div class="tip-box"><p><code>tz_localize</code>: «эти данные уже в таком поясе, запомни». <code>tz_convert</code>: «пересчитай из одного пояса в другой». Перепутаете — получите сдвиг на несколько часов во всех данных.</p></div>
+<h2>Формат дат</h2>
+<p>Дата <code>03/04/2025</code> — это 3 апреля или 4 марта? pandas может угадать неправильно. Всегда указывайте формат явно:</p>
+<pre><code>df['date'] = pd.to_datetime(df['date'], format='%d/%m/%Y')</code></pre>
+<h2>Чеклист</h2>
+<ul class="checklist"><li>Проверяйте тип данных: DATE или TIMESTAMP?</li><li>Выясняйте, в каком часовом поясе хранятся данные в источнике</li><li>Договоритесь с командой о едином часовом поясе для отчётов</li><li>Явно указывайте формат при парсинге дат</li></ul>` },
+
+      { tag: 'Статистика / Python', title: 'Метод Монте-Карло',
+        lead: 'Мощный инструмент, который позволяет аналитикам работать с неопределённостью и прогнозировать будущие результаты. Метод назван в честь района Монако, где полно казино с рулеткой.',
+        body: `<h2>Как это работает</h2>
+<p>Суть метода: смоделировать тысячи возможных сценариев с разными случайными входными данными, а потом посмотреть на распределение результатов и понять диапазон вероятных исходов. Синоним метода Монте-Карло — «симуляция».</p>
+<ol style="padding-left:20px;margin-bottom:12px;font-size:14px;color:var(--text-secondary);line-height:1.8">
+<li>Описываем модель: что хотим посчитать и от каких факторов это зависит</li>
+<li>Генерируем случайные значения: для каждого фактора задаём диапазон возможных значений</li>
+<li>Прогоняем много раз: запускаем расчёт с разными случайными комбинациями</li>
+<li>Анализируем результаты: смотрим на распределение полученных значений</li>
+</ol>
+<h2>Простой пример: бросок двух кубиков</h2>
+<p>Какова вероятность выбросить дубль (одинаковые числа)?</p>
+<pre><code>import random
+
+num_simulations = 10_000
+wins = 0
+
+for i in range(num_simulations):
+    dice1 = random.randint(1, 6)
+    dice2 = random.randint(1, 6)
+    if dice1 == dice2:
+        wins += 1
+
+probability = wins / num_simulations
+print(f"Вероятность выбросить дубль: {probability:.4f}")</code></pre>
+<div class="tip-box"><p>Попробуйте поменять <code>num_simulations</code> с 100 до 100 000. Почувствуете разницу в точности — это и есть закон больших чисел в действии.</p></div>
+<p>Видео: парадокс Монти-Хола решённый симуляцией: <a href="https://youtu.be/iQPt6FizJzU?si=4sXkREhX-4S8QO8K" target="_blank">YouTube</a></p>` },
+
+      { tag: 'ML / Статистика', title: 'Confusion Matrix',
+        lead: 'Матрица ошибок — инструмент для оценки качества классификации. Те же идеи, что и в ошибках I и II рода в A/B тестировании, но под другими именами.',
+        body: `<h2>Четыре исхода классификации</h2>
+<p>Представьте антифрод-систему банка, которая смотрит на каждую транзакцию и решает: мошенничество или нет?</p>
+<ul class="checklist"><li>TP (True Positive): верно предсказали «да» — мошенничество есть, заблокировали</li><li>TN (True Negative): верно предсказали «нет» — транзакция честная, пропустили</li><li>FP (False Positive): предсказали «да», а на деле «нет» — заблокировали честного клиента (ошибка I рода)</li><li>FN (False Negative): предсказали «нет», а на деле «да» — пропустили мошенника (ошибка II рода)</li></ul>
+<pre><code>from sklearn.metrics import confusion_matrix, ConfusionMatrixDisplay
+import matplotlib.pyplot as plt
+
+y_true = [1, 0, 1, 1, 0, 1, 0, 0, 1, 0]
+y_pred = [1, 0, 1, 0, 0, 1, 1, 0, 1, 0]
+
+cm = confusion_matrix(y_true, y_pred)
+disp = ConfusionMatrixDisplay(confusion_matrix=cm,
+  display_labels=["Нет эффекта", "Есть эффект"])
+disp.plot(cmap="Blues")
+plt.title("Confusion Matrix")
+plt.show()</code></pre>
+<h2>Метрики качества классификации</h2>
+<ul class="checklist"><li>Accuracy = (TP + TN) / (TP + TN + FP + FN). Обманывает при несбалансированных классах: модель, которая всегда говорит «не мошенник», даст accuracy 95% — но это бесполезная модель</li><li>Precision = TP / (TP + FP). Когда мы говорим «ДА» — насколько мы уверены?</li><li>Recall = TP / (TP + FN). Из всех реально положительных, сколько мы нашли?</li><li>F1-score = 2 * (Precision * Recall) / (Precision + Recall). Баланс между Precision и Recall</li></ul>
+<div class="tip-box"><p>Разные задачи требуют разного баланса. В антифроде FN дорого — смотрим на Recall. В спам-фильтре важно не отправить нужное письмо в спам — смотрим на Precision. В A/B тесте держим баланс — смотрим на F1.</p></div>
+<pre><code>from sklearn.metrics import classification_report
+
+print(classification_report(y_true, y_pred,
+  target_names=["Честная", "Мошенничество"]))
+# Покажет precision, recall, f1 для каждого класса</code></pre>` },
+
+      { tag: 'Монте-Карло / Python', title: 'Дизайн А/Б теста с помощью Монте-Карло',
+        lead: 'Сценарий: мобильное приложение, хотим проверить новый онбординг. Базовый retention на 7-й день — 20%, надеемся поднять до 23%. Сколько пользователей нужно? Симуляция поможет «пощупать руками» надёжность теста до его запуска.',
+        body: `<h2>Шаг 1. Задаём параметры теста</h2>
+<pre><code>import numpy as np
+from statsmodels.stats.proportion import proportions_ztest
+
+baseline_retention = 0.20   # текущий retention (группа A)
+expected_retention = 0.23   # ожидаемый retention (группа B)
+n_per_group = 1000          # пользователей в каждой группе
+alpha = 0.05                # уровень значимости
+n_simulations = 10_000      # количество симуляций</code></pre>
+<p><code>alpha = 0.05</code> означает: мы готовы ошибиться и объявить тест значимым в 5% случаев, когда на самом деле разницы нет.</p>
+<h2>Шаг 2. Симулируем один запуск теста</h2>
+<pre><code>def run_single_ab_test(p_control, p_treatment, n):
+    control = np.random.binomial(1, p_control, n)
+    treatment = np.random.binomial(1, p_treatment, n)
+    return control, treatment</code></pre>
+<p><code>np.random.binomial(1, p, n)</code> — «бросаем монетку» для каждого пользователя с вероятностью p вернуться в приложение.</p>
+<h2>Шаг 3. Проверяем значимость через z-тест</h2>
+<pre><code>def is_significant(control, treatment, alpha=0.05):
+    successes = [treatment.sum(), control.sum()]
+    nobs = [len(treatment), len(control)]
+    _, p_value = proportions_ztest(successes, nobs)
+    return p_value < alpha</code></pre>
+<h2>Шаг 4. Запускаем 10 000 симуляций</h2>
+<pre><code>false_positives = 0
+true_positives = 0
+
+for _ in range(n_simulations):
+    # H0: разницы нет
+    c0, t0 = run_single_ab_test(
+        baseline_retention, baseline_retention, n_per_group)
+    if is_significant(c0, t0):
+        false_positives += 1
+
+    # H1: эффект есть
+    c1, t1 = run_single_ab_test(
+        baseline_retention, expected_retention, n_per_group)
+    if is_significant(c1, t1):
+        true_positives += 1
+
+print(f"False positive rate: {false_positives/n_simulations:.3f}")
+print(f"Power: {true_positives/n_simulations:.3f}")</code></pre>
+<h2>Шаг 5. Визуализируем мощность при разных размерах выборки</h2>
+<pre><code>import matplotlib.pyplot as plt
+import matplotlib.ticker as mticker
+
+sample_sizes = list(range(500, 5500, 500))
+powers = []
+
+for n in sample_sizes:
+    tp = 0
+    for _ in range(n_simulations):
+        c, t = run_single_ab_test(
+            baseline_retention, expected_retention, n)
+        if is_significant(c, t):
+            tp += 1
+    powers.append(tp / n_simulations)
+
+fig, ax = plt.subplots(figsize=(9, 5))
+ax.plot(sample_sizes, powers, color='#4C9BE8',
+        linewidth=2.5, marker='o', markersize=6)
+ax.axhline(y=0.80, color='#F4A83A', linewidth=1.5,
+           linestyle='--', label='Минимальная мощность (80%)')
+ax.set_xlabel('Размер выборки (в каждой группе)')
+ax.set_ylabel('Мощность теста')
+ax.yaxis.set_major_formatter(mticker.PercentFormatter(xmax=1))
+ax.legend()
+plt.tight_layout()
+plt.show()</code></pre>
+<h2>Что показала симуляция</h2>
+<ul class="checklist"><li>Ошибка I рода под контролем: при любом n false positive rate держится около 5% — там, где мы задали alpha</li><li>При n=1000 мощность всего 47% — мы пропустим реальный эффект в половине случаев</li><li>При n=3000 мощность 84% — тест становится надёжным</li><li>Кривая нелинейная: с 500 до 1000 прирост мощности +17 п.п., с 4000 до 5000 — уже только +5 п.п.</li></ul>
+<div class="tip-box"><p>Задание: сколько времени нам потребуется держать тест, если в приложении 200 новых пользователей в день? И какова при наших параметрах вероятность допустить ошибку II рода?</p></div>` }
+    ],
+    en: [
+      { tag: 'Python / Pandas', title: 'EDA — Exploratory Data Analysis',
+        lead: 'EDA is the first step when working with any dataset. Before building models or drawing conclusions, you need to understand what\'s actually in the data.',
+        body: `<h2>Automated EDA tools</h2>
+<p><strong>ydata-profiling</strong> is the most popular library. A few lines of code generate a full report: data types, statistics, visualizations, anomaly detection, and dataframe comparison. <a href="https://github.com/ydataai/ydata-profiling" target="_blank">GitHub</a></p>
+<pre><code>pip install ydata-profiling</code></pre>
+<pre><code>from ydata_profiling import ProfileReport
+profile = ProfileReport(df, title="EDA")
+profile.to_file("report.html")</code></pre>
+<p>Similar tools: <a href="https://github.com/fbdesignpro/sweetviz" target="_blank">sweetviz</a> and <a href="https://github.com/man-group/dtale" target="_blank">d-tale</a>. More powerful, but also more resource-heavy. On large datasets, memory may run out. pandas profiling has a <a href="https://docs.profiling.ydata.ai/latest/features/big_data/" target="_blank">Big Data guide</a>.</p>
+<h2>Basic EDA checklist</h2>
+<ul class="checklist"><li>Data types</li><li>Missing values</li><li>Duplicates</li><li>Row counts</li><li>Value ranges</li><li>Outliers</li><li>Distribution shapes</li><li>Invalid values</li><li>Cross-column consistency</li></ul>` },
+
+      { tag: 'Statistics', title: 'Correlation and Causation',
+        lead: 'It\'s crucial to tell these apart. Misunderstanding these concepts leads to concrete errors in analysis.',
+        body: `<h2>What is correlation</h2>
+<p>Correlation is a statistical relationship between two or more variables, where a change in one accompanies a change in the other. Measured by a coefficient from -1 to 1.</p>
+<ul class="checklist"><li>Positive: variables move in the same direction (height and weight)</li><li>Negative: variables move in opposite directions (temperature and heating costs)</li><li>Zero: variables are not related</li></ul>
+<pre><code>import pandas as pd
+
+d = {"A": [10, 20, 30], "B": [15, 25, 35]}
+df = pd.DataFrame(d)
+print(df.corr())</code></pre>
+<p>Docs: <a href="https://www.geeksforgeeks.org/pandas/python-pandas-dataframe-corr/" target="_blank">pandas DataFrame.corr()</a></p>
+<h2>Causation</h2>
+<p>A causal relationship means one event directly causes another. There's directionality: changing the cause changes the effect.</p>
+<div class="tip-box"><p>Correlation only shows that a relationship exists — not why. Classic example: ice cream sales and drowning deaths both rise in summer. Ice cream doesn't cause drowning — both depend on warm weather.</p></div>
+<p>Fun examples of spurious correlations: <a href="https://tylervigen.com/spurious-correlations" target="_blank">tylervigen.com</a></p>` },
+
+      { tag: 'SQL / Python', title: 'Cohort Analysis',
+        lead: 'Cohort analysis is a method for studying the behavior of groups of users (cohorts). Most commonly, cohorts are formed by the date of first interaction with the product.',
+        body: `<h2>Why it matters</h2>
+<p>Cohort analysis answers: how does user retention change over time? Which cohorts perform best? Do product changes affect user behavior? Are acquisition costs paying off?</p>
+<h2>Steps of cohort analysis</h2>
+<div class="step"><div class="step-num">1</div><div class="step-body"><div class="step-title">Define your goal</div><div class="step-desc">Formulate a clear question. For example: did retention improve after the app redesign?</div></div></div>
+<div class="step"><div class="step-num">2</div><div class="step-body"><div class="step-title">Choose the cohort criterion</div><div class="step-desc">Registration date (most common), first purchase date, traffic source, product version on first use, geography.</div></div></div>
+<div class="step"><div class="step-num">3</div><div class="step-body"><div class="step-title">Define time intervals</div><div class="step-desc">Days, weeks, months or a combination — depends on the business.</div></div></div>
+<div class="step"><div class="step-num">4</div><div class="step-body"><div class="step-title">Decide what to measure</div><div class="step-desc">App returns (DAU/WAU/MAU/retention rate), purchases, key feature usage, average order value or revenue.</div></div></div>
+<div class="step"><div class="step-num">5</div><div class="step-body"><div class="step-title">Build the cohort table</div><div class="step-desc">Use the SQL queries below. The output should be a retention matrix.</div></div></div>
+<h2>SQL implementation</h2>
+<pre><code>WITH cohorts AS (
+  SELECT
+    user_id,
+    DATE_TRUNC('month', registration_date) AS cohort_month,
+    registration_date
+  FROM users
+),
+cohort_activity AS (
+  SELECT
+    c.cohort_month,
+    COUNT(DISTINCT c.user_id) AS cohort_size,
+    COUNT(DISTINCT CASE
+      WHEN s.session_date BETWEEN c.registration_date + 8
+        AND c.registration_date + 14
+      THEN c.user_id END) AS week_2,
+    COUNT(DISTINCT CASE
+      WHEN s.session_date BETWEEN c.registration_date + 15
+        AND c.registration_date + 30
+      THEN c.user_id END) AS week_3_4,
+    COUNT(DISTINCT CASE
+      WHEN s.session_date BETWEEN c.registration_date + 31
+        AND c.registration_date + 60
+      THEN c.user_id END) AS month_2
+  FROM cohorts c
+    LEFT JOIN user_sessions s ON c.user_id = s.user_id
+  GROUP BY c.cohort_month
+)
+SELECT
+  TO_CHAR(cohort_month, 'YYYY-MM') AS cohort,
+  cohort_size,
+  ROUND((week_2::decimal / cohort_size * 100), 2) AS week_2_ret,
+  ROUND((week_3_4::decimal / cohort_size * 100), 2) AS week_3_4_ret,
+  ROUND((month_2::decimal / cohort_size * 100), 2) AS month_2_ret
+FROM cohort_activity
+ORDER BY cohort_month</code></pre>` },
+
+      { tag: 'SQL / Python', title: 'Time Series',
+        lead: 'A topic you\'ll encounter in almost every analytical task. Sales by day, DAU by week, revenue by month — all time series.',
+        body: `<h2>Components of a time series</h2>
+<ul class="checklist"><li>Trend: long-term direction (growing, falling, flat)</li><li>Seasonality: recurring patterns tied to the calendar (pre-holiday sales spike, summer slowdown)</li><li>Cyclical fluctuations: like seasonality but not calendar-bound (economic cycles)</li><li>Noise: random deviations that nothing else explains</li></ul>
+<h2>The most common mistake</h2>
+<p>Confusing a seasonal dip with a real problem. DAU dropped 15% in August — disaster or just summer? To answer, compare not to the previous month but to the same period last year (YoY — year over year).</p>
+<h2>Moving average</h2>
+<p>When there's too much noise, moving average smooths short-term fluctuations and makes the trend visible.</p>
+<pre><code>df['ma_7'] = df['value'].rolling(window=7).mean()</code></pre>
+<p>In SQL:</p>
+<pre><code>SELECT
+  date,
+  revenue,
+  AVG(revenue) OVER (
+    ORDER BY date
+    ROWS BETWEEN 6 PRECEDING AND CURRENT ROW
+  ) AS ma_7
+FROM daily_revenue
+ORDER BY date</code></pre>
+<p>Useful links: <a href="https://pandas.pydata.org/docs/user_guide/timeseries.html" target="_blank">pandas timeseries docs</a></p>` },
+
+      { tag: 'SQL / Python', title: 'Working with Dates',
+        lead: 'A topic that seems simple but is among the top sources of bugs in analytics. The worst part: date errors are hard to spot — everything looks plausible, but the numbers are wrong.',
+        body: `<h2>DATE vs TIMESTAMP</h2>
+<p><code>DATE</code> is just a calendar date: <code>2025-03-15</code>. <code>TIMESTAMP</code> includes time: <code>2025-03-15 14:30:00</code>.</p>
+<pre><code>-- An order at '2025-03-15 10:30:00' will NOT match this!
+WHERE created_at = '2025-03-15'
+
+-- Working version 1
+WHERE created_at::date = '2025-03-15'
+
+-- Working version 2
+WHERE created_at >= '2025-03-15' AND created_at < '2025-03-16'</code></pre>
+<h2>Time zones</h2>
+<p>A user in Moscow placed an order at 1:30 AM on March 15th. The server in UTC logged it as March 14th, 10:30 PM. One order, two days. Multiply by thousands of orders.</p>
+<pre><code>SELECT
+  (created_at AT TIME ZONE 'UTC'
+    AT TIME ZONE 'Europe/Moscow')::date AS order_date,
+  COUNT(1) AS orders_count
+FROM orders
+GROUP BY 1</code></pre>
+<pre><code>df['created_at'] = pd.to_datetime(df['created_at']).dt.tz_localize('UTC')
+df['created_at_msk'] = df['created_at'].dt.tz_convert('Europe/Moscow')</code></pre>
+<div class="tip-box"><p><code>tz_localize</code>: "this data is already in this timezone, remember it." <code>tz_convert</code>: "convert from one timezone to another." Mix them up and you get an hours-long offset across all your data.</p></div>
+<h2>Date format pitfall</h2>
+<p>Is <code>03/04/2025</code> April 3rd or March 4th? pandas may guess wrong. Always specify the format explicitly:</p>
+<pre><code>df['date'] = pd.to_datetime(df['date'], format='%d/%m/%Y')</code></pre>` },
+
+      { tag: 'Statistics / Python', title: 'Monte Carlo Method',
+        lead: 'A powerful tool for working with uncertainty and forecasting results. Named after the Monaco district full of casinos and roulette — a source of random numbers.',
+        body: `<h2>How it works</h2>
+<p>The idea: simulate thousands of possible scenarios with different random inputs, then look at the distribution of results to understand the range of likely outcomes. Synonym for Monte Carlo: "simulation."</p>
+<ol style="padding-left:20px;margin-bottom:12px;font-size:14px;color:var(--text-secondary);line-height:1.8">
+<li>Describe the model: what we want to calculate and what factors affect it</li>
+<li>Generate random values: define a range for each factor</li>
+<li>Run many times: execute the calculation with different random combinations</li>
+<li>Analyze results: look at the distribution of outcomes</li>
+</ol>
+<h2>Simple example: rolling two dice</h2>
+<p>What's the probability of rolling doubles?</p>
+<pre><code>import random
+
+num_simulations = 10_000
+wins = 0
+
+for i in range(num_simulations):
+    dice1 = random.randint(1, 6)
+    dice2 = random.randint(1, 6)
+    if dice1 == dice2:
+        wins += 1
+
+probability = wins / num_simulations
+print(f"Probability of doubles: {probability:.4f}")</code></pre>
+<div class="tip-box"><p>Try changing <code>num_simulations</code> from 100 to 100,000. You'll feel the difference in accuracy — that's the law of large numbers in action.</p></div>
+<p>Video: Monty Hall paradox solved by simulation: <a href="https://youtu.be/iQPt6FizJzU?si=4sXkREhX-4S8QO8K" target="_blank">YouTube</a></p>` },
+
+      { tag: 'ML / Statistics', title: 'Confusion Matrix',
+        lead: 'The confusion matrix is a tool for evaluating classification quality. The same ideas as Type I and Type II errors in A/B testing — just with different names.',
+        body: `<h2>Four classification outcomes</h2>
+<p>Imagine a bank anti-fraud system that looks at each transaction and decides: fraud or not?</p>
+<ul class="checklist"><li>TP (True Positive): correctly predicted "yes" — fraud detected, blocked</li><li>TN (True Negative): correctly predicted "no" — clean transaction, allowed through</li><li>FP (False Positive): predicted "yes" but actually "no" — blocked a legitimate customer (Type I error)</li><li>FN (False Negative): predicted "no" but actually "yes" — missed a fraudster (Type II error)</li></ul>
+<pre><code>from sklearn.metrics import confusion_matrix, ConfusionMatrixDisplay
+import matplotlib.pyplot as plt
+
+y_true = [1, 0, 1, 1, 0, 1, 0, 0, 1, 0]
+y_pred = [1, 0, 1, 0, 0, 1, 1, 0, 1, 0]
+
+cm = confusion_matrix(y_true, y_pred)
+disp = ConfusionMatrixDisplay(confusion_matrix=cm,
+  display_labels=["No fraud", "Fraud"])
+disp.plot(cmap="Blues")
+plt.show()</code></pre>
+<h2>Classification metrics</h2>
+<ul class="checklist"><li>Accuracy = (TP + TN) / all. Misleads with imbalanced classes: a model that always says "not fraud" gets 95% accuracy — but it's useless</li><li>Precision = TP / (TP + FP). When we say "YES" — how confident are we?</li><li>Recall = TP / (TP + FN). Of all actual positives, how many did we find?</li><li>F1-score = 2 * (P * R) / (P + R). Balance between Precision and Recall</li></ul>
+<div class="tip-box"><p>Different tasks need different balances. Anti-fraud: FN is costly — use Recall. Spam filter: don't want to lose real emails — use Precision. A/B test: balance both — use F1.</p></div>
+<pre><code>from sklearn.metrics import classification_report
+print(classification_report(y_true, y_pred,
+  target_names=["Legit", "Fraud"]))</code></pre>` },
+
+      { tag: 'Monte Carlo / Python', title: 'A/B Test Design with Monte Carlo',
+        lead: 'Scenario: mobile app, testing a new onboarding. Baseline 7-day retention is 20%, we hope to reach 23%. How many users do we need? Simulation lets us "feel" the reliability of the test before launching it.',
+        body: `<h2>Step 1. Set test parameters</h2>
+<pre><code>import numpy as np
+from statsmodels.stats.proportion import proportions_ztest
+
+baseline_retention = 0.20
+expected_retention = 0.23
+n_per_group = 1000
+alpha = 0.05
+n_simulations = 10_000</code></pre>
+<h2>Step 2. Simulate a single test run</h2>
+<pre><code>def run_single_ab_test(p_control, p_treatment, n):
+    control = np.random.binomial(1, p_control, n)
+    treatment = np.random.binomial(1, p_treatment, n)
+    return control, treatment</code></pre>
+<h2>Step 3. Check significance with z-test</h2>
+<pre><code>def is_significant(control, treatment, alpha=0.05):
+    successes = [treatment.sum(), control.sum()]
+    nobs = [len(treatment), len(control)]
+    _, p_value = proportions_ztest(successes, nobs)
+    return p_value < alpha</code></pre>
+<h2>Step 4. Run 10,000 simulations</h2>
+<pre><code>false_positives = 0
+true_positives = 0
+
+for _ in range(n_simulations):
+    c0, t0 = run_single_ab_test(
+        baseline_retention, baseline_retention, n_per_group)
+    if is_significant(c0, t0):
+        false_positives += 1
+
+    c1, t1 = run_single_ab_test(
+        baseline_retention, expected_retention, n_per_group)
+    if is_significant(c1, t1):
+        true_positives += 1</code></pre>
+<h2>What the simulation showed</h2>
+<ul class="checklist"><li>Type I error is controlled: false positive rate stays at ~5% — exactly where we set alpha</li><li>At n=1000, power is only 47% — we miss the real effect half the time</li><li>At n=3000, power reaches 84% — the test becomes reliable</li><li>The curve is nonlinear: doubling from 500 to 1000 adds +17pp of power; from 4000 to 5000 only +5pp</li></ul>
+<div class="tip-box"><p>Challenge: how long do we need to run the test if the app gets 200 new users per day? And what's the probability of a Type II error with our parameters?</p></div>` }
+    ]
+  }
 };
+
+var sectionOpen = { soft: false, hard: true };
 
 function renderNav() {
   var el = document.getElementById('nav');
   el.innerHTML = '';
-  nav.forEach(function(item, i) {
-    var d = item[currentLang];
-    var div = document.createElement('div');
-    div.className = 'nav-item' + (i === currentArticle ? ' active' : '');
-    div.onclick = (function(idx){ return function(){ showArticle(idx); }; })(i);
-    div.innerHTML =
-      '<div class="nav-icon" style="background:' + item.bg + ';color:' + item.color + '">' + item.icon + '</div>' +
-      '<div><div class="nav-label">' + d.label + '</div><div class="nav-tag">' + d.tag + '</div></div>';
-    el.appendChild(div);
+  ['soft', 'hard'].forEach(function(sec) {
+    var s = sections[sec][currentLang];
+    var open = sectionOpen[sec];
+    var items = navData[sec];
+
+    var header = document.createElement('div');
+    header.className = 'nav-section-header';
+    header.innerHTML = '<span class="nav-section-title">' + s.label + '</span><span class="nav-section-arrow' + (open ? ' open' : '') + '" id="arrow-' + sec + '">▾</span>';
+    header.onclick = (function(section){ return function() { toggleSection(section); }; })(sec);
+    el.appendChild(header);
+
+    var wrap = document.createElement('div');
+    wrap.className = 'nav-section-items';
+    wrap.id = 'section-' + sec;
+    var totalH = items.length * 52;
+    wrap.style.maxHeight = open ? totalH + 'px' : '0px';
+
+    items.forEach(function(item, i) {
+      var d = item[currentLang];
+      var div = document.createElement('div');
+      var isActive = currentSection === sec && currentArticle === i;
+      div.className = 'nav-item' + (isActive ? ' active' : '');
+      div.onclick = (function(s2, idx){ return function(){ showArticle(s2, idx); }; })(sec, i);
+      div.innerHTML = '<div class="nav-icon" style="background:' + item.bg + ';color:' + item.color + '">' + item.icon + '</div>' +
+        '<div><div class="nav-label">' + d.label + '</div><div class="nav-tag">' + d.tag + '</div></div>';
+      wrap.appendChild(div);
+    });
+    el.appendChild(wrap);
   });
 }
 
+function toggleSection(sec) {
+  sectionOpen[sec] = !sectionOpen[sec];
+  var wrap = document.getElementById('section-' + sec);
+  var arrow = document.getElementById('arrow-' + sec);
+  var items = navData[sec];
+  if (sectionOpen[sec]) {
+    wrap.style.maxHeight = (items.length * 52) + 'px';
+    arrow.classList.add('open');
+  } else {
+    wrap.style.maxHeight = '0px';
+    arrow.classList.remove('open');
+  }
+}
+
 function renderArticle() {
-  var a = articles[currentLang][currentArticle];
+  var a = articles[currentSection][currentLang][currentArticle];
   document.getElementById('content').innerHTML =
     '<div class="article-tag">' + a.tag + '</div>' +
     '<h1>' + a.title + '</h1>' +
@@ -572,15 +1175,19 @@ function renderArticle() {
   document.documentElement.lang = currentLang;
 }
 
-function showArticle(id) {
+function showArticle(section, id) {
+  currentSection = section;
   currentArticle = id;
+  if (!sectionOpen[section]) {
+    sectionOpen[section] = true;
+  }
   renderNav();
   renderArticle();
 }
 
 function setLang(lang) {
   currentLang = lang;
-  document.getElementById('sidebar-title').textContent = lang === 'ru' ? 'Софт скиллы' : 'Soft skills';
+  document.getElementById('sidebar-title').textContent = lang === 'ru' ? 'Навигация' : 'Navigation';
   document.getElementById('site-label').textContent = lang === 'ru' ? 'Data Analyst wiki' : 'Data Analyst wiki';
   document.querySelectorAll('.lang-btn').forEach(function(b) {
     b.classList.toggle('active', b.textContent === lang.toUpperCase());
