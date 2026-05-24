@@ -1,5 +1,10 @@
 {
   "sections": {
+    "about": {
+      "ru": "Об авторе",
+      "en": "About",
+      "defaultOpen": true
+    },
     "soft": {
       "ru": "Софт скиллы",
       "en": "Soft Skills",
@@ -8,11 +13,6 @@
     "hard": {
       "ru": "Хард скиллы",
       "en": "Hard Skills",
-      "defaultOpen": true
-    },
-    "about": {
-      "ru": "Об авторе",
-      "en": "About",
       "defaultOpen": false
     }
   },
