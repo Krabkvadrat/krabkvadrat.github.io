@@ -1,0 +1,54 @@
+<section data-lang="ru">
+<div class="article-tag">ML / Статистика</div>
+<h1>Confusion Matrix</h1>
+<p class="lead">Матрица ошибок — инструмент для оценки качества классификации. Те же идеи, что и в ошибках I и II рода в A/B тестировании, но под другими именами.</p>
+<h2>Четыре исхода классификации</h2>
+<p>Представьте антифрод-систему банка, которая смотрит на каждую транзакцию и решает: мошенничество или нет?</p>
+<ul class="checklist"><li>TP (True Positive): верно предсказали «да» — мошенничество есть, заблокировали</li><li>TN (True Negative): верно предсказали «нет» — транзакция честная, пропустили</li><li>FP (False Positive): предсказали «да», а на деле «нет» — заблокировали честного клиента (ошибка I рода)</li><li>FN (False Negative): предсказали «нет», а на деле «да» — пропустили мошенника (ошибка II рода)</li></ul>
+<pre><code>from sklearn.metrics import confusion_matrix, ConfusionMatrixDisplay
+import matplotlib.pyplot as plt
+
+y_true = [1, 0, 1, 1, 0, 1, 0, 0, 1, 0]
+y_pred = [1, 0, 1, 0, 0, 1, 1, 0, 1, 0]
+
+cm = confusion_matrix(y_true, y_pred)
+disp = ConfusionMatrixDisplay(confusion_matrix=cm,
+  display_labels=["Нет эффекта", "Есть эффект"])
+disp.plot(cmap="Blues")
+plt.title("Confusion Matrix")
+plt.show()</code></pre>
+<h2>Метрики качества классификации</h2>
+<ul class="checklist"><li>Accuracy = (TP + TN) / (TP + TN + FP + FN). Обманывает при несбалансированных классах: модель, которая всегда говорит «не мошенник», даст accuracy 95% — но это бесполезная модель</li><li>Precision = TP / (TP + FP). Когда мы говорим «ДА» — насколько мы уверены?</li><li>Recall = TP / (TP + FN). Из всех реально положительных, сколько мы нашли?</li><li>F1-score = 2 * (Precision * Recall) / (Precision + Recall). Баланс между Precision и Recall</li></ul>
+<div class="tip-box"><p>Разные задачи требуют разного баланса. В антифроде FN дорого — смотрим на Recall. В спам-фильтре важно не отправить нужное письмо в спам — смотрим на Precision. В A/B тесте держим баланс — смотрим на F1.</p></div>
+<pre><code>from sklearn.metrics import classification_report
+
+print(classification_report(y_true, y_pred,
+  target_names=["Честная", "Мошенничество"]))
+# Покажет precision, recall, f1 для каждого класса</code></pre>
+</section>
+
+<section data-lang="en">
+<div class="article-tag">ML / Statistics</div>
+<h1>Confusion Matrix</h1>
+<p class="lead">The confusion matrix is a tool for evaluating classification quality. The same ideas as Type I and Type II errors in A/B testing — just with different names.</p>
+<h2>Four classification outcomes</h2>
+<p>Imagine a bank anti-fraud system that looks at each transaction and decides: fraud or not?</p>
+<ul class="checklist"><li>TP (True Positive): correctly predicted "yes" — fraud detected, blocked</li><li>TN (True Negative): correctly predicted "no" — clean transaction, allowed through</li><li>FP (False Positive): predicted "yes" but actually "no" — blocked a legitimate customer (Type I error)</li><li>FN (False Negative): predicted "no" but actually "yes" — missed a fraudster (Type II error)</li></ul>
+<pre><code>from sklearn.metrics import confusion_matrix, ConfusionMatrixDisplay
+import matplotlib.pyplot as plt
+
+y_true = [1, 0, 1, 1, 0, 1, 0, 0, 1, 0]
+y_pred = [1, 0, 1, 0, 0, 1, 1, 0, 1, 0]
+
+cm = confusion_matrix(y_true, y_pred)
+disp = ConfusionMatrixDisplay(confusion_matrix=cm,
+  display_labels=["No fraud", "Fraud"])
+disp.plot(cmap="Blues")
+plt.show()</code></pre>
+<h2>Classification metrics</h2>
+<ul class="checklist"><li>Accuracy = (TP + TN) / all. Misleads with imbalanced classes: a model that always says "not fraud" gets 95% accuracy — but it's useless</li><li>Precision = TP / (TP + FP). When we say "YES" — how confident are we?</li><li>Recall = TP / (TP + FN). Of all actual positives, how many did we find?</li><li>F1-score = 2 * (P * R) / (P + R). Balance between Precision and Recall</li></ul>
+<div class="tip-box"><p>Different tasks need different balances. Anti-fraud: FN is costly — use Recall. Spam filter: don't want to lose real emails — use Precision. A/B test: balance both — use F1.</p></div>
+<pre><code>from sklearn.metrics import classification_report
+print(classification_report(y_true, y_pred,
+  target_names=["Legit", "Fraud"]))</code></pre>
+</section>

@@ -1,0 +1,61 @@
+<section data-lang="ru">
+<div class="article-tag">Статистика / Python</div>
+<h1>Метод Монте-Карло</h1>
+<p class="lead">Мощный инструмент, который позволяет аналитикам работать с неопределённостью и прогнозировать будущие результаты. Метод назван в честь района Монако, где полно казино с рулеткой.</p>
+<h2>Как это работает</h2>
+<p>Суть метода: смоделировать тысячи возможных сценариев с разными случайными входными данными, а потом посмотреть на распределение результатов и понять диапазон вероятных исходов. Синоним метода Монте-Карло — «симуляция».</p>
+<ol style="padding-left:20px;margin-bottom:12px;font-size:14px;color:var(--text-secondary);line-height:1.8">
+<li>Описываем модель: что хотим посчитать и от каких факторов это зависит</li>
+<li>Генерируем случайные значения: для каждого фактора задаём диапазон возможных значений</li>
+<li>Прогоняем много раз: запускаем расчёт с разными случайными комбинациями</li>
+<li>Анализируем результаты: смотрим на распределение полученных значений</li>
+</ol>
+<h2>Простой пример: бросок двух кубиков</h2>
+<p>Какова вероятность выбросить дубль (одинаковые числа)?</p>
+<pre><code>import random
+
+num_simulations = 10_000
+wins = 0
+
+for i in range(num_simulations):
+    dice1 = random.randint(1, 6)
+    dice2 = random.randint(1, 6)
+    if dice1 == dice2:
+        wins += 1
+
+probability = wins / num_simulations
+print(f"Вероятность выбросить дубль: {probability:.4f}")</code></pre>
+<div class="tip-box"><p>Попробуйте поменять <code>num_simulations</code> с 100 до 100 000. Почувствуете разницу в точности — это и есть закон больших чисел в действии.</p></div>
+<p>Видео: парадокс Монти Холла, решённый симуляцией: <a href="https://youtu.be/iQPt6FizJzU?si=4sXkREhX-4S8QO8K" target="_blank">YouTube</a></p>
+</section>
+
+<section data-lang="en">
+<div class="article-tag">Statistics / Python</div>
+<h1>Monte Carlo Method</h1>
+<p class="lead">A powerful tool for working with uncertainty and forecasting results. Named after the Monaco district full of casinos and roulette — a source of random numbers.</p>
+<h2>How it works</h2>
+<p>The idea: simulate thousands of possible scenarios with different random inputs, then look at the distribution of results to understand the range of likely outcomes. Synonym for Monte Carlo: "simulation."</p>
+<ol style="padding-left:20px;margin-bottom:12px;font-size:14px;color:var(--text-secondary);line-height:1.8">
+<li>Describe the model: what we want to calculate and what factors affect it</li>
+<li>Generate random values: define a range for each factor</li>
+<li>Run many times: execute the calculation with different random combinations</li>
+<li>Analyze results: look at the distribution of outcomes</li>
+</ol>
+<h2>Simple example: rolling two dice</h2>
+<p>What's the probability of rolling doubles?</p>
+<pre><code>import random
+
+num_simulations = 10_000
+wins = 0
+
+for i in range(num_simulations):
+    dice1 = random.randint(1, 6)
+    dice2 = random.randint(1, 6)
+    if dice1 == dice2:
+        wins += 1
+
+probability = wins / num_simulations
+print(f"Probability of doubles: {probability:.4f}")</code></pre>
+<div class="tip-box"><p>Try changing <code>num_simulations</code> from 100 to 100,000. You'll feel the difference in accuracy — that's the law of large numbers in action.</p></div>
+<p>Video: Monty Hall paradox solved by simulation: <a href="https://youtu.be/iQPt6FizJzU?si=4sXkREhX-4S8QO8K" target="_blank">YouTube</a></p>
+</section>

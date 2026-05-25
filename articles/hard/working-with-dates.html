@@ -1,0 +1,66 @@
+<section data-lang="ru">
+<div class="article-tag">SQL / Python</div>
+<h1>Работа с датами</h1>
+<p class="lead">Тема, которая кажется простой, но входит в топ источников багов в аналитике. Самое неприятное: ошибки с датами сложно заметить — метрика считается, всё выглядит правдоподобно, но цифры неверные.</p>
+<h2>DATE vs TIMESTAMP</h2>
+<p><code>DATE</code> — просто календарная дата: <code>2025-03-15</code>. <code>TIMESTAMP</code> — дата плюс время: <code>2025-03-15 14:30:00</code>.</p>
+<p>Классический баг:</p>
+<pre><code>-- Заказ в '2025-03-15 10:30:00' сюда НЕ попадёт!
+WHERE created_at = '2025-03-15'
+
+-- Рабочий вариант 1
+WHERE created_at::date = '2025-03-15'
+
+-- Рабочий вариант 2
+WHERE created_at >= '2025-03-15' AND created_at < '2025-03-16'</code></pre>
+<h2>Часовые пояса</h2>
+<p>Пользователь из Москвы сделал заказ в 1:30 ночи 15 марта. На сервере в UTC это записалось как 14 марта 22:30. Один заказ, два дня. Умножьте на тысячи заказов.</p>
+<pre><code>-- Конвертируем UTC в московское время
+SELECT
+  (created_at AT TIME ZONE 'UTC'
+    AT TIME ZONE 'Europe/Moscow')::date AS order_date,
+  COUNT(1) AS orders_count
+FROM orders
+GROUP BY 1</code></pre>
+<p>В pandas:</p>
+<pre><code># Указываем, что данные в UTC
+df['created_at'] = pd.to_datetime(df['created_at']).dt.tz_localize('UTC')
+# Конвертируем в Москву
+df['created_at_msk'] = df['created_at'].dt.tz_convert('Europe/Moscow')</code></pre>
+<div class="tip-box"><p><code>tz_localize</code>: «эти данные уже в таком поясе, запомни». <code>tz_convert</code>: «пересчитай из одного пояса в другой». Перепутаете — получите сдвиг на несколько часов во всех данных.</p></div>
+<h2>Формат дат</h2>
+<p>Дата <code>03/04/2025</code> — это 3 апреля или 4 марта? pandas может угадать неправильно. Всегда указывайте формат явно:</p>
+<pre><code>df['date'] = pd.to_datetime(df['date'], format='%d/%m/%Y')</code></pre>
+<h2>Чеклист</h2>
+<ul class="checklist"><li>Проверяйте тип данных: DATE или TIMESTAMP?</li><li>Выясняйте, в каком часовом поясе хранятся данные в источнике</li><li>Договоритесь с командой о едином часовом поясе для отчётов</li><li>Явно указывайте формат при парсинге дат</li></ul>
+</section>
+
+<section data-lang="en">
+<div class="article-tag">SQL / Python</div>
+<h1>Working with Dates</h1>
+<p class="lead">A topic that seems simple but is among the top sources of bugs in analytics. The worst part: date errors are hard to spot — everything looks plausible, but the numbers are wrong.</p>
+<h2>DATE vs TIMESTAMP</h2>
+<p><code>DATE</code> is just a calendar date: <code>2025-03-15</code>. <code>TIMESTAMP</code> includes time: <code>2025-03-15 14:30:00</code>.</p>
+<pre><code>-- An order at '2025-03-15 10:30:00' will NOT match this!
+WHERE created_at = '2025-03-15'
+
+-- Working version 1
+WHERE created_at::date = '2025-03-15'
+
+-- Working version 2
+WHERE created_at >= '2025-03-15' AND created_at < '2025-03-16'</code></pre>
+<h2>Time zones</h2>
+<p>A user in Moscow placed an order at 1:30 AM on March 15th. The server in UTC logged it as March 14th, 10:30 PM. One order, two days. Multiply by thousands of orders.</p>
+<pre><code>SELECT
+  (created_at AT TIME ZONE 'UTC'
+    AT TIME ZONE 'Europe/Moscow')::date AS order_date,
+  COUNT(1) AS orders_count
+FROM orders
+GROUP BY 1</code></pre>
+<pre><code>df['created_at'] = pd.to_datetime(df['created_at']).dt.tz_localize('UTC')
+df['created_at_msk'] = df['created_at'].dt.tz_convert('Europe/Moscow')</code></pre>
+<div class="tip-box"><p><code>tz_localize</code>: "this data is already in this timezone, remember it." <code>tz_convert</code>: "convert from one timezone to another." Mix them up and you get an hours-long offset across all your data.</p></div>
+<h2>Date format pitfall</h2>
+<p>Is <code>03/04/2025</code> April 3rd or March 4th? pandas may guess wrong. Always specify the format explicitly:</p>
+<pre><code>df['date'] = pd.to_datetime(df['date'], format='%d/%m/%Y')</code></pre>
+</section>

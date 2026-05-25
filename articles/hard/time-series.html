@@ -1,0 +1,51 @@
+<section data-lang="ru">
+<div class="article-tag">SQL / Python</div>
+<h1>Временные ряды</h1>
+<p class="lead">Тема, с которой вы будете сталкиваться практически в любой аналитической задаче. Продажи по дням, DAU по неделям, выручка по месяцам — всё это временные ряды.</p>
+<h2>Из чего состоит временной ряд</h2>
+<ul class="checklist"><li>Тренд: долгосрочное направление движения (растёт, падает, стоит на месте)</li><li>Сезонность: повторяющиеся паттерны, связанные с календарём (рост продаж перед НГ, просадка летом)</li><li>Циклические колебания: похожи на сезонность, но не привязаны к календарю жёстко (например, экономические циклы)</li><li>Шум: случайные отклонения, которые не объясняются ничем из вышеперечисленного</li></ul>
+<h2>Самая частая ошибка</h2>
+<p>Перепутать сезонный спад с реальной проблемой. DAU упал на 15% в августе — это катастрофа или просто лето? Чтобы ответить, нужно сравнивать не с предыдущим месяцем, а с аналогичным периодом прошлого года (YoY — year over year).</p>
+<h2>Чеклист при работе с новым временным рядом</h2>
+<ul class="checklist"><li>Есть ли явный тренд?</li><li>Есть ли повторяющиеся паттерны (сезонность)?</li><li>Есть ли аномалии — резкие пики или провалы?</li><li>Нет ли пропусков в данных?</li><li>Равномерны ли временные интервалы?</li></ul>
+<h2>Скользящее среднее</h2>
+<p>Когда на графике много шума, скользящее среднее сглаживает краткосрочные колебания и делает тренд наглядным.</p>
+<p>В pandas — одна строчка:</p>
+<pre><code>df['ma_7'] = df['value'].rolling(window=7).mean()</code></pre>
+<p>В SQL — через оконные функции:</p>
+<pre><code>SELECT
+  date,
+  revenue,
+  AVG(revenue) OVER (
+    ORDER BY date
+    ROWS BETWEEN 6 PRECEDING AND CURRENT ROW
+  ) AS ma_7
+FROM daily_revenue
+ORDER BY date</code></pre>
+<p>Здесь <code>ROWS BETWEEN 6 PRECEDING AND CURRENT ROW</code> означает: возьми текущую строку и 6 предыдущих — итого окно в 7 дней. Для 30-дневного среднего меняете 6 на 29.</p>
+<p>Полезные материалы: <a href="https://habr.com/ru/companies/mvideo/articles/769190/" target="_blank">Работа с временными рядами в pandas — M.Video</a>, <a href="https://pandas.pydata.org/docs/user_guide/timeseries.html" target="_blank">Документация pandas по timeseries</a></p>
+</section>
+
+<section data-lang="en">
+<div class="article-tag">SQL / Python</div>
+<h1>Time Series</h1>
+<p class="lead">A topic you'll encounter in almost every analytical task. Sales by day, DAU by week, revenue by month — all time series.</p>
+<h2>Components of a time series</h2>
+<ul class="checklist"><li>Trend: long-term direction (growing, falling, flat)</li><li>Seasonality: recurring patterns tied to the calendar (pre-holiday sales spike, summer slowdown)</li><li>Cyclical fluctuations: like seasonality but not calendar-bound (economic cycles)</li><li>Noise: random deviations that nothing else explains</li></ul>
+<h2>The most common mistake</h2>
+<p>Confusing a seasonal dip with a real problem. DAU dropped 15% in August — disaster or just summer? To answer, compare not to the previous month but to the same period last year (YoY — year over year).</p>
+<h2>Moving average</h2>
+<p>When there's too much noise, moving average smooths short-term fluctuations and makes the trend visible.</p>
+<pre><code>df['ma_7'] = df['value'].rolling(window=7).mean()</code></pre>
+<p>In SQL:</p>
+<pre><code>SELECT
+  date,
+  revenue,
+  AVG(revenue) OVER (
+    ORDER BY date
+    ROWS BETWEEN 6 PRECEDING AND CURRENT ROW
+  ) AS ma_7
+FROM daily_revenue
+ORDER BY date</code></pre>
+<p>Useful links: <a href="https://pandas.pydata.org/docs/user_guide/timeseries.html" target="_blank">pandas timeseries docs</a></p>
+</section>
