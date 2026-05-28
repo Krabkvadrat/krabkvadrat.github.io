@@ -5,6 +5,11 @@
       "en": "About",
       "defaultOpen": true
     },
+    "videos": {
+      "ru": "Видео",
+      "en": "Videos",
+      "defaultOpen": false
+    },
     "soft": {
       "ru": "Софт скиллы",
       "en": "Soft Skills",
@@ -255,6 +260,51 @@
       "en": {
         "label": "Alexandr Grudinin",
         "tag": "Lead Data Analyst"
+      }
+    },
+    {
+      "section": "videos",
+      "slug": "ab-test-sample-size",
+      "icon": "🧪",
+      "bg": "var(--bg-warning)",
+      "color": "var(--text-warning)",
+      "ru": {
+        "label": "Размер выборки в A/B",
+        "tag": "A/B-тесты"
+      },
+      "en": {
+        "label": "A/B Test Sample Size",
+        "tag": "A/B testing"
+      }
+    },
+    {
+      "section": "videos",
+      "slug": "sql-interview-problems",
+      "icon": "💼",
+      "bg": "var(--bg-info)",
+      "color": "var(--text-info)",
+      "ru": {
+        "label": "SQL на собеседованиях",
+        "tag": "SQL / Собеседования"
+      },
+      "en": {
+        "label": "SQL Interview Problems",
+        "tag": "SQL / Interviews"
+      }
+    },
+    {
+      "section": "videos",
+      "slug": "monty-hall-paradox",
+      "icon": "🎲",
+      "bg": "var(--bg-success)",
+      "color": "var(--text-success)",
+      "ru": {
+        "label": "Парадокс Монти-Холла",
+        "tag": "Вероятности"
+      },
+      "en": {
+        "label": "Monty Hall Paradox",
+        "tag": "Probability"
       }
     }
   ]
