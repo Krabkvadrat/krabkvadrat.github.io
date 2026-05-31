@@ -315,6 +315,59 @@
     top: 5px;
   }
 
+  /* base list (fallback for plain ul/ol) */
+  .content ul:not([class]), .content ol:not([class]) {
+    margin: 0 0 14px; padding-left: 22px;
+  }
+  .content ul:not([class]) li, .content ol:not([class]) li {
+    font-size: 14px; color: var(--text-secondary); line-height: 1.7; margin-bottom: 5px;
+  }
+
+  /* accent cards: term + description with a colored left rail */
+  .accent-list { margin: 16px 0; display: flex; flex-direction: column; gap: 8px; }
+  .accent-item {
+    background: var(--bg-secondary);
+    border: 0.5px solid var(--border);
+    border-left: 3px solid var(--border-md);
+    border-radius: var(--radius);
+    padding: 11px 15px;
+  }
+  .accent-item.danger { border-left-color: var(--text-danger); }
+  .accent-item.warning { border-left-color: var(--text-warning); }
+  .accent-item.info { border-left-color: var(--text-info); }
+  .accent-item .term {
+    display: block; font-size: 14px; font-weight: 500;
+    color: var(--text-primary); margin-bottom: 3px;
+  }
+  .accent-item .desc { font-size: 13px; color: var(--text-secondary); line-height: 1.6; margin: 0; }
+
+  /* glossary: boxed term/definition list, set apart from headings */
+  .glossary {
+    list-style: none; margin: 16px 0;
+    background: var(--bg-secondary);
+    border: 0.5px solid var(--border);
+    border-radius: var(--radius);
+    padding: 2px 16px;
+  }
+  .glossary li {
+    font-size: 13px; color: var(--text-secondary); line-height: 1.6;
+    padding: 10px 0 10px 18px; text-indent: -18px;
+    border-bottom: 0.5px solid var(--border);
+  }
+  .glossary li:last-child { border-bottom: none; }
+  .glossary li strong { color: var(--text-primary); font-weight: 600; text-indent: 0; }
+
+  /* comparison table */
+  .cmp-table { width: 100%; border-collapse: collapse; margin: 16px 0; font-size: 13px; }
+  .cmp-table th, .cmp-table td {
+    text-align: left; padding: 9px 13px; border: 0.5px solid var(--border);
+    vertical-align: top; line-height: 1.55;
+  }
+  .cmp-table th { background: var(--bg-secondary); color: var(--text-primary); font-weight: 500; }
+  .cmp-table td { color: var(--text-secondary); }
+  .cmp-table td:first-child { color: var(--text-primary); font-weight: 500; }
+  .cmp-table tbody tr:hover td { background: var(--bg-secondary); }
+
   .tip-box {
     background: var(--bg-secondary);
     border-left: 3px solid var(--border-md);

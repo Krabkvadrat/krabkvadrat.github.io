@@ -5,11 +5,20 @@
 
 <h2>В чём сложность денежных метрик</h2>
 <p>У выручки на клиента обычно неудобное для статистики распределение:</p>
-<ul>
-  <li><strong>Тяжёлые хвосты.</strong> Несколько крупных клиентов приносят непропорционально много. Один такой клиент может заметно сдвинуть среднее всей группы, что резко увеличивает дисперсию метрики.</li>
-  <li><strong>Много нулей.</strong> В реальных данных значительная часть пользователей не платит вообще. В одном из разобранных датасетов платящих было всего 13%, остальные 87% это нули.</li>
-  <li><strong>Сильная скошенность.</strong> Среднее в разы больше медианы, распределение далеко от симметричного.</li>
-</ul>
+<div class="accent-list">
+  <div class="accent-item danger">
+    <span class="term">Тяжёлые хвосты</span>
+    <p class="desc">Несколько крупных клиентов приносят непропорционально много. Один такой клиент может заметно сдвинуть среднее всей группы, что резко увеличивает дисперсию метрики.</p>
+  </div>
+  <div class="accent-item warning">
+    <span class="term">Много нулей</span>
+    <p class="desc">В реальных данных значительная часть пользователей не платит вообще. В одном из разобранных датасетов платящих было всего 13%, остальные 87% это нули.</p>
+  </div>
+  <div class="accent-item info">
+    <span class="term">Сильная скошенность</span>
+    <p class="desc">Среднее в разы больше медианы, распределение далеко от симметричного.</p>
+  </div>
+</div>
 
 <h2>Почему аналитическая формула может подвести</h2>
 <p>Аналитический расчёт размера выборки (например, через <code>TTestIndPower</code> из statsmodels) опирается на t-тест, а тот, в свою очередь, на центральную предельную теорему: предполагается, что среднее выборки распределено приблизительно нормально. Для метрик с близким к нормальному распределением это работает хорошо. Но чем тяжелее хвост, тем больший размер выборки нужен, чтобы среднее действительно сошлось к нормальному.</p>
@@ -18,7 +27,7 @@
 
 <h2>Основные термины</h2>
 <p>Чтобы дальше говорить на одном языке:</p>
-<ul>
+<ul class="glossary">
   <li><strong>A/B-тест</strong> — способ проверить, действительно ли изменение в продукте улучшает целевую метрику.</li>
   <li><strong>alpha</strong> — вероятность сказать «эффект есть», когда на самом деле его нет (обычно 5%).</li>
   <li><strong>power (мощность)</strong> — вероятность заметить реальный эффект, если он действительно есть (обычно 80%).</li>
@@ -42,11 +51,28 @@
 <p>Ограничение метода в том, что он настолько хорош, насколько репрезентативны исторические данные. Если они собраны в нетипичный период (распродажа, сезонный всплеск), симуляция унаследует это искажение, и оценка размера выборки будет смещённой.</p>
 
 <h2>Когда какой способ выбирать</h2>
-<ul>
-  <li><strong>Аналитика</strong> подходит для метрик с распределением, близким к нормальному: конверсии, CTR, рейтинги. Здесь формула корректна и экономит время.</li>
-  <li><strong>Монте-Карло</strong> имеет смысл, когда реальных данных ещё нет, но есть обоснованное представление о форме распределения (из бенчмарков, оценок команды, исторических агрегатов). Подход позволяет осознанно заложить тяжёлый хвост или долю нулей и оценить, как они влияют на мощность.</li>
-  <li><strong>Bootstrap</strong> это предпочтительный вариант, когда есть исторические данные по метрике. Он учитывает реальную форму распределения без дополнительных предположений и потому наиболее надёжен для денежных метрик. Основной минус метода это трудозатраты на сбор репрезентативной выборки и трата времени на прогон расчётов.</li>
-</ul>
+<table class="cmp-table">
+  <thead>
+    <tr><th>Способ</th><th>Когда применять</th><th>Надёжность для денег</th></tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Аналитика</td>
+      <td>Распределение близко к нормальному: конверсии, CTR, рейтинги. Формула корректна и экономит время.</td>
+      <td>Низкая: на тяжёлом хвосте только нижняя оценка.</td>
+    </tr>
+    <tr>
+      <td>Монте-Карло</td>
+      <td>Реальных данных ещё нет, но есть обоснованное представление о форме распределения (бенчмарки, оценки команды, исторические агрегаты).</td>
+      <td>Средняя: зависит от качества предположений о распределении.</td>
+    </tr>
+    <tr>
+      <td>Bootstrap</td>
+      <td>Есть исторические данные по метрике. Учитывает реальную форму распределения без дополнительных предположений.</td>
+      <td>Высокая, если выборка репрезентативна. Минус: трудозатраты на сбор данных и время на прогон расчётов.</td>
+    </tr>
+  </tbody>
+</table>
 <p>Общий принцип: для денежных метрик аналитический расчёт стоит рассматривать как отправную точку, а не как финальный ответ. Сравнение с Монте-Карло или bootstrap показывает, насколько формуле можно доверять на конкретных данных. Если оценки расходятся в разы, ориентироваться следует на симуляцию.</p>
 
 <h2>Как это выглядит на практике</h2>
@@ -60,11 +86,20 @@
 
 <h2>Why monetary metrics are tricky</h2>
 <p>Revenue per customer usually has a distribution that is awkward for statistics:</p>
-<ul>
-  <li><strong>Heavy tails.</strong> A few large customers bring in a disproportionate share. One such customer can noticeably shift the group mean, sharply increasing the variance of the metric.</li>
-  <li><strong>Many zeros.</strong> In real data a large fraction of users do not pay at all. In one of the datasets analyzed, only 13% were paying, the other 87% were zeros.</li>
-  <li><strong>Strong skew.</strong> The mean is several times larger than the median, and the distribution is far from symmetric.</li>
-</ul>
+<div class="accent-list">
+  <div class="accent-item danger">
+    <span class="term">Heavy tails</span>
+    <p class="desc">A few large customers bring in a disproportionate share. One such customer can noticeably shift the group mean, sharply increasing the variance of the metric.</p>
+  </div>
+  <div class="accent-item warning">
+    <span class="term">Many zeros</span>
+    <p class="desc">In real data a large fraction of users do not pay at all. In one of the datasets analyzed, only 13% were paying, the other 87% were zeros.</p>
+  </div>
+  <div class="accent-item info">
+    <span class="term">Strong skew</span>
+    <p class="desc">The mean is several times larger than the median, and the distribution is far from symmetric.</p>
+  </div>
+</div>
 
 <h2>Why the analytical formula can let you down</h2>
 <p>The analytical sample size calculation (for example via <code>TTestIndPower</code> from statsmodels) relies on the t-test, which in turn relies on the central limit theorem: it assumes the sample mean is approximately normally distributed. For metrics with a near-normal distribution this works well. But the heavier the tail, the larger the sample size needed for the mean to actually converge to normal.</p>
@@ -73,7 +108,7 @@
 
 <h2>Key terms</h2>
 <p>So we speak the same language:</p>
-<ul>
+<ul class="glossary">
   <li><strong>A/B test</strong>: a way to check whether a product change really improves the target metric.</li>
   <li><strong>alpha</strong>: the probability of saying "there is an effect" when there is none (usually 5%).</li>
   <li><strong>power</strong>: the probability of detecting a real effect when it actually exists (usually 80%).</li>
@@ -97,11 +132,28 @@
 <p>The limitation is that the method is only as good as the historical data is representative. If the data was collected in an atypical period (a sale, a seasonal spike), the simulation inherits that distortion, and the sample size estimate will be biased.</p>
 
 <h2>How to choose between them</h2>
-<ul>
-  <li><strong>Analytical</strong> works for metrics with a near-normal distribution: conversions, CTR, ratings. Here the formula is correct and saves time.</li>
-  <li><strong>Monte Carlo</strong> makes sense when you do not yet have real data but have a well-grounded idea of the distribution shape (from benchmarks, team estimates, historical aggregates). It lets you deliberately build in a heavy tail or a share of zeros and assess how they affect power.</li>
-  <li><strong>Bootstrap</strong> is the preferred option when you have historical data for the metric. It accounts for the real distribution shape with no extra assumptions and is therefore the most reliable for monetary metrics. The main downside is the effort of collecting a representative sample and the time spent running the computations.</li>
-</ul>
+<table class="cmp-table">
+  <thead>
+    <tr><th>Method</th><th>When to use</th><th>Reliability for money</th></tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Analytical</td>
+      <td>Near-normal distribution: conversions, CTR, ratings. The formula is correct and saves time.</td>
+      <td>Low: only a lower bound on a heavy tail.</td>
+    </tr>
+    <tr>
+      <td>Monte Carlo</td>
+      <td>No real data yet, but a well-grounded idea of the distribution shape (benchmarks, team estimates, historical aggregates).</td>
+      <td>Medium: depends on how good the distribution assumptions are.</td>
+    </tr>
+    <tr>
+      <td>Bootstrap</td>
+      <td>Historical data for the metric is available. Accounts for the real distribution shape with no extra assumptions.</td>
+      <td>High, if the sample is representative. Downside: effort to collect data and time to run the computations.</td>
+    </tr>
+  </tbody>
+</table>
 <p>The general principle: for monetary metrics, treat the analytical estimate as a starting point rather than the final answer. Comparing it with Monte Carlo or bootstrap shows how much you can trust the formula on your specific data. If the estimates differ by a factor, go with the simulation.</p>
 
 <h2>How it looks in practice</h2>
