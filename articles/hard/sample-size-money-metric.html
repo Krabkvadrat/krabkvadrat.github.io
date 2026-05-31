@@ -29,11 +29,11 @@
 </ul>
 
 <h2>Способ 1. Аналитический</h2>
-<p>Расчёт по формуле: оцениваем размер эффекта (например, через d Коэна) и получаем нужный размер выборки готовой функцией из statsmodels.</p>
-<p>Это быстрый и дешёвый способ, не требующий ни данных, ни вычислительных ресурсов. Его естественная область применения это метрики с распределением, близким к нормальному. На денежных метриках с тяжёлым хвостом результат стоит воспринимать как нижнюю оценку, которую нужно перепроверить.</p>
+<p>Оцениваем размер эффекта, используя готовые функции из <code>statsmodels</code> или формулу напрямую.</p>
+<p>Это быстрый и дешёвый способ, требующий минимум данных и вычислительных ресурсов. Его естественная область применения это метрики с распределением, близким к нормальному. На денежных метриках с тяжёлым хвостом результат стоит воспринимать как нижнюю оценку, которую нужно перепроверить.</p>
 
 <h2>Способ 2. Симуляция Монте-Карло</h2>
-<p>Если исторических данных под рукой нет, распределение метрики можно задать из предположений. Для денег это обычно логнормальное распределение, а при большом числе нулей смесь: сначала разыгрываем, платит клиент или нет, затем для платящих берём сумму из логнормального. Дальше генерируем синтетические группы, закладываем в одну из них ожидаемый эффект и многократно прогоняем тест. Доля прогонов, в которых тест поймал эффект, и есть эмпирическая оценка мощности.</p>
+<p>Если исторических данных под рукой нет, распределение метрики можно задать из предположений. Для денег это обычно логнормальное распределение (надо учитывать особенности каждого бизнеса отдельно), а при большом числе нулей смесь: сначала определяем, платит клиент или нет, затем для платящих берём сумму из логнормального распределения. Дальше генерируем синтетические группы, закладываем в одну из них ожидаемый эффект и многократно прогоняем тест. Доля прогонов, в которых тест поймал эффект, и есть эмпирическая оценка мощности.</p>
 <p>Главное достоинство подхода в том, что мы не полагаемся на аналитическую формулу, а напрямую проигрываем эксперимент на распределении нужной формы и видим фактическую мощность.</p>
 <p>Тем же методом Монте-Карло можно дизайнить тест и для бинарной метрики (конверсии), у которой своя специфика. Этот случай разобран в <a href="#ab-test-design">отдельной статье</a>.</p>
 
@@ -45,7 +45,7 @@
 <ul>
   <li><strong>Аналитика</strong> подходит для метрик с распределением, близким к нормальному: конверсии, CTR, рейтинги. Здесь формула корректна и экономит время.</li>
   <li><strong>Монте-Карло</strong> имеет смысл, когда реальных данных ещё нет, но есть обоснованное представление о форме распределения (из бенчмарков, оценок команды, исторических агрегатов). Подход позволяет осознанно заложить тяжёлый хвост или долю нулей и оценить, как они влияют на мощность.</li>
-  <li><strong>Bootstrap</strong> это предпочтительный вариант, когда есть исторические данные по метрике. Он учитывает реальную форму распределения без дополнительных предположений и потому наиболее надёжен для денежных метрик.</li>
+  <li><strong>Bootstrap</strong> это предпочтительный вариант, когда есть исторические данные по метрике. Он учитывает реальную форму распределения без дополнительных предположений и потому наиболее надёжен для денежных метрик. Основной минус метода это трудозатраты на сбор репрезентативной выборки и трата времени на прогон расчётов.</li>
 </ul>
 <p>Общий принцип: для денежных метрик аналитический расчёт стоит рассматривать как отправную точку, а не как финальный ответ. Сравнение с Монте-Карло или bootstrap показывает, насколько формуле можно доверять на конкретных данных. Если оценки расходятся в разы, ориентироваться следует на симуляцию.</p>
 
@@ -84,11 +84,11 @@
 </ul>
 
 <h2>Method 1. Analytical</h2>
-<p>A formula-based calculation: estimate the effect size (for example via Cohen's d) and get the required sample size from a ready-made statsmodels function.</p>
-<p>This is a fast and cheap method that needs neither data nor computing resources. Its natural use case is metrics with a near-normal distribution. On monetary metrics with a heavy tail, treat the result as a lower bound that needs to be double-checked.</p>
+<p>Estimate the effect size using ready-made functions from <code>statsmodels</code> or the formula directly.</p>
+<p>This is a fast and cheap method that needs minimal data and computing resources. Its natural use case is metrics with a near-normal distribution. On monetary metrics with a heavy tail, treat the result as a lower bound that needs to be double-checked.</p>
 
 <h2>Method 2. Monte Carlo simulation</h2>
-<p>If you have no historical data at hand, you can specify the metric distribution from assumptions. For money this is usually a lognormal distribution, and with many zeros a mixture: first draw whether a customer pays, then for payers take the amount from a lognormal. Next you generate synthetic groups, build the expected effect into one of them, and run the test many times. The share of runs in which the test caught the effect is the empirical power estimate.</p>
+<p>If you have no historical data at hand, you can specify the metric distribution from assumptions. For money this is usually a lognormal distribution (the specifics of each business should be accounted for separately), and with many zeros a mixture: first determine whether a customer pays, then for payers take the amount from a lognormal distribution. Next you generate synthetic groups, build the expected effect into one of them, and run the test many times. The share of runs in which the test caught the effect is the empirical power estimate.</p>
 <p>The main strength of this approach is that we do not rely on an analytical formula, but directly replay the experiment on a distribution of the right shape and see the actual power.</p>
 <p>The same Monte Carlo method can be used to design a test for a binary metric (conversion), which has its own specifics. That case is covered in a <a href="#ab-test-design">separate article</a>.</p>
 
@@ -100,7 +100,7 @@
 <ul>
   <li><strong>Analytical</strong> works for metrics with a near-normal distribution: conversions, CTR, ratings. Here the formula is correct and saves time.</li>
   <li><strong>Monte Carlo</strong> makes sense when you do not yet have real data but have a well-grounded idea of the distribution shape (from benchmarks, team estimates, historical aggregates). It lets you deliberately build in a heavy tail or a share of zeros and assess how they affect power.</li>
-  <li><strong>Bootstrap</strong> is the preferred option when you have historical data for the metric. It accounts for the real distribution shape with no extra assumptions and is therefore the most reliable for monetary metrics.</li>
+  <li><strong>Bootstrap</strong> is the preferred option when you have historical data for the metric. It accounts for the real distribution shape with no extra assumptions and is therefore the most reliable for monetary metrics. The main downside is the effort of collecting a representative sample and the time spent running the computations.</li>
 </ul>
 <p>The general principle: for monetary metrics, treat the analytical estimate as a starting point rather than the final answer. Comparing it with Monte Carlo or bootstrap shows how much you can trust the formula on your specific data. If the estimates differ by a factor, go with the simulation.</p>
 
