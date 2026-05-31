@@ -512,6 +512,7 @@ var sections = null;
 var sectionOpen = null;
 var navData = null;
 var articleCache = {};
+var suppressHashChange = false;
 
 function loadManifest() {
   return fetch('manifest.json', { cache: 'no-cache' }).then(function(r) {
@@ -635,8 +636,41 @@ function showArticle(section, id) {
   if (!sectionOpen[section]) sectionOpen[section] = true;
   renderNav();
   renderArticle();
+  var item = navData[section] && navData[section][id];
+  if (item && item.slug) {
+    var h = '#' + item.slug;
+    if (location.hash !== h) {
+      suppressHashChange = true;
+      location.hash = h;
+    }
+  }
   if (window.matchMedia('(max-width: 720px)').matches) closeDrawer();
 }
+
+function findArticleBySlug(slug) {
+  var secs = Object.keys(navData);
+  for (var i = 0; i < secs.length; i++) {
+    var items = navData[secs[i]];
+    for (var j = 0; j < items.length; j++) {
+      if (items[j].slug === slug) return { section: secs[i], idx: j };
+    }
+  }
+  return null;
+}
+
+function goToArticle(slug) {
+  var loc = findArticleBySlug(slug);
+  if (!loc) return false;
+  showArticle(loc.section, loc.idx);
+  return true;
+}
+window.goToArticle = goToArticle;
+
+window.addEventListener('hashchange', function() {
+  if (suppressHashChange) { suppressHashChange = false; return; }
+  var slug = decodeURIComponent((location.hash || '').replace(/^#/, ''));
+  if (slug) goToArticle(slug);
+});
 
 function openDrawer() {
   document.getElementById('sidebar').classList.add('open');
@@ -663,6 +697,13 @@ function setLang(lang) {
 }
 
 loadManifest().then(function() {
+  var slug = decodeURIComponent((location.hash || '').replace(/^#/, ''));
+  var loc = slug ? findArticleBySlug(slug) : null;
+  if (loc) {
+    currentSection = loc.section;
+    currentArticle = loc.idx;
+    if (!sectionOpen[loc.section]) sectionOpen[loc.section] = true;
+  }
   renderNav();
   renderArticle();
 }).catch(function(err) {

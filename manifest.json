@@ -248,6 +248,21 @@
       }
     },
     {
+      "section": "hard",
+      "slug": "sample-size-money-metric",
+      "icon": "💰",
+      "bg": "var(--bg-success)",
+      "color": "var(--text-success)",
+      "ru": {
+        "label": "Размер выборки: деньги",
+        "tag": "Статистика / A/B-тесты"
+      },
+      "en": {
+        "label": "Sample Size: Money",
+        "tag": "Statistics / A/B testing"
+      }
+    },
+    {
       "section": "about",
       "slug": "me",
       "icon": "👤",
