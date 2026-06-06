@@ -13,7 +13,6 @@
   <li><strong>Workflow (рабочий процесс)</strong> — сценарий целиком: цепочка нод от триггера до финального действия.</li>
   <li><strong>Нода (node)</strong> — один шаг: запрос к API, запись в базу, отправка сообщения, преобразование данных.</li>
   <li><strong>Триггер</strong> — нода, которая запускает workflow: по расписанию (cron), по вебхуку или по новому событию в сервисе.</li>
-  <li><strong>Credentials</strong> — отдельно хранимые ключи и доступы, которые ноды переиспользуют, не зашивая секреты в сам сценарий.</li>
 </ul>
 
 <h2>Чем полезно аналитику и компании</h2>
@@ -35,18 +34,6 @@
     <p class="desc">Есть ноды для агентов, RAG и вызова моделей. Можно размечать тексты обращений, генерировать саммари или классифицировать заявки, не поднимая под это отдельный сервис.</p>
   </div>
 </div>
-
-<h2>Что обязательно учесть</h2>
-<p>Чтобы автоматизация не превратилась в источник тихих ошибок, при сборке стоит сразу заложить:</p>
-<ul class="checklist">
-  <li><strong>Обработку ошибок.</strong> Настроить Error Trigger и уведомление о сбое, иначе упавший сценарий пройдёт незаметно. Нода Stop and Error осознанно останавливает поток, когда нет критичных данных.</li>
-  <li><strong>Хранение секретов.</strong> Ключи и токены только через Credentials, не в полях нод и не в коде.</li>
-  <li><strong>Повторные запуски.</strong> Триггер может сработать дважды, а нода упасть на сетевой ошибке. Нужны дедупликация и безопасный повтор, чтобы не задвоить данные.</li>
-  <li><strong>Лимиты API источников.</strong> Пагинация, троттлинг и квоты. Большие выгрузки лучше бить на батчи.</li>
-  <li><strong>Версионирование.</strong> Редактор не сохраняет изменения автоматически. Экспорт workflow в JSON стоит держать в git, чтобы откатываться.</li>
-  <li><strong>Мониторинг.</strong> Регулярно смотреть историю выполнений: время работы, частоту и причины падений.</li>
-  <li><strong>Приватность данных.</strong> Понимать, какие данные проходят через сервис, особенно в облачной версии.</li>
-</ul>
 
 <h2>Cloud или self-hosted</h2>
 <p>У n8n два варианта развёртывания, и выбор между ними влияет на стоимость, контроль над данными и объём администрирования.</p>
@@ -84,32 +71,30 @@
 </table>
 
 <h2>Пример реального использования</h2>
-<p>Типовая задача аналитика: утренняя сводка по выручке, которую раньше собирали руками. На n8n она превращается в один workflow.</p>
+<p>Типовая задача аналитика: регулярно обновлять отчётную Google-таблицу свежими данными из базы. На n8n это один workflow из пяти нод.</p>
 <div class="step">
   <div class="step-num">1</div>
-  <div><div class="step-title">Триггер по расписанию</div><div class="step-desc">Cron-нода запускает сценарий каждое утро в 8:00.</div></div>
+  <div><div class="step-title">Schedule Trigger</div><div class="step-desc">Триггер запускает сценарий по расписанию, например каждое утро.</div></div>
 </div>
 <div class="step">
   <div class="step-num">2</div>
-  <div><div class="step-title">Забор данных</div><div class="step-desc">Нода Postgres или HTTP Request достаёт вчерашнюю выручку и ключевые метрики из хранилища.</div></div>
+  <div><div class="step-title">Google Sheets (clear)</div><div class="step-desc">Очищает целевой лист от данных прошлого запуска.</div></div>
 </div>
 <div class="step">
   <div class="step-num">3</div>
-  <div><div class="step-title">Расчёт и проверка</div><div class="step-desc">Code-нода считает отклонение от плана и неделя-к-неделе, помечает аномалии.</div></div>
+  <div><div class="step-title">check db (Postgres)</div><div class="step-desc">Нода Postgres выполняет SQL-запрос и достаёт свежие цифры из базы.</div></div>
 </div>
 <div class="step">
   <div class="step-num">4</div>
-  <div><div class="step-title">Ветвление</div><div class="step-desc">IF-нода: если отклонение больше порога, уходит в ветку с отдельным алертом.</div></div>
+  <div><div class="step-title">update sheet (Google Sheets)</div><div class="step-desc">Записывает результат запроса обратно в лист, дописывая или обновляя строки.</div></div>
 </div>
 <div class="step">
   <div class="step-num">5</div>
-  <div><div class="step-title">Доставка</div><div class="step-desc">Нода Google Sheets дописывает строку в историю, нода Slack или Telegram отправляет сводку в канал команды.</div></div>
+  <div><div class="step-title">Send a message (Slack)</div><div class="step-desc">Отправляет в Slack сообщение, что отчёт обновлён.</div></div>
 </div>
-<div class="step">
-  <div class="step-num">6</div>
-  <div><div class="step-title">Страховка</div><div class="step-desc">Error Trigger ловит сбой и пишет ответственному, чтобы отчёт не пропал молча.</div></div>
-</div>
-<p>В итоге аналитик перестаёт вручную собирать сводку каждое утро, а команда получает её стабильно и с подсветкой аномалий.</p>
+<p>В итоге таблица обновляется сама по расписанию, а команда получает уведомление в Slack. Перезаливать данные руками больше не нужно.</p>
+<img class="article-img" src="articles/hard/n8n-workflow.png" alt="Сценарий в n8n: Schedule Trigger, очистка Google Sheets, запрос в Postgres, обновление листа, сообщение в Slack">
+<p class="img-caption">Тот же сценарий на полотне n8n.</p>
 <div class="tip-box">
   <p>Другие частые сценарии: сбор лидов с сайта в CRM и таблицу, синхронизация задач между трекерами, авторазметка обращений через LLM, регулярные проверки качества данных в хранилище.</p>
 </div>
@@ -133,7 +118,6 @@
   <li><strong>Workflow</strong>: the whole scenario, a chain of nodes from the trigger to the final action.</li>
   <li><strong>Node</strong>: a single step, such as an API call, a database write, sending a message, or transforming data.</li>
   <li><strong>Trigger</strong>: the node that starts the workflow, on a schedule (cron), a webhook, or a new event in a service.</li>
-  <li><strong>Credentials</strong>: keys and access stored separately, reused by nodes so secrets are not baked into the scenario.</li>
 </ul>
 
 <h2>Why it helps analysts and the company</h2>
@@ -155,18 +139,6 @@
     <p class="desc">There are nodes for agents, RAG, and model calls. You can tag support tickets, generate summaries, or classify requests without spinning up a dedicated service.</p>
   </div>
 </div>
-
-<h2>What you must account for</h2>
-<p>To keep the automation from becoming a source of silent errors, build in from the start:</p>
-<ul class="checklist">
-  <li><strong>Error handling.</strong> Set up an Error Trigger and a failure notification, or a broken scenario will go unnoticed. The Stop and Error node deliberately halts the flow when critical data is missing.</li>
-  <li><strong>Secret storage.</strong> Keys and tokens only through Credentials, never in node fields or code.</li>
-  <li><strong>Re-runs.</strong> A trigger can fire twice and a node can fail on a network error. You need deduplication and safe retries so data is not doubled.</li>
-  <li><strong>Source API limits.</strong> Pagination, throttling, and quotas. Large exports are better split into batches.</li>
-  <li><strong>Versioning.</strong> The editor does not save changes automatically. Keep the workflow JSON export in git so you can roll back.</li>
-  <li><strong>Monitoring.</strong> Regularly check the execution history: run time, how often it fails, and why.</li>
-  <li><strong>Data privacy.</strong> Know what data passes through the service, especially in the cloud version.</li>
-</ul>
 
 <h2>Cloud or self-hosted</h2>
 <p>n8n comes in two deployment options, and the choice affects cost, control over data, and how much administration you take on.</p>
@@ -204,32 +176,30 @@
 </table>
 
 <h2>A real-world example</h2>
-<p>A typical analyst task: the morning revenue summary that used to be assembled by hand. On n8n it becomes a single workflow.</p>
+<p>A typical analyst task: regularly refresh a reporting Google Sheet with fresh data from the database. On n8n this is a single workflow of five nodes.</p>
 <div class="step">
   <div class="step-num">1</div>
-  <div><div class="step-title">Schedule trigger</div><div class="step-desc">A cron node starts the scenario every morning at 8:00.</div></div>
+  <div><div class="step-title">Schedule Trigger</div><div class="step-desc">The trigger runs the scenario on a schedule, for example every morning.</div></div>
 </div>
 <div class="step">
   <div class="step-num">2</div>
-  <div><div class="step-title">Fetch the data</div><div class="step-desc">A Postgres or HTTP Request node pulls yesterday's revenue and key metrics from the warehouse.</div></div>
+  <div><div class="step-title">Google Sheets (clear)</div><div class="step-desc">Clears the target sheet of data from the previous run.</div></div>
 </div>
 <div class="step">
   <div class="step-num">3</div>
-  <div><div class="step-title">Compute and check</div><div class="step-desc">A Code node calculates the deviation from plan and week-over-week, and flags anomalies.</div></div>
+  <div><div class="step-title">check db (Postgres)</div><div class="step-desc">A Postgres node runs a SQL query and pulls fresh figures from the database.</div></div>
 </div>
 <div class="step">
   <div class="step-num">4</div>
-  <div><div class="step-title">Branching</div><div class="step-desc">An IF node: if the deviation exceeds the threshold, it goes down a branch with a separate alert.</div></div>
+  <div><div class="step-title">update sheet (Google Sheets)</div><div class="step-desc">Writes the query result back into the sheet, appending or updating rows.</div></div>
 </div>
 <div class="step">
   <div class="step-num">5</div>
-  <div><div class="step-title">Delivery</div><div class="step-desc">A Google Sheets node appends a row to the history, and a Slack or Telegram node sends the summary to the team channel.</div></div>
+  <div><div class="step-title">Send a message (Slack)</div><div class="step-desc">Posts a Slack message that the report has been updated.</div></div>
 </div>
-<div class="step">
-  <div class="step-num">6</div>
-  <div><div class="step-title">Safety net</div><div class="step-desc">An Error Trigger catches a failure and messages the owner, so the report never disappears silently.</div></div>
-</div>
-<p>As a result, the analyst stops assembling the summary by hand every morning, and the team gets it reliably, with anomalies highlighted.</p>
+<p>As a result, the sheet refreshes itself on schedule and the team gets a Slack notification. No more reloading the data by hand.</p>
+<img class="article-img" src="articles/hard/n8n-workflow.png" alt="An n8n workflow: Schedule Trigger, clear Google Sheets, query Postgres, update the sheet, send a Slack message">
+<p class="img-caption">The same workflow on the n8n canvas.</p>
 <div class="tip-box">
   <p>Other common scenarios: capturing website leads into a CRM and a spreadsheet, syncing tasks between trackers, auto-tagging support tickets with an LLM, and regular data-quality checks in the warehouse.</p>
 </div>

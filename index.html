@@ -397,6 +397,20 @@
     margin: 14px 0;
   }
 
+  .article-img {
+    display: block;
+    width: 100%;
+    height: auto;
+    margin: 14px 0 6px;
+    border: 0.5px solid var(--border);
+    border-radius: var(--radius);
+  }
+  .img-caption {
+    font-size: 12px;
+    color: var(--text-tertiary);
+    margin: 0 0 16px;
+  }
+
   .video-embed {
     position: relative;
     width: 100%;
@@ -629,9 +643,6 @@ function renderNav() {
     var wrap = document.createElement('div');
     wrap.className = 'nav-section-items';
     wrap.id = 'section-' + sec;
-    var totalH = items.length * 52;
-    wrap.style.maxHeight = open ? totalH + 'px' : '0px';
-
     items.forEach(function(item, i) {
       var d = item[currentLang];
       var div = document.createElement('div');
@@ -643,6 +654,7 @@ function renderNav() {
       wrap.appendChild(div);
     });
     el.appendChild(wrap);
+    wrap.style.maxHeight = open ? wrap.scrollHeight + 'px' : '0px';
   });
 }
 
@@ -650,9 +662,8 @@ function toggleSection(sec) {
   sectionOpen[sec] = !sectionOpen[sec];
   var wrap = document.getElementById('section-' + sec);
   var arrow = document.getElementById('arrow-' + sec);
-  var items = navData[sec];
   if (sectionOpen[sec]) {
-    wrap.style.maxHeight = (items.length * 52) + 'px';
+    wrap.style.maxHeight = wrap.scrollHeight + 'px';
     arrow.classList.add('open');
   } else {
     wrap.style.maxHeight = '0px';
