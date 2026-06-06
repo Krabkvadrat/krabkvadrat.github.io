@@ -13,7 +13,6 @@
   <li><strong>Workflow (рабочий процесс)</strong> — сценарий целиком: цепочка нод от триггера до финального действия.</li>
   <li><strong>Нода (node)</strong> — один шаг: запрос к API, запись в базу, отправка сообщения, преобразование данных.</li>
   <li><strong>Триггер</strong> — нода, которая запускает workflow: по расписанию (cron), по вебхуку или по новому событию в сервисе.</li>
-  <li><strong>Нода действия</strong> — выполняет операцию во внешнем сервисе: Slack, Google Sheets, Postgres и так далее.</li>
   <li><strong>Credentials</strong> — отдельно хранимые ключи и доступы, которые ноды переиспользуют, не зашивая секреты в сам сценарий.</li>
 </ul>
 
@@ -134,7 +133,6 @@
   <li><strong>Workflow</strong>: the whole scenario, a chain of nodes from the trigger to the final action.</li>
   <li><strong>Node</strong>: a single step, such as an API call, a database write, sending a message, or transforming data.</li>
   <li><strong>Trigger</strong>: the node that starts the workflow, on a schedule (cron), a webhook, or a new event in a service.</li>
-  <li><strong>Action node</strong>: performs an operation in an external service: Slack, Google Sheets, Postgres, and so on.</li>
   <li><strong>Credentials</strong>: keys and access stored separately, reused by nodes so secrets are not baked into the scenario.</li>
 </ul>
 
