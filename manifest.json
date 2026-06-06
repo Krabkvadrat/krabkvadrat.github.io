@@ -263,6 +263,21 @@
       }
     },
     {
+      "section": "hard",
+      "slug": "n8n",
+      "icon": "🔗",
+      "bg": "var(--bg-info)",
+      "color": "var(--text-info)",
+      "ru": {
+        "label": "n8n",
+        "tag": "Автоматизация / Low-code"
+      },
+      "en": {
+        "label": "n8n",
+        "tag": "Automation / Low-code"
+      }
+    },
+    {
       "section": "about",
       "slug": "me",
       "icon": "👤",

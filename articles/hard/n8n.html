@@ -1,0 +1,241 @@
+<section data-lang="ru">
+<div class="article-tag">Автоматизация / Low-code</div>
+<h1>n8n: автоматизация процессов и данных для аналитика</h1>
+<p class="lead">n8n это low-code платформа для автоматизации рабочих процессов. Она соединяет приложения, базы данных и API в единый сценарий, который запускается по событию или расписанию. Для аналитика это способ собрать рутинные операции (выгрузки, проверки данных, уведомления, простые ETL) в один воспроизводимый конвейер, не разворачивая отдельный сервис.</p>
+
+<h2>Что такое n8n</h2>
+<p>n8n (произносится как «ЭН-ЭЙТ-ЭН») построена на Node.js. Логика собирается визуально из блоков-нод, соединённых стрелками: данные идут по цепочке в формате JSON, и каждая нода что-то с ними делает. В отличие от классических ETL-инструментов, n8n заточена под интеграции между сервисами по API и под событийную модель «триггер, затем действия».</p>
+<p>При этом визуальный редактор не загоняет в рамки: в любом месте сценария можно вставить JavaScript или Python через Code-ноду, а на self-hosted подключить и внешние npm-пакеты. Получается компромисс между no-code и полноценным кодом, где простое делается мышкой, а сложное дописывается руками.</p>
+
+<h2>Ключевые понятия</h2>
+<p>Чтобы дальше говорить на одном языке:</p>
+<ul class="glossary">
+  <li><strong>Workflow (рабочий процесс)</strong> — сценарий целиком: цепочка нод от триггера до финального действия.</li>
+  <li><strong>Нода (node)</strong> — один шаг: запрос к API, запись в базу, отправка сообщения, преобразование данных.</li>
+  <li><strong>Триггер</strong> — нода, которая запускает workflow: по расписанию (cron), по вебхуку или по новому событию в сервисе.</li>
+  <li><strong>Нода действия</strong> — выполняет операцию во внешнем сервисе: Slack, Google Sheets, Postgres и так далее.</li>
+  <li><strong>Credentials</strong> — отдельно хранимые ключи и доступы, которые ноды переиспользуют, не зашивая секреты в сам сценарий.</li>
+</ul>
+
+<h2>Чем полезно аналитику и компании</h2>
+<div class="accent-list">
+  <div class="accent-item info">
+    <span class="term">Рутина без скриптов на сервере</span>
+    <p class="desc">Регулярные выгрузки, обновление витрин, рассылка отчётов собираются за вечер и дальше работают по расписанию, не требуя отдельного сервиса и деплоя.</p>
+  </div>
+  <div class="accent-item success">
+    <span class="term">Связка разрозненных систем</span>
+    <p class="desc">CRM, рекламные кабинеты, базы, мессенджеры и таблицы соединяются в один поток данных. Более 1100 готовых интеграций закрывают большинство типовых источников.</p>
+  </div>
+  <div class="accent-item warning">
+    <span class="term">Прозрачность для всей команды</span>
+    <p class="desc">Логика видна на схеме, её может прочитать и поправить не только автор. Это снижает риск ситуации «ушёл человек, сломалась выгрузка».</p>
+  </div>
+  <div class="accent-item info">
+    <span class="term">AI и LLM прямо в пайплайне</span>
+    <p class="desc">Есть ноды для агентов, RAG и вызова моделей. Можно размечать тексты обращений, генерировать саммари или классифицировать заявки, не поднимая под это отдельный сервис.</p>
+  </div>
+</div>
+
+<h2>Что обязательно учесть</h2>
+<p>Чтобы автоматизация не превратилась в источник тихих ошибок, при сборке стоит сразу заложить:</p>
+<ul class="checklist">
+  <li><strong>Обработку ошибок.</strong> Настроить Error Trigger и уведомление о сбое, иначе упавший сценарий пройдёт незаметно. Нода Stop and Error осознанно останавливает поток, когда нет критичных данных.</li>
+  <li><strong>Хранение секретов.</strong> Ключи и токены только через Credentials, не в полях нод и не в коде.</li>
+  <li><strong>Повторные запуски.</strong> Триггер может сработать дважды, а нода упасть на сетевой ошибке. Нужны дедупликация и безопасный повтор, чтобы не задвоить данные.</li>
+  <li><strong>Лимиты API источников.</strong> Пагинация, троттлинг и квоты. Большие выгрузки лучше бить на батчи.</li>
+  <li><strong>Версионирование.</strong> Редактор не сохраняет изменения автоматически. Экспорт workflow в JSON стоит держать в git, чтобы откатываться.</li>
+  <li><strong>Мониторинг.</strong> Регулярно смотреть историю выполнений: время работы, частоту и причины падений.</li>
+  <li><strong>Приватность данных.</strong> Понимать, какие данные проходят через сервис, особенно в облачной версии.</li>
+</ul>
+
+<h2>Cloud или self-hosted</h2>
+<p>У n8n два варианта развёртывания, и выбор между ними влияет на стоимость, контроль над данными и объём администрирования.</p>
+<table class="cmp-table">
+  <thead>
+    <tr><th>Параметр</th><th>Cloud</th><th>Self-hosted</th></tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Стоимость</td>
+      <td>Платная подписка.</td>
+      <td>Бесплатно, нужен только свой сервер.</td>
+    </tr>
+    <tr>
+      <td>Развёртывание и обновления</td>
+      <td>Автоматически, администрировать ничего не нужно.</td>
+      <td>На вас: Docker или Kubernetes, обновления и бэкапы.</td>
+    </tr>
+    <tr>
+      <td>Контроль над данными</td>
+      <td>Данные проходят через инфраструктуру n8n.</td>
+      <td>Данные не покидают ваш контур, удобно для чувствительной информации.</td>
+    </tr>
+    <tr>
+      <td>AI-ассистент в редакторе</td>
+      <td>Доступен.</td>
+      <td>Недоступен.</td>
+    </tr>
+    <tr>
+      <td>Когда выбирать</td>
+      <td>Нужен быстрый старт без своего devops.</td>
+      <td>Есть требования к приватности, нужен полный контроль и кастомные ноды.</td>
+    </tr>
+  </tbody>
+</table>
+
+<h2>Пример реального использования</h2>
+<p>Типовая задача аналитика: утренняя сводка по выручке, которую раньше собирали руками. На n8n она превращается в один workflow.</p>
+<div class="step">
+  <div class="step-num">1</div>
+  <div><div class="step-title">Триггер по расписанию</div><div class="step-desc">Cron-нода запускает сценарий каждое утро в 8:00.</div></div>
+</div>
+<div class="step">
+  <div class="step-num">2</div>
+  <div><div class="step-title">Забор данных</div><div class="step-desc">Нода Postgres или HTTP Request достаёт вчерашнюю выручку и ключевые метрики из хранилища.</div></div>
+</div>
+<div class="step">
+  <div class="step-num">3</div>
+  <div><div class="step-title">Расчёт и проверка</div><div class="step-desc">Code-нода считает отклонение от плана и неделя-к-неделе, помечает аномалии.</div></div>
+</div>
+<div class="step">
+  <div class="step-num">4</div>
+  <div><div class="step-title">Ветвление</div><div class="step-desc">IF-нода: если отклонение больше порога, уходит в ветку с отдельным алертом.</div></div>
+</div>
+<div class="step">
+  <div class="step-num">5</div>
+  <div><div class="step-title">Доставка</div><div class="step-desc">Нода Google Sheets дописывает строку в историю, нода Slack или Telegram отправляет сводку в канал команды.</div></div>
+</div>
+<div class="step">
+  <div class="step-num">6</div>
+  <div><div class="step-title">Страховка</div><div class="step-desc">Error Trigger ловит сбой и пишет ответственному, чтобы отчёт не пропал молча.</div></div>
+</div>
+<p>В итоге аналитик перестаёт вручную собирать сводку каждое утро, а команда получает её стабильно и с подсветкой аномалий.</p>
+<div class="tip-box">
+  <p>Другие частые сценарии: сбор лидов с сайта в CRM и таблицу, синхронизация задач между трекерами, авторазметка обращений через LLM, регулярные проверки качества данных в хранилище.</p>
+</div>
+
+<h2>С чего начать</h2>
+<p>Официальный сайт с документацией: <a href="https://n8n.io/" target="_blank" rel="noopener">n8n.io</a>. Подробный разбор интерфейса, ключевых фич, плюсов и минусов с наглядными примерами есть в обзоре на <a href="https://habr.com/ru/companies/datafeel/articles/958060/" target="_blank" rel="noopener">Habr</a>.</p>
+</section>
+
+<section data-lang="en">
+<div class="article-tag">Automation / Low-code</div>
+<h1>n8n: Automating Processes and Data for Analysts</h1>
+<p class="lead">n8n is a low-code workflow automation platform. It connects apps, databases, and APIs into a single scenario that runs on an event or a schedule. For an analyst it is a way to fold routine operations (exports, data checks, notifications, lightweight ETL) into one reproducible pipeline without standing up a separate service.</p>
+
+<h2>What n8n is</h2>
+<p>n8n is built on Node.js. The logic is assembled visually from node blocks connected by arrows: data flows down the chain as JSON, and each node does something with it. Unlike classic ETL tools, n8n is built around API integrations between services and the event-driven "trigger, then actions" model.</p>
+<p>The visual editor does not box you in, though: anywhere in a scenario you can drop in JavaScript or Python via a Code node, and on self-hosted you can pull in external npm packages too. The result is a compromise between no-code and full code, where the simple parts are done with the mouse and the hard parts are written by hand.</p>
+
+<h2>Key terms</h2>
+<p>So we speak the same language:</p>
+<ul class="glossary">
+  <li><strong>Workflow</strong>: the whole scenario, a chain of nodes from the trigger to the final action.</li>
+  <li><strong>Node</strong>: a single step, such as an API call, a database write, sending a message, or transforming data.</li>
+  <li><strong>Trigger</strong>: the node that starts the workflow, on a schedule (cron), a webhook, or a new event in a service.</li>
+  <li><strong>Action node</strong>: performs an operation in an external service: Slack, Google Sheets, Postgres, and so on.</li>
+  <li><strong>Credentials</strong>: keys and access stored separately, reused by nodes so secrets are not baked into the scenario.</li>
+</ul>
+
+<h2>Why it helps analysts and the company</h2>
+<div class="accent-list">
+  <div class="accent-item info">
+    <span class="term">Routine without server scripts</span>
+    <p class="desc">Recurring exports, dashboard refreshes, and report delivery come together in an evening and then run on a schedule, with no separate service or deploy to maintain.</p>
+  </div>
+  <div class="accent-item success">
+    <span class="term">Gluing disparate systems together</span>
+    <p class="desc">CRM, ad accounts, databases, messengers, and spreadsheets join into one data flow. More than 1100 ready-made integrations cover most common sources.</p>
+  </div>
+  <div class="accent-item warning">
+    <span class="term">Transparency for the whole team</span>
+    <p class="desc">The logic is visible on the canvas, so it can be read and fixed by more than just its author. That lowers the "someone left, the export broke" risk.</p>
+  </div>
+  <div class="accent-item info">
+    <span class="term">AI and LLMs right in the pipeline</span>
+    <p class="desc">There are nodes for agents, RAG, and model calls. You can tag support tickets, generate summaries, or classify requests without spinning up a dedicated service.</p>
+  </div>
+</div>
+
+<h2>What you must account for</h2>
+<p>To keep the automation from becoming a source of silent errors, build in from the start:</p>
+<ul class="checklist">
+  <li><strong>Error handling.</strong> Set up an Error Trigger and a failure notification, or a broken scenario will go unnoticed. The Stop and Error node deliberately halts the flow when critical data is missing.</li>
+  <li><strong>Secret storage.</strong> Keys and tokens only through Credentials, never in node fields or code.</li>
+  <li><strong>Re-runs.</strong> A trigger can fire twice and a node can fail on a network error. You need deduplication and safe retries so data is not doubled.</li>
+  <li><strong>Source API limits.</strong> Pagination, throttling, and quotas. Large exports are better split into batches.</li>
+  <li><strong>Versioning.</strong> The editor does not save changes automatically. Keep the workflow JSON export in git so you can roll back.</li>
+  <li><strong>Monitoring.</strong> Regularly check the execution history: run time, how often it fails, and why.</li>
+  <li><strong>Data privacy.</strong> Know what data passes through the service, especially in the cloud version.</li>
+</ul>
+
+<h2>Cloud or self-hosted</h2>
+<p>n8n comes in two deployment options, and the choice affects cost, control over data, and how much administration you take on.</p>
+<table class="cmp-table">
+  <thead>
+    <tr><th>Aspect</th><th>Cloud</th><th>Self-hosted</th></tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Cost</td>
+      <td>Paid subscription.</td>
+      <td>Free, you just need your own server.</td>
+    </tr>
+    <tr>
+      <td>Deployment and updates</td>
+      <td>Automatic, nothing to administer.</td>
+      <td>On you: Docker or Kubernetes, updates, and backups.</td>
+    </tr>
+    <tr>
+      <td>Control over data</td>
+      <td>Data passes through n8n infrastructure.</td>
+      <td>Data never leaves your perimeter, convenient for sensitive information.</td>
+    </tr>
+    <tr>
+      <td>AI assistant in the editor</td>
+      <td>Available.</td>
+      <td>Not available.</td>
+    </tr>
+    <tr>
+      <td>When to choose</td>
+      <td>You want a fast start without your own devops.</td>
+      <td>You have privacy requirements and need full control and custom nodes.</td>
+    </tr>
+  </tbody>
+</table>
+
+<h2>A real-world example</h2>
+<p>A typical analyst task: the morning revenue summary that used to be assembled by hand. On n8n it becomes a single workflow.</p>
+<div class="step">
+  <div class="step-num">1</div>
+  <div><div class="step-title">Schedule trigger</div><div class="step-desc">A cron node starts the scenario every morning at 8:00.</div></div>
+</div>
+<div class="step">
+  <div class="step-num">2</div>
+  <div><div class="step-title">Fetch the data</div><div class="step-desc">A Postgres or HTTP Request node pulls yesterday's revenue and key metrics from the warehouse.</div></div>
+</div>
+<div class="step">
+  <div class="step-num">3</div>
+  <div><div class="step-title">Compute and check</div><div class="step-desc">A Code node calculates the deviation from plan and week-over-week, and flags anomalies.</div></div>
+</div>
+<div class="step">
+  <div class="step-num">4</div>
+  <div><div class="step-title">Branching</div><div class="step-desc">An IF node: if the deviation exceeds the threshold, it goes down a branch with a separate alert.</div></div>
+</div>
+<div class="step">
+  <div class="step-num">5</div>
+  <div><div class="step-title">Delivery</div><div class="step-desc">A Google Sheets node appends a row to the history, and a Slack or Telegram node sends the summary to the team channel.</div></div>
+</div>
+<div class="step">
+  <div class="step-num">6</div>
+  <div><div class="step-title">Safety net</div><div class="step-desc">An Error Trigger catches a failure and messages the owner, so the report never disappears silently.</div></div>
+</div>
+<p>As a result, the analyst stops assembling the summary by hand every morning, and the team gets it reliably, with anomalies highlighted.</p>
+<div class="tip-box">
+  <p>Other common scenarios: capturing website leads into a CRM and a spreadsheet, syncing tasks between trackers, auto-tagging support tickets with an LLM, and regular data-quality checks in the warehouse.</p>
+</div>
+
+<h2>Where to start</h2>
+<p>The official site with documentation: <a href="https://n8n.io/" target="_blank" rel="noopener">n8n.io</a>. A detailed walkthrough of the interface, key features, and pros and cons with clear examples is in the review on <a href="https://habr.com/ru/companies/datafeel/articles/958060/" target="_blank" rel="noopener">Habr</a> (in Russian).</p>
+</section>
