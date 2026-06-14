@@ -1,0 +1,145 @@
+<section data-lang="ru">
+<div class="article-tag">Статистика</div>
+<h1>Парадокс Симпсона</h1>
+<p class="lead">Мы выкатили новую версию страницы оплаты и сравниваем конверсию до и после. На десктопе она выросла с 8% до 10%, на мобильных с 2% до 3%. А общая конверсия упала: с 6.0% до 5.3%. Каждый сегмент стал лучше, а в сумме хуже. Это не ошибка в выгрузке, а парадокс Симпсона.</p>
+
+<h2>Смотрим на таблицу</h2>
+<p>Соберём те же цифры в одну таблицу:</p>
+<table class="cmp-table">
+  <thead>
+    <tr><th>Сегмент</th><th>До</th><th>После</th></tr>
+  </thead>
+  <tbody>
+    <tr><td>Десктоп</td><td>80 / 1000 = 8.0%</td><td>50 / 500 = 10.0%</td></tr>
+    <tr><td>Мобильные</td><td>10 / 500 = 2.0%</td><td>30 / 1000 = 3.0%</td></tr>
+    <tr><td>Всего</td><td>90 / 1500 = 6.0%</td><td>80 / 1500 = 5.3%</td></tr>
+  </tbody>
+</table>
+<p>В каждой строке по устройству после изменения стало лучше. А в строке «Всего» наоборот: 6.0% превратились в 5.3%. Оба наблюдения верны одновременно, и в этом вся ловушка.</p>
+
+<h2>Что такое парадокс Симпсона</h2>
+<p>Парадокс Симпсона возникает, когда зависимость одинаково выглядит во всех подгруппах, но переворачивается, стоит эти подгруппы объединить. Никакого чуда нет, арифметика честная, путается только интуиция. Почти всегда виноват скрытый третий фактор, который по-разному распределён между группами. Пока вы его не заметили, общее число показывает не качество вариантов, а перекос в составе данных.</p>
+
+<h2>Ключевые понятия</h2>
+<ul class="glossary">
+  <li><strong>Конфаундер (смешивающая переменная)</strong>: третий фактор, который связан и с тем, как поделили группы, и с результатом. Из-за него картина и переворачивается.</li>
+  <li><strong>Агрегат</strong>: общее число по всем данным сразу, без деления на сегменты.</li>
+  <li><strong>Стратификация</strong>: деление данных на однородные группы перед тем, как их сравнивать.</li>
+</ul>
+
+<h2>Почему так получилось</h2>
+<p>Между «до» и «после» поменялся состав трафика. В период «до» две трети визитов были с десктопа, где конверсия и так высокая. В период «после» две трети пришли с мобильных, где конверсия всегда ниже. Например, параллельно запустили мобильную рекламу, или доля мобильных просто растёт сама по себе.</p>
+<p>Этот сдвиг и есть конфаундер: устройство влияет и на то, в какой период попало больше визитов, и на саму конверсию. Общий процент (он же агрегат) считается как взвешенное среднее по сегментам, и в периоде «после» вес сместился к слабому мобильному сегменту. Поэтому итог просел, хотя новая версия улучшила обе группы.</p>
+
+<h2>Как это поймать в данных</h2>
+<p>Правило простое: не верьте одному общему числу, всегда смотрите разбивку по очевидным сегментам. На pandas разворот видно в несколько строк:</p>
+<pre><code>import pandas as pd
+
+df = pd.DataFrame({
+    "version": ["before", "before", "after", "after"],
+    "device":  ["desktop", "mobile", "desktop", "mobile"],
+    "users":   [1000, 500, 500, 1000],
+    "conv":    [80, 10, 50, 30],
+})
+
+# Общий итог: после изменения стало хуже
+agg = df.groupby("version")[["conv", "users"]].sum()
+agg["rate"] = agg["conv"] / agg["users"]
+print(agg["rate"])    # after 0.053, before 0.060
+
+# По сегментам: в каждом стало лучше
+df["rate"] = df["conv"] / df["users"]
+print(df.pivot(index="device", columns="version", values="rate"))
+# version        after  before
+# device
+# desktop         0.10    0.08
+# mobile          0.03    0.02</code></pre>
+<ul class="checklist">
+  <li>Сравниваете «до» и «после»? Проверьте, не поменялся ли за это время состав аудитории</li>
+  <li>Доли сегментов сдвинулись или сегменты сильно разного размера? Это повод к стратификации: считайте метрику внутри каждого сегмента</li>
+  <li>В A/B-тестах следите за рандомизацией: перекос в распределении сегментов даёт ровно такой же эффект</li>
+</ul>
+
+<h2>Какому числу верить</h2>
+<p>Часто думают, что разбивка всегда «правильнее» общего числа. Это не так. Что важнее, зависит от того, как устроены причины, а не от того, насколько подробно вы смотрите.</p>
+<p>Если дело в конфаундере, который можно учесть (например, пересчитать конверсию на одинаковом составе устройств), верьте сегментам: новая версия и правда стала лучше. А если доля мобильных выросла насовсем и вам важен фактический итог по всем пользователям, общий процент тоже о чём-то говорит. Сначала поймите, на какой вопрос вы отвечаете.</p>
+<div class="tip-box">
+  <p>Хрестоматийный пример нашли в Беркли в 1973 году: по всему университету женщин принимали реже мужчин, но почти на каждом факультете наравне или даже чаще. Просто женщины чаще подавали на сложные факультеты, куда мало кого брали. Такой же разворот находили в данных про лечение камней в почках.</p>
+</div>
+
+<h2>Главный вывод</h2>
+<p>Для аналитика парадокс Симпсона не абстрактная задачка из учебника, а вполне рабочий риск. После любого изменения метрика по сегментам и метрика в целом могут разойтись, если параллельно сдвинулся состав аудитории. Прежде чем радоваться росту или горевать о падении, разбейте данные по сегментам и проверьте, не поменялся ли их вес.</p>
+</section>
+
+<section data-lang="en">
+<div class="article-tag">Statistics</div>
+<h1>Simpson's Paradox</h1>
+<p class="lead">We shipped a new version of the checkout page and compare conversion before and after. On desktop it rose from 8% to 10%, on mobile from 2% to 3%. Yet overall conversion fell: from 6.0% to 5.3%. Every segment got better, but the total got worse. This is not a glitch in the data, it is Simpson's paradox.</p>
+
+<h2>Look at the table</h2>
+<p>Here are the same numbers in one table:</p>
+<table class="cmp-table">
+  <thead>
+    <tr><th>Segment</th><th>Before</th><th>After</th></tr>
+  </thead>
+  <tbody>
+    <tr><td>Desktop</td><td>80 / 1000 = 8.0%</td><td>50 / 500 = 10.0%</td></tr>
+    <tr><td>Mobile</td><td>10 / 500 = 2.0%</td><td>30 / 1000 = 3.0%</td></tr>
+    <tr><td>Total</td><td>90 / 1500 = 6.0%</td><td>80 / 1500 = 5.3%</td></tr>
+  </tbody>
+</table>
+<p>In every device row the metric improves after the change. In the "Total" row it does the opposite: 6.0% turns into 5.3%. Both readings are true at once, and that is the whole trap.</p>
+
+<h2>What Simpson's paradox is</h2>
+<p>Simpson's paradox happens when a relationship looks the same in every subgroup but flips once you merge those subgroups. There is no magic, the arithmetic is honest; only intuition gets confused. The culprit is almost always a hidden third factor spread unevenly across the groups. Until you spot it, the overall number reflects the skew in the data mix, not the quality of the variants.</p>
+
+<h2>Key terms</h2>
+<ul class="glossary">
+  <li><strong>Confounder (lurking variable)</strong>: a third factor linked both to how the groups are split and to the result. It is what flips the picture.</li>
+  <li><strong>Aggregate</strong>: a single number over all the data at once, with no split into segments.</li>
+  <li><strong>Stratification</strong>: splitting the data into uniform groups before you compare them.</li>
+</ul>
+
+<h2>Why it happened</h2>
+<p>Between "before" and "after" the traffic mix changed. In the "before" period two thirds of the visits were desktop, where conversion is already high. In the "after" period two thirds came from mobile, where conversion is always lower. Maybe a mobile ad campaign launched at the same time, or the mobile share is simply growing on its own.</p>
+<p>That shift is the confounder: the device affects both which period got more visits and the conversion rate itself. The overall percentage (the aggregate) is a weighted average across segments, and in the "after" period the weight moved to the weak mobile segment. So the total dropped even though the new version improved both groups.</p>
+
+<h2>How to catch it in data</h2>
+<p>The rule is simple: never trust a single overall number, always look at the breakdown by obvious segments. In pandas the reversal shows up in a few lines:</p>
+<pre><code>import pandas as pd
+
+df = pd.DataFrame({
+    "version": ["before", "before", "after", "after"],
+    "device":  ["desktop", "mobile", "desktop", "mobile"],
+    "users":   [1000, 500, 500, 1000],
+    "conv":    [80, 10, 50, 30],
+})
+
+# Overall: the change made things worse
+agg = df.groupby("version")[["conv", "users"]].sum()
+agg["rate"] = agg["conv"] / agg["users"]
+print(agg["rate"])    # after 0.053, before 0.060
+
+# By segment: each one got better
+df["rate"] = df["conv"] / df["users"]
+print(df.pivot(index="device", columns="version", values="rate"))
+# version        after  before
+# device
+# desktop         0.10    0.08
+# mobile          0.03    0.02</code></pre>
+<ul class="checklist">
+  <li>Comparing "before" and "after"? Check whether the audience mix changed in between</li>
+  <li>Segment shares shifted, or segments very different in size? That is a reason for stratification: measure the metric inside each segment</li>
+  <li>In A/B tests, watch the randomization: a skew in how segments are split gives exactly this effect</li>
+</ul>
+
+<h2>Which number to trust</h2>
+<p>People often assume the breakdown is always "more correct" than the overall number. It is not. Which one matters depends on how the causes are wired, not on how detailed your view is.</p>
+<p>If the difference is a confounder you can account for (say, recompute conversion on the same device mix), trust the segments: the new version really is better. But if the mobile share has grown for good and you care about the real total across all users, the overall number means something too. First work out which question you are answering.</p>
+<div class="tip-box">
+  <p>The classic example comes from Berkeley in 1973: across the whole university women were admitted less often than men, yet in almost every department at the same rate or higher. Women simply applied more often to tough departments that admitted few people at all. The same reversal showed up in data on kidney stone treatments.</p>
+</div>
+
+<h2>Bottom line</h2>
+<p>For an analyst, Simpson's paradox is not a textbook puzzle but a real, everyday risk. After any change, the per-segment metric and the overall metric can diverge if the audience mix shifted at the same time. Before you celebrate a rise or mourn a drop, break the data down by segment and check whether their weights moved.</p>
+</section>

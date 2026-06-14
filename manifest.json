@@ -278,6 +278,21 @@
       }
     },
     {
+      "section": "hard",
+      "slug": "simpsons-paradox",
+      "icon": "🔀",
+      "bg": "var(--bg-danger)",
+      "color": "var(--text-danger)",
+      "ru": {
+        "label": "Парадокс Симпсона",
+        "tag": "Статистика"
+      },
+      "en": {
+        "label": "Simpson's Paradox",
+        "tag": "Statistics"
+      }
+    },
+    {
       "section": "about",
       "slug": "me",
       "icon": "👤",
