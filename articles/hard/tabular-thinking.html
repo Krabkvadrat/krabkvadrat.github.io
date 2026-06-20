@@ -51,33 +51,45 @@ WHERE date = '2024-01-01'</code></pre>
 
 <h2>LEFT JOIN</h2>
 <p>Добавляет колонки из правой таблицы. Все строки левой остаются, а если у одного ключа несколько совпадений справа - строки множатся.</p>
-<!-- TODO: SVG стрелки между таблицами users и events, показывающие связь каждой строки с соответствующими строками в events -->
-<p class="example-label">users:</p>
-<table class="cmp-table">
-  <thead>
-    <tr><th>user_id</th><th>city</th></tr>
-  </thead>
-  <tbody>
-    <tr><td>1</td><td>Москва</td></tr>
-    <tr><td>2</td><td>Казань</td></tr>
-    <tr><td>3</td><td>Самара</td></tr>
-    <tr><td>4</td><td>Екатеринбург</td></tr>
-  </tbody>
-</table>
-<p class="example-label" style="margin-top:12px">events:</p>
-<table class="cmp-table">
-  <thead>
-    <tr><th>event_id</th><th>user_id</th><th>date</th><th>event</th></tr>
-  </thead>
-  <tbody>
-    <tr><td>1</td><td>1</td><td>2024-01-01</td><td>click</td></tr>
-    <tr><td>2</td><td>1</td><td>2024-01-02</td><td>buy</td></tr>
-    <tr><td>3</td><td>1</td><td>2024-01-03</td><td>click</td></tr>
-    <tr><td>4</td><td>2</td><td>2024-01-01</td><td>buy</td></tr>
-    <tr><td>5</td><td>3</td><td>2024-01-02</td><td>click</td></tr>
-    <tr><td>6</td><td>3</td><td>2024-01-02</td><td>share</td></tr>
-  </tbody>
-</table>
+<div style="overflow-x:auto; margin:14px 0">
+  <div style="display:inline-flex; gap:0; align-items:flex-start">
+    <table class="cmp-table" style="margin:0; width:auto; flex-shrink:0">
+      <thead>
+        <tr><th colspan="2" style="font-size:10px;text-transform:uppercase;letter-spacing:0.06em;color:var(--text-tertiary);font-weight:500;text-align:center">users</th></tr>
+        <tr><th>user_id</th><th>city</th></tr>
+      </thead>
+      <tbody>
+        <tr style="background:var(--bg-info)"><td>1</td><td>Москва</td></tr>
+        <tr style="background:var(--bg-warning)"><td>2</td><td>Казань</td></tr>
+        <tr style="background:var(--bg-success)"><td>3</td><td>Самара</td></tr>
+        <tr style="color:var(--text-tertiary)"><td>4</td><td>Екатеринбург</td></tr>
+      </tbody>
+    </table>
+    <svg width="80" height="304" style="flex-shrink:0" aria-hidden="true">
+      <path d="M 0,95 C 40,95 40,95 80,95" stroke="var(--text-info)" stroke-width="1.5" fill="none" opacity="0.7"/>
+      <path d="M 0,95 C 40,95 40,133 80,133" stroke="var(--text-info)" stroke-width="1.5" fill="none" opacity="0.7"/>
+      <path d="M 0,95 C 40,95 40,171 80,171" stroke="var(--text-info)" stroke-width="1.5" fill="none" opacity="0.7"/>
+      <path d="M 0,133 C 40,133 40,209 80,209" stroke="var(--text-warning)" stroke-width="1.5" fill="none" opacity="0.7"/>
+      <path d="M 0,171 C 40,171 40,247 80,247" stroke="var(--text-success)" stroke-width="1.5" fill="none" opacity="0.7"/>
+      <path d="M 0,171 C 40,171 40,285 80,285" stroke="var(--text-success)" stroke-width="1.5" fill="none" opacity="0.7"/>
+      <path d="M 0,209 L 35,209" stroke="var(--text-tertiary)" stroke-width="1.5" fill="none" opacity="0.4" stroke-dasharray="4,3"/>
+    </svg>
+    <table class="cmp-table" style="margin:0; width:auto; flex-shrink:0">
+      <thead>
+        <tr><th colspan="4" style="font-size:10px;text-transform:uppercase;letter-spacing:0.06em;color:var(--text-tertiary);font-weight:500;text-align:center">events</th></tr>
+        <tr><th>event_id</th><th>user_id</th><th>date</th><th>event</th></tr>
+      </thead>
+      <tbody>
+        <tr style="background:var(--bg-info)"><td>1</td><td>1</td><td>2024-01-01</td><td>click</td></tr>
+        <tr style="background:var(--bg-info)"><td>2</td><td>1</td><td>2024-01-02</td><td>buy</td></tr>
+        <tr style="background:var(--bg-info)"><td>3</td><td>1</td><td>2024-01-03</td><td>click</td></tr>
+        <tr style="background:var(--bg-warning)"><td>4</td><td>2</td><td>2024-01-01</td><td>buy</td></tr>
+        <tr style="background:var(--bg-success)"><td>5</td><td>3</td><td>2024-01-02</td><td>click</td></tr>
+        <tr style="background:var(--bg-success)"><td>6</td><td>3</td><td>2024-01-02</td><td>share</td></tr>
+      </tbody>
+    </table>
+  </div>
+</div>
 <pre><code>SELECT users.user_id, city, date, event
 FROM users
 LEFT JOIN events ON users.user_id = events.user_id</code></pre>
@@ -136,27 +148,27 @@ GROUP BY user_id</code></pre>
 <p class="example-label">Рисуешь что есть:</p>
 <table class="cmp-table">
   <thead>
-    <tr><th>user_id</th><th>date</th><th>amount</th></tr>
+    <tr><th>event_id</th><th>user_id</th><th>date</th><th>amount</th></tr>
   </thead>
   <tbody>
-    <tr><td>1</td><td>2024-01-01</td><td>100</td></tr>
-    <tr><td>1</td><td>2024-01-02</td><td>250</td></tr>
-    <tr><td>1</td><td>2024-01-03</td><td>80</td></tr>
-    <tr><td>2</td><td>2024-01-01</td><td>300</td></tr>
-    <tr><td>2</td><td>2024-01-02</td><td>150</td></tr>
+    <tr><td>1</td><td>1</td><td>2024-01-01</td><td>100</td></tr>
+    <tr><td>2</td><td>1</td><td>2024-01-02</td><td>250</td></tr>
+    <tr><td>3</td><td>1</td><td>2024-01-03</td><td>80</td></tr>
+    <tr><td>4</td><td>2</td><td>2024-01-01</td><td>300</td></tr>
+    <tr><td>5</td><td>2</td><td>2024-01-02</td><td>150</td></tr>
   </tbody>
 </table>
 <p class="example-label" style="margin-top:12px">Рисуешь что хочешь получить - и понимаешь что нужно пронумеровать строки внутри каждого пользователя по убыванию суммы:</p>
 <table class="cmp-table">
   <thead>
-    <tr><th>user_id</th><th>date</th><th>amount</th><th>№</th></tr>
+    <tr><th>event_id</th><th>user_id</th><th>date</th><th>amount</th><th>№</th></tr>
   </thead>
   <tbody>
-    <tr><td>1</td><td>2024-01-02</td><td>250</td><td>1</td></tr>
-    <tr style="background:var(--bg-info)"><td>1</td><td>2024-01-01</td><td>100</td><td>2</td></tr>
-    <tr><td>1</td><td>2024-01-03</td><td>80</td><td>3</td></tr>
-    <tr><td>2</td><td>2024-01-01</td><td>300</td><td>1</td></tr>
-    <tr style="background:var(--bg-info)"><td>2</td><td>2024-01-02</td><td>150</td><td>2</td></tr>
+    <tr><td>2</td><td>1</td><td>2024-01-02</td><td>250</td><td>1</td></tr>
+    <tr style="background:var(--bg-info)"><td>1</td><td>1</td><td>2024-01-01</td><td>100</td><td>2</td></tr>
+    <tr><td>3</td><td>1</td><td>2024-01-03</td><td>80</td><td>3</td></tr>
+    <tr><td>4</td><td>2</td><td>2024-01-01</td><td>300</td><td>1</td></tr>
+    <tr style="background:var(--bg-info)"><td>5</td><td>2</td><td>2024-01-02</td><td>150</td><td>2</td></tr>
   </tbody>
 </table>
 <p>Как только нарисовал столбец с номером - идёшь в Google или спрашиваешь LLM: "как пронумеровать строки внутри группы в SQL?" И узнаёшь про оконные функции и ROW_NUMBER. Потом фильтруешь WHERE № = 2 - и задача решена.</p>
@@ -233,33 +245,45 @@ WHERE date = '2024-01-01'</code></pre>
 
 <h2>LEFT JOIN</h2>
 <p>Adds columns from the right table. All rows from the left table are kept, and if one key matches multiple rows on the right - rows multiply.</p>
-<!-- TODO: SVG arrows between users and events tables showing which row connects to which rows in events -->
-<p class="example-label">users:</p>
-<table class="cmp-table">
-  <thead>
-    <tr><th>user_id</th><th>city</th></tr>
-  </thead>
-  <tbody>
-    <tr><td>1</td><td>Moscow</td></tr>
-    <tr><td>2</td><td>Kazan</td></tr>
-    <tr><td>3</td><td>Samara</td></tr>
-    <tr><td>4</td><td>Yekaterinburg</td></tr>
-  </tbody>
-</table>
-<p class="example-label" style="margin-top:12px">events:</p>
-<table class="cmp-table">
-  <thead>
-    <tr><th>event_id</th><th>user_id</th><th>date</th><th>event</th></tr>
-  </thead>
-  <tbody>
-    <tr><td>1</td><td>1</td><td>2024-01-01</td><td>click</td></tr>
-    <tr><td>2</td><td>1</td><td>2024-01-02</td><td>buy</td></tr>
-    <tr><td>3</td><td>1</td><td>2024-01-03</td><td>click</td></tr>
-    <tr><td>4</td><td>2</td><td>2024-01-01</td><td>buy</td></tr>
-    <tr><td>5</td><td>3</td><td>2024-01-02</td><td>click</td></tr>
-    <tr><td>6</td><td>3</td><td>2024-01-02</td><td>share</td></tr>
-  </tbody>
-</table>
+<div style="overflow-x:auto; margin:14px 0">
+  <div style="display:inline-flex; gap:0; align-items:flex-start">
+    <table class="cmp-table" style="margin:0; width:auto; flex-shrink:0">
+      <thead>
+        <tr><th colspan="2" style="font-size:10px;text-transform:uppercase;letter-spacing:0.06em;color:var(--text-tertiary);font-weight:500;text-align:center">users</th></tr>
+        <tr><th>user_id</th><th>city</th></tr>
+      </thead>
+      <tbody>
+        <tr style="background:var(--bg-info)"><td>1</td><td>Moscow</td></tr>
+        <tr style="background:var(--bg-warning)"><td>2</td><td>Kazan</td></tr>
+        <tr style="background:var(--bg-success)"><td>3</td><td>Samara</td></tr>
+        <tr style="color:var(--text-tertiary)"><td>4</td><td>Yekaterinburg</td></tr>
+      </tbody>
+    </table>
+    <svg width="80" height="304" style="flex-shrink:0" aria-hidden="true">
+      <path d="M 0,95 C 40,95 40,95 80,95" stroke="var(--text-info)" stroke-width="1.5" fill="none" opacity="0.7"/>
+      <path d="M 0,95 C 40,95 40,133 80,133" stroke="var(--text-info)" stroke-width="1.5" fill="none" opacity="0.7"/>
+      <path d="M 0,95 C 40,95 40,171 80,171" stroke="var(--text-info)" stroke-width="1.5" fill="none" opacity="0.7"/>
+      <path d="M 0,133 C 40,133 40,209 80,209" stroke="var(--text-warning)" stroke-width="1.5" fill="none" opacity="0.7"/>
+      <path d="M 0,171 C 40,171 40,247 80,247" stroke="var(--text-success)" stroke-width="1.5" fill="none" opacity="0.7"/>
+      <path d="M 0,171 C 40,171 40,285 80,285" stroke="var(--text-success)" stroke-width="1.5" fill="none" opacity="0.7"/>
+      <path d="M 0,209 L 35,209" stroke="var(--text-tertiary)" stroke-width="1.5" fill="none" opacity="0.4" stroke-dasharray="4,3"/>
+    </svg>
+    <table class="cmp-table" style="margin:0; width:auto; flex-shrink:0">
+      <thead>
+        <tr><th colspan="4" style="font-size:10px;text-transform:uppercase;letter-spacing:0.06em;color:var(--text-tertiary);font-weight:500;text-align:center">events</th></tr>
+        <tr><th>event_id</th><th>user_id</th><th>date</th><th>event</th></tr>
+      </thead>
+      <tbody>
+        <tr style="background:var(--bg-info)"><td>1</td><td>1</td><td>2024-01-01</td><td>click</td></tr>
+        <tr style="background:var(--bg-info)"><td>2</td><td>1</td><td>2024-01-02</td><td>buy</td></tr>
+        <tr style="background:var(--bg-info)"><td>3</td><td>1</td><td>2024-01-03</td><td>click</td></tr>
+        <tr style="background:var(--bg-warning)"><td>4</td><td>2</td><td>2024-01-01</td><td>buy</td></tr>
+        <tr style="background:var(--bg-success)"><td>5</td><td>3</td><td>2024-01-02</td><td>click</td></tr>
+        <tr style="background:var(--bg-success)"><td>6</td><td>3</td><td>2024-01-02</td><td>share</td></tr>
+      </tbody>
+    </table>
+  </div>
+</div>
 <pre><code>SELECT users.user_id, city, date, event
 FROM users
 LEFT JOIN events ON users.user_id = events.user_id</code></pre>
@@ -318,14 +342,14 @@ GROUP BY user_id</code></pre>
 <p class="example-label">Draw what you have:</p>
 <table class="cmp-table">
   <thead>
-    <tr><th>user_id</th><th>date</th><th>amount</th></tr>
+    <tr><th>event_id</th><th>user_id</th><th>date</th><th>amount</th></tr>
   </thead>
   <tbody>
-    <tr><td>1</td><td>2024-01-01</td><td>100</td></tr>
-    <tr><td>1</td><td>2024-01-02</td><td>250</td></tr>
-    <tr><td>1</td><td>2024-01-03</td><td>80</td></tr>
-    <tr><td>2</td><td>2024-01-01</td><td>300</td></tr>
-    <tr><td>2</td><td>2024-01-02</td><td>150</td></tr>
+    <tr><td>1</td><td>1</td><td>2024-01-01</td><td>100</td></tr>
+    <tr><td>2</td><td>1</td><td>2024-01-02</td><td>250</td></tr>
+    <tr><td>3</td><td>1</td><td>2024-01-03</td><td>80</td></tr>
+    <tr><td>4</td><td>2</td><td>2024-01-01</td><td>300</td></tr>
+    <tr><td>5</td><td>2</td><td>2024-01-02</td><td>150</td></tr>
   </tbody>
 </table>
 <p class="example-label" style="margin-top:12px">Draw what you want to get - and you realise you need to number rows within each user by amount descending:</p>
