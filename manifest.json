@@ -128,18 +128,18 @@
       }
     },
     {
-      "section": "soft",
+      "section": "hard",
       "slug": "tabular-thinking",
       "icon": "🗂️",
       "bg": "var(--bg-info)",
       "color": "var(--text-info)",
       "ru": {
         "label": "Табличное мышление",
-        "tag": "Мышление аналитика"
+        "tag": "SQL / Основы"
       },
       "en": {
         "label": "Tabular Thinking",
-        "tag": "Analyst mindset"
+        "tag": "SQL / Fundamentals"
       }
     },
     {

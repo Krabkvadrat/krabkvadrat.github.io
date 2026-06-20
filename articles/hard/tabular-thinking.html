@@ -1,0 +1,363 @@
+<section data-lang="ru">
+<div class="article-tag">Мышление аналитика</div>
+<h1>Табличное мышление</h1>
+<p class="lead">Табличное мышление - один из самых полезных навыков аналитика. Это умение позволяет понимать, что происходит с данными на каждом шаге: что содержится в одной строчке таблицы (какая гранулярность) и как она изменится после следующей операции.</p>
+
+<h2>Гранулярность таблицы</h2>
+<p>Прежде чем что-то делать с данными, задайте один вопрос: <strong>что является одной строкой в этой таблице?</strong></p>
+<p>Это и есть гранулярность (степень детализации данных: насколько мелко нарезана таблица). От неё зависит всё: какие операции допустимы, что означает агрегат, насколько правомерен JOIN.</p>
+<table class="cmp-table">
+  <thead>
+    <tr><th>Таблица</th><th>Гранулярность (одна строка = ?)</th><th>Гранула</th></tr>
+  </thead>
+  <tbody>
+    <tr><td>events</td><td>Одно событие пользователя</td><td>event_id</td></tr>
+    <tr><td>users</td><td>Один пользователь</td><td>user_id</td></tr>
+  </tbody>
+</table>
+<p>Если не можете сформулировать гранулярность - вы ещё не поняли таблицу. Без этого любая трансформация будет наугад.</p>
+
+<h2>Нарисуй таблицу</h2>
+<p>Самый простой способ понять, что происходит с данными - нарисовать таблицу. Буквально 3-4 строки на бумаге или в заметках. Дальше любая операция становится очевидной. Разберём три базовые операции на маленькой таблице events.</p>
+
+<h2>WHERE</h2>
+<p>Убирает строки по условию. Гранулярность не меняется.</p>
+<p class="example-label">Было:</p>
+<table class="cmp-table">
+  <thead>
+    <tr><th>user_id</th><th>date</th><th>event</th></tr>
+  </thead>
+  <tbody>
+    <tr><td>1</td><td>2024-01-01</td><td>click</td></tr>
+    <tr><td>2</td><td>2024-01-01</td><td>buy</td></tr>
+    <tr style="opacity:0.35"><td style="text-decoration:line-through">1</td><td style="text-decoration:line-through">2024-01-02</td><td style="text-decoration:line-through">click</td></tr>
+    <tr style="opacity:0.35"><td style="text-decoration:line-through">3</td><td style="text-decoration:line-through">2024-01-02</td><td style="text-decoration:line-through">click</td></tr>
+  </tbody>
+</table>
+<pre><code>SELECT *
+FROM events
+WHERE date = '2024-01-01'</code></pre>
+<p class="example-label">Стало:</p>
+<table class="cmp-table">
+  <thead>
+    <tr><th>user_id</th><th>date</th><th>event</th></tr>
+  </thead>
+  <tbody>
+    <tr><td>1</td><td>2024-01-01</td><td>click</td></tr>
+    <tr><td>2</td><td>2024-01-01</td><td>buy</td></tr>
+  </tbody>
+</table>
+<p>Строк стало меньше, но одна строка по-прежнему означает одно событие.</p>
+
+<h2>LEFT JOIN</h2>
+<p>Добавляет колонки из правой таблицы. Все строки левой остаются, а если у одного ключа несколько совпадений справа - строки множатся.</p>
+<!-- TODO: SVG стрелки между таблицами users и events, показывающие связь каждой строки с соответствующими строками в events -->
+<p class="example-label">users:</p>
+<table class="cmp-table">
+  <thead>
+    <tr><th>user_id</th><th>city</th></tr>
+  </thead>
+  <tbody>
+    <tr><td>1</td><td>Москва</td></tr>
+    <tr><td>2</td><td>Казань</td></tr>
+    <tr><td>3</td><td>Самара</td></tr>
+    <tr><td>4</td><td>Екатеринбург</td></tr>
+  </tbody>
+</table>
+<p class="example-label" style="margin-top:12px">events:</p>
+<table class="cmp-table">
+  <thead>
+    <tr><th>user_id</th><th>date</th><th>event</th></tr>
+  </thead>
+  <tbody>
+    <tr><td>1</td><td>2024-01-01</td><td>click</td></tr>
+    <tr><td>1</td><td>2024-01-02</td><td>buy</td></tr>
+    <tr><td>1</td><td>2024-01-03</td><td>click</td></tr>
+    <tr><td>2</td><td>2024-01-01</td><td>buy</td></tr>
+    <tr><td>3</td><td>2024-01-02</td><td>click</td></tr>
+    <tr><td>3</td><td>2024-01-02</td><td>share</td></tr>
+  </tbody>
+</table>
+<pre><code>SELECT users.user_id, city, date, event
+FROM users
+LEFT JOIN events ON users.user_id = events.user_id</code></pre>
+<p class="example-label">Стало:</p>
+<table class="cmp-table">
+  <thead>
+    <tr><th>user_id</th><th>city</th><th>date</th><th>event</th></tr>
+  </thead>
+  <tbody>
+    <tr><td>1</td><td>Москва</td><td>2024-01-01</td><td>click</td></tr>
+    <tr><td>1</td><td>Москва</td><td>2024-01-02</td><td>buy</td></tr>
+    <tr><td>1</td><td>Москва</td><td>2024-01-03</td><td>click</td></tr>
+    <tr><td>2</td><td>Казань</td><td>2024-01-01</td><td>buy</td></tr>
+    <tr><td>3</td><td>Самара</td><td>2024-01-02</td><td>click</td></tr>
+    <tr><td>3</td><td>Самара</td><td>2024-01-02</td><td>share</td></tr>
+    <tr style="color:var(--text-tertiary)"><td>4</td><td>Екатеринбург</td><td>NULL</td><td>NULL</td></tr>
+  </tbody>
+</table>
+<p>Пользователь 1 был одной строкой, стал тремя. Пользователь 4 остался, но date и event NULL. Гранулярность поменялась: было "один пользователь", стало "одно событие пользователя".</p>
+
+<h2>GROUP BY</h2>
+<p>Сворачивает строки в группы. Гранулярность меняется.</p>
+<p class="example-label">Было:</p>
+<table class="cmp-table">
+  <thead>
+    <tr><th>user_id</th><th>date</th><th>event</th></tr>
+  </thead>
+  <tbody>
+    <tr style="background:var(--bg-info)"><td>1</td><td>2024-01-01</td><td>click</td></tr>
+    <tr style="background:var(--bg-info)"><td>1</td><td>2024-01-02</td><td>buy</td></tr>
+    <tr style="background:var(--bg-info)"><td>1</td><td>2024-01-03</td><td>click</td></tr>
+    <tr style="background:var(--bg-warning)"><td>2</td><td>2024-01-01</td><td>buy</td></tr>
+    <tr style="background:var(--bg-success)"><td>3</td><td>2024-01-02</td><td>click</td></tr>
+    <tr style="background:var(--bg-success)"><td>3</td><td>2024-01-02</td><td>share</td></tr>
+  </tbody>
+</table>
+<pre><code>SELECT user_id, COUNT(*) AS event_count
+FROM events
+GROUP BY user_id</code></pre>
+<p class="example-label">Стало:</p>
+<table class="cmp-table">
+  <thead>
+    <tr><th>user_id</th><th>event_count</th></tr>
+  </thead>
+  <tbody>
+    <tr style="background:var(--bg-info)"><td>1</td><td>3</td></tr>
+    <tr style="background:var(--bg-warning)"><td>2</td><td>1</td></tr>
+    <tr style="background:var(--bg-success)"><td>3</td><td>2</td></tr>
+  </tbody>
+</table>
+<p>Каждый пользователь теперь одна строка. Гранулярность стала "один пользователь".</p>
+
+<h2>Рисуй с конца</h2>
+<p>Рисование работает в обе стороны. Когда задача непонятна - нарисуй не только входные данные, но и то как должен выглядеть результат. Потом думай как туда добраться.</p>
+<p>Задача: найти второе по величине событие каждого пользователя.</p>
+<p class="example-label">Рисуешь что есть:</p>
+<table class="cmp-table">
+  <thead>
+    <tr><th>user_id</th><th>date</th><th>amount</th></tr>
+  </thead>
+  <tbody>
+    <tr><td>1</td><td>2024-01-01</td><td>100</td></tr>
+    <tr><td>1</td><td>2024-01-02</td><td>250</td></tr>
+    <tr><td>1</td><td>2024-01-03</td><td>80</td></tr>
+    <tr><td>2</td><td>2024-01-01</td><td>300</td></tr>
+    <tr><td>2</td><td>2024-01-02</td><td>150</td></tr>
+  </tbody>
+</table>
+<p class="example-label" style="margin-top:12px">Рисуешь что хочешь получить - и понимаешь что нужно пронумеровать строки внутри каждого пользователя по убыванию суммы:</p>
+<table class="cmp-table">
+  <thead>
+    <tr><th>user_id</th><th>date</th><th>amount</th><th>№</th></tr>
+  </thead>
+  <tbody>
+    <tr><td>1</td><td>2024-01-02</td><td>250</td><td>1</td></tr>
+    <tr style="background:var(--bg-info)"><td>1</td><td>2024-01-01</td><td>100</td><td>2</td></tr>
+    <tr><td>1</td><td>2024-01-03</td><td>80</td><td>3</td></tr>
+    <tr><td>2</td><td>2024-01-01</td><td>300</td><td>1</td></tr>
+    <tr style="background:var(--bg-info)"><td>2</td><td>2024-01-02</td><td>150</td><td>2</td></tr>
+  </tbody>
+</table>
+<p>Как только нарисовал столбец с номером - идёшь в Google или спрашиваешь LLM: "как пронумеровать строки внутри группы в SQL?" И узнаёшь про оконные функции и ROW_NUMBER. Потом фильтруешь WHERE № = 2 - и задача решена.</p>
+<p>Визуализация желаемого результата подсказывает какой инструмент искать, даже если ты про него ещё не знал.</p>
+
+<h2>Чек-лист</h2>
+<p><strong>Перед тем как писать запрос:</strong></p>
+<ul class="checklist">
+  <li>Что является одной строкой в исходной таблице?</li>
+  <li>Как выглядит результат который хочу получить - нарисовал?</li>
+</ul>
+<p><strong>В процессе:</strong></p>
+<ul class="checklist">
+  <li>Что станет со строками после следующей операции?</li>
+  <li>Гранулярность изменилась - я это учёл?</li>
+</ul>
+<p><strong>Если застрял:</strong></p>
+<ul class="checklist">
+  <li>Нарисовал желаемый результат и понял какой инструмент нужен?</li>
+  <li>Спросил LLM почему результат не совпал с ожиданием?</li>
+</ul>
+</section>
+
+<section data-lang="en">
+<div class="article-tag">Analyst mindset</div>
+<h1>Tabular Thinking</h1>
+<p class="lead">Tabular thinking is one of the most useful skills for an analyst. It lets you understand what happens to data at every step: what is contained in a single row (its granularity) and how that will change after the next operation.</p>
+
+<h2>Table granularity</h2>
+<p>Before doing anything with data, ask one question: <strong>what does a single row in this table represent?</strong></p>
+<p>That is granularity (the level of detail: how finely the table is sliced). Everything depends on it: which operations are valid, what an aggregate means, whether a JOIN is appropriate.</p>
+<table class="cmp-table">
+  <thead>
+    <tr><th>Table</th><th>Granularity (one row = ?)</th><th>Grain</th></tr>
+  </thead>
+  <tbody>
+    <tr><td>events</td><td>One user event</td><td>event_id</td></tr>
+    <tr><td>users</td><td>One user</td><td>user_id</td></tr>
+  </tbody>
+</table>
+<p>If you cannot state the granularity, you have not yet understood the table. Without it, any transformation is a guess.</p>
+
+<h2>Draw the table</h2>
+<p>The simplest way to understand what is happening to data is to draw the table. Literally 3-4 rows on paper or in a note. After that, any operation becomes obvious. Let's walk through three basic operations on a small events table.</p>
+
+<h2>WHERE</h2>
+<p>Removes rows based on a condition. Granularity does not change.</p>
+<p class="example-label">Before:</p>
+<table class="cmp-table">
+  <thead>
+    <tr><th>user_id</th><th>date</th><th>event</th></tr>
+  </thead>
+  <tbody>
+    <tr><td>1</td><td>2024-01-01</td><td>click</td></tr>
+    <tr><td>2</td><td>2024-01-01</td><td>buy</td></tr>
+    <tr style="opacity:0.35"><td style="text-decoration:line-through">1</td><td style="text-decoration:line-through">2024-01-02</td><td style="text-decoration:line-through">click</td></tr>
+    <tr style="opacity:0.35"><td style="text-decoration:line-through">3</td><td style="text-decoration:line-through">2024-01-02</td><td style="text-decoration:line-through">click</td></tr>
+  </tbody>
+</table>
+<pre><code>SELECT *
+FROM events
+WHERE date = '2024-01-01'</code></pre>
+<p class="example-label">After:</p>
+<table class="cmp-table">
+  <thead>
+    <tr><th>user_id</th><th>date</th><th>event</th></tr>
+  </thead>
+  <tbody>
+    <tr><td>1</td><td>2024-01-01</td><td>click</td></tr>
+    <tr><td>2</td><td>2024-01-01</td><td>buy</td></tr>
+  </tbody>
+</table>
+<p>Fewer rows, but one row still means one event.</p>
+
+<h2>LEFT JOIN</h2>
+<p>Adds columns from the right table. All rows from the left table are kept, and if one key matches multiple rows on the right - rows multiply.</p>
+<!-- TODO: SVG arrows between users and events tables showing which row connects to which rows in events -->
+<p class="example-label">users:</p>
+<table class="cmp-table">
+  <thead>
+    <tr><th>user_id</th><th>city</th></tr>
+  </thead>
+  <tbody>
+    <tr><td>1</td><td>Moscow</td></tr>
+    <tr><td>2</td><td>Kazan</td></tr>
+    <tr><td>3</td><td>Samara</td></tr>
+    <tr><td>4</td><td>Yekaterinburg</td></tr>
+  </tbody>
+</table>
+<p class="example-label" style="margin-top:12px">events:</p>
+<table class="cmp-table">
+  <thead>
+    <tr><th>user_id</th><th>date</th><th>event</th></tr>
+  </thead>
+  <tbody>
+    <tr><td>1</td><td>2024-01-01</td><td>click</td></tr>
+    <tr><td>1</td><td>2024-01-02</td><td>buy</td></tr>
+    <tr><td>1</td><td>2024-01-03</td><td>click</td></tr>
+    <tr><td>2</td><td>2024-01-01</td><td>buy</td></tr>
+    <tr><td>3</td><td>2024-01-02</td><td>click</td></tr>
+    <tr><td>3</td><td>2024-01-02</td><td>share</td></tr>
+  </tbody>
+</table>
+<pre><code>SELECT users.user_id, city, date, event
+FROM users
+LEFT JOIN events ON users.user_id = events.user_id</code></pre>
+<p class="example-label">After:</p>
+<table class="cmp-table">
+  <thead>
+    <tr><th>user_id</th><th>city</th><th>date</th><th>event</th></tr>
+  </thead>
+  <tbody>
+    <tr><td>1</td><td>Moscow</td><td>2024-01-01</td><td>click</td></tr>
+    <tr><td>1</td><td>Moscow</td><td>2024-01-02</td><td>buy</td></tr>
+    <tr><td>1</td><td>Moscow</td><td>2024-01-03</td><td>click</td></tr>
+    <tr><td>2</td><td>Kazan</td><td>2024-01-01</td><td>buy</td></tr>
+    <tr><td>3</td><td>Samara</td><td>2024-01-02</td><td>click</td></tr>
+    <tr><td>3</td><td>Samara</td><td>2024-01-02</td><td>share</td></tr>
+    <tr style="color:var(--text-tertiary)"><td>4</td><td>Yekaterinburg</td><td>NULL</td><td>NULL</td></tr>
+  </tbody>
+</table>
+<p>User 1 was one row, now is three. User 4 remains but date and event are NULL. Granularity changed: was "one user", now "one user event".</p>
+
+<h2>GROUP BY</h2>
+<p>Collapses rows into groups. Granularity changes.</p>
+<p class="example-label">Before:</p>
+<table class="cmp-table">
+  <thead>
+    <tr><th>user_id</th><th>date</th><th>event</th></tr>
+  </thead>
+  <tbody>
+    <tr style="background:var(--bg-info)"><td>1</td><td>2024-01-01</td><td>click</td></tr>
+    <tr style="background:var(--bg-info)"><td>1</td><td>2024-01-02</td><td>buy</td></tr>
+    <tr style="background:var(--bg-info)"><td>1</td><td>2024-01-03</td><td>click</td></tr>
+    <tr style="background:var(--bg-warning)"><td>2</td><td>2024-01-01</td><td>buy</td></tr>
+    <tr style="background:var(--bg-success)"><td>3</td><td>2024-01-02</td><td>click</td></tr>
+    <tr style="background:var(--bg-success)"><td>3</td><td>2024-01-02</td><td>share</td></tr>
+  </tbody>
+</table>
+<pre><code>SELECT user_id, COUNT(*) AS event_count
+FROM events
+GROUP BY user_id</code></pre>
+<p class="example-label">After:</p>
+<table class="cmp-table">
+  <thead>
+    <tr><th>user_id</th><th>event_count</th></tr>
+  </thead>
+  <tbody>
+    <tr style="background:var(--bg-info)"><td>1</td><td>3</td></tr>
+    <tr style="background:var(--bg-warning)"><td>2</td><td>1</td></tr>
+    <tr style="background:var(--bg-success)"><td>3</td><td>2</td></tr>
+  </tbody>
+</table>
+<p>Each user is now one row. Granularity became "one user".</p>
+
+<h2>Draw from the end</h2>
+<p>Drawing works both ways. When a task is unclear - draw not just the input, but also what the result should look like. Then think about how to get there.</p>
+<p>Task: find the second largest event for each user.</p>
+<p class="example-label">Draw what you have:</p>
+<table class="cmp-table">
+  <thead>
+    <tr><th>user_id</th><th>date</th><th>amount</th></tr>
+  </thead>
+  <tbody>
+    <tr><td>1</td><td>2024-01-01</td><td>100</td></tr>
+    <tr><td>1</td><td>2024-01-02</td><td>250</td></tr>
+    <tr><td>1</td><td>2024-01-03</td><td>80</td></tr>
+    <tr><td>2</td><td>2024-01-01</td><td>300</td></tr>
+    <tr><td>2</td><td>2024-01-02</td><td>150</td></tr>
+  </tbody>
+</table>
+<p class="example-label" style="margin-top:12px">Draw what you want to get - and you realise you need to number rows within each user by amount descending:</p>
+<table class="cmp-table">
+  <thead>
+    <tr><th>user_id</th><th>date</th><th>amount</th><th>#</th></tr>
+  </thead>
+  <tbody>
+    <tr><td>1</td><td>2024-01-02</td><td>250</td><td>1</td></tr>
+    <tr style="background:var(--bg-info)"><td>1</td><td>2024-01-01</td><td>100</td><td>2</td></tr>
+    <tr><td>1</td><td>2024-01-03</td><td>80</td><td>3</td></tr>
+    <tr><td>2</td><td>2024-01-01</td><td>300</td><td>1</td></tr>
+    <tr style="background:var(--bg-info)"><td>2</td><td>2024-01-02</td><td>150</td><td>2</td></tr>
+  </tbody>
+</table>
+<p>Once you draw that numbered column, you search or ask an LLM: "how to number rows within a group in SQL?" And you discover window functions and ROW_NUMBER. Then filter WHERE # = 2 - task solved.</p>
+<p>Visualizing the desired result tells you what tool to look for, even if you did not know it existed.</p>
+
+<h2>Checklist</h2>
+<p><strong>Before writing a query:</strong></p>
+<ul class="checklist">
+  <li>What does a single row in the source table represent?</li>
+  <li>Did you draw what the result should look like?</li>
+</ul>
+<p><strong>While working:</strong></p>
+<ul class="checklist">
+  <li>What will happen to the rows after the next operation?</li>
+  <li>Did the granularity change - did I account for that?</li>
+</ul>
+<p><strong>If stuck:</strong></p>
+<ul class="checklist">
+  <li>Did you draw the desired result and figure out which tool you need?</li>
+  <li>Did you ask an LLM why the result did not match your expectation?</li>
+</ul>
+</section>
