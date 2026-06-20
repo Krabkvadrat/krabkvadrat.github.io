@@ -129,6 +129,21 @@
     },
     {
       "section": "hard",
+      "slug": "tabular-thinking",
+      "icon": "🗂️",
+      "bg": "var(--bg-info)",
+      "color": "var(--text-info)",
+      "ru": {
+        "label": "Табличное мышление",
+        "tag": "SQL / Основы"
+      },
+      "en": {
+        "label": "Tabular Thinking",
+        "tag": "SQL / Fundamentals"
+      }
+    },
+    {
+      "section": "hard",
       "slug": "eda",
       "icon": "🔬",
       "bg": "var(--bg-info)",
