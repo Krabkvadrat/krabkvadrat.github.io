@@ -128,6 +128,21 @@
       }
     },
     {
+      "section": "soft",
+      "slug": "tabular-thinking",
+      "icon": "🗂️",
+      "bg": "var(--bg-info)",
+      "color": "var(--text-info)",
+      "ru": {
+        "label": "Табличное мышление",
+        "tag": "Мышление аналитика"
+      },
+      "en": {
+        "label": "Tabular Thinking",
+        "tag": "Analyst mindset"
+      }
+    },
+    {
       "section": "hard",
       "slug": "eda",
       "icon": "🔬",
