@@ -13,21 +13,46 @@
     "soft": {
       "ru": "Софт скиллы",
       "en": "Soft Skills",
-      "defaultOpen": false
+      "defaultOpen": false,
+      "subsections": {
+        "mindset": { "ru": "Мышление", "en": "Mindset" },
+        "communication": { "ru": "Коммуникация", "en": "Communication" }
+      }
     },
     "hard": {
       "ru": "Хард скиллы",
       "en": "Hard Skills",
-      "defaultOpen": false
+      "defaultOpen": false,
+      "subsections": {
+        "sql": { "ru": "SQL и данные", "en": "SQL & Data" },
+        "python-ml": { "ru": "Python и ML", "en": "Python & ML" },
+        "stats": { "ru": "Статистика", "en": "Statistics" },
+        "experiments": { "ru": "Эксперименты", "en": "Experiments" },
+        "automation": { "ru": "Автоматизация", "en": "Automation" }
+      }
     }
+  },
+  "tags": {
+    "sql": { "ru": "SQL", "en": "SQL" },
+    "python": { "ru": "Python", "en": "Python" },
+    "statistics": { "ru": "Статистика", "en": "Statistics" },
+    "ab-testing": { "ru": "A/B-тесты", "en": "A/B testing" },
+    "ml": { "ru": "ML", "en": "ML" },
+    "automation": { "ru": "Автоматизация", "en": "Automation" },
+    "critical-thinking": { "ru": "Критическое мышление", "en": "Critical thinking" },
+    "communication": { "ru": "Коммуникация", "en": "Communication" },
+    "product": { "ru": "Продуктовое мышление", "en": "Product thinking" },
+    "probability": { "ru": "Вероятности", "en": "Probability" }
   },
   "articles": [
     {
       "section": "soft",
+      "subsection": "mindset",
       "slug": "survivorship-bias",
       "icon": "🔍",
       "bg": "var(--bg-info)",
       "color": "var(--text-info)",
+      "tags": ["critical-thinking"],
       "ru": {
         "label": "Ошибка выжившего",
         "tag": "Критическое мышление"
@@ -39,10 +64,12 @@
     },
     {
       "section": "soft",
+      "subsection": "mindset",
       "slug": "sunk-cost-fallacy",
       "icon": "💸",
       "bg": "var(--bg-warning)",
       "color": "var(--text-warning)",
+      "tags": ["critical-thinking"],
       "ru": {
         "label": "Ошибка невозвратных затрат",
         "tag": "Когнитивные искажения"
@@ -54,10 +81,12 @@
     },
     {
       "section": "soft",
+      "subsection": "mindset",
       "slug": "cost-of-mistakes",
       "icon": "⚠️",
       "bg": "var(--bg-danger)",
       "color": "var(--text-danger)",
+      "tags": ["product"],
       "ru": {
         "label": "Цена ошибки",
         "tag": "Ответственность"
@@ -69,10 +98,29 @@
     },
     {
       "section": "soft",
+      "subsection": "mindset",
+      "slug": "product-thinking",
+      "icon": "💡",
+      "bg": "var(--bg-warning)",
+      "color": "var(--text-warning)",
+      "tags": ["product"],
+      "ru": {
+        "label": "Продуктовое мышление",
+        "tag": "Роль аналитика"
+      },
+      "en": {
+        "label": "Product Thinking",
+        "tag": "Analyst's role"
+      }
+    },
+    {
+      "section": "soft",
+      "subsection": "communication",
       "slug": "gathering-requirements",
       "icon": "📋",
       "bg": "var(--bg-success)",
       "color": "var(--text-success)",
+      "tags": ["communication"],
       "ru": {
         "label": "Сбор требований",
         "tag": "Коммуникация с заказчиком"
@@ -84,10 +132,12 @@
     },
     {
       "section": "soft",
+      "subsection": "communication",
       "slug": "asking-questions",
       "icon": "❓",
       "bg": "var(--bg-secondary)",
       "color": "var(--text-secondary)",
+      "tags": ["communication", "product"],
       "ru": {
         "label": "Как задавать вопросы",
         "tag": "Продуктовое мышление"
@@ -99,10 +149,12 @@
     },
     {
       "section": "soft",
+      "subsection": "communication",
       "slug": "presenting-results",
       "icon": "📊",
       "bg": "var(--bg-info)",
       "color": "var(--text-info)",
+      "tags": ["communication"],
       "ru": {
         "label": "Как делать презентацию",
         "tag": "Представление результатов"
@@ -113,26 +165,13 @@
       }
     },
     {
-      "section": "soft",
-      "slug": "product-thinking",
-      "icon": "💡",
-      "bg": "var(--bg-warning)",
-      "color": "var(--text-warning)",
-      "ru": {
-        "label": "Продуктовое мышление",
-        "tag": "Роль аналитика"
-      },
-      "en": {
-        "label": "Product Thinking",
-        "tag": "Analyst's role"
-      }
-    },
-    {
       "section": "hard",
+      "subsection": "sql",
       "slug": "tabular-thinking",
       "icon": "🗂️",
       "bg": "var(--bg-info)",
       "color": "var(--text-info)",
+      "tags": ["sql"],
       "ru": {
         "label": "Табличное мышление",
         "tag": "SQL / Основы"
@@ -144,70 +183,12 @@
     },
     {
       "section": "hard",
-      "slug": "eda",
-      "icon": "🔬",
-      "bg": "var(--bg-info)",
-      "color": "var(--text-info)",
-      "ru": {
-        "label": "EDA",
-        "tag": "Python / Pandas"
-      },
-      "en": {
-        "label": "EDA",
-        "tag": "Python / Pandas"
-      }
-    },
-    {
-      "section": "hard",
-      "slug": "correlation",
-      "icon": "📈",
-      "bg": "var(--bg-success)",
-      "color": "var(--text-success)",
-      "ru": {
-        "label": "Корреляция",
-        "tag": "Статистика"
-      },
-      "en": {
-        "label": "Correlation",
-        "tag": "Statistics"
-      }
-    },
-    {
-      "section": "hard",
-      "slug": "cohort-analysis",
-      "icon": "👥",
-      "bg": "var(--bg-warning)",
-      "color": "var(--text-warning)",
-      "ru": {
-        "label": "Когортный анализ",
-        "tag": "SQL / Python"
-      },
-      "en": {
-        "label": "Cohort Analysis",
-        "tag": "SQL / Python"
-      }
-    },
-    {
-      "section": "hard",
-      "slug": "time-series",
-      "icon": "📅",
-      "bg": "var(--bg-danger)",
-      "color": "var(--text-danger)",
-      "ru": {
-        "label": "Временные ряды",
-        "tag": "SQL / Python"
-      },
-      "en": {
-        "label": "Time Series",
-        "tag": "SQL / Python"
-      }
-    },
-    {
-      "section": "hard",
+      "subsection": "sql",
       "slug": "working-with-dates",
       "icon": "🕐",
       "bg": "var(--bg-secondary)",
       "color": "var(--text-secondary)",
+      "tags": ["sql", "python"],
       "ru": {
         "label": "Работа с датами",
         "tag": "SQL / Python"
@@ -219,25 +200,63 @@
     },
     {
       "section": "hard",
-      "slug": "monte-carlo",
-      "icon": "🎲",
-      "bg": "var(--bg-info)",
-      "color": "var(--text-info)",
+      "subsection": "sql",
+      "slug": "cohort-analysis",
+      "icon": "👥",
+      "bg": "var(--bg-warning)",
+      "color": "var(--text-warning)",
+      "tags": ["sql", "python"],
       "ru": {
-        "label": "Метод Монте-Карло",
-        "tag": "Статистика / Python"
+        "label": "Когортный анализ",
+        "tag": "SQL / Python"
       },
       "en": {
-        "label": "Monte Carlo Method",
-        "tag": "Statistics / Python"
+        "label": "Cohort Analysis",
+        "tag": "SQL / Python"
       }
     },
     {
       "section": "hard",
+      "subsection": "sql",
+      "slug": "time-series",
+      "icon": "📅",
+      "bg": "var(--bg-danger)",
+      "color": "var(--text-danger)",
+      "tags": ["sql", "python"],
+      "ru": {
+        "label": "Временные ряды",
+        "tag": "SQL / Python"
+      },
+      "en": {
+        "label": "Time Series",
+        "tag": "SQL / Python"
+      }
+    },
+    {
+      "section": "hard",
+      "subsection": "python-ml",
+      "slug": "eda",
+      "icon": "🔬",
+      "bg": "var(--bg-info)",
+      "color": "var(--text-info)",
+      "tags": ["python"],
+      "ru": {
+        "label": "EDA",
+        "tag": "Python / Pandas"
+      },
+      "en": {
+        "label": "EDA",
+        "tag": "Python / Pandas"
+      }
+    },
+    {
+      "section": "hard",
+      "subsection": "python-ml",
       "slug": "confusion-matrix",
       "icon": "🧩",
       "bg": "var(--bg-danger)",
       "color": "var(--text-danger)",
+      "tags": ["ml", "statistics"],
       "ru": {
         "label": "Confusion Matrix",
         "tag": "ML / Статистика"
@@ -249,10 +268,63 @@
     },
     {
       "section": "hard",
+      "subsection": "stats",
+      "slug": "correlation",
+      "icon": "📈",
+      "bg": "var(--bg-success)",
+      "color": "var(--text-success)",
+      "tags": ["statistics"],
+      "ru": {
+        "label": "Корреляция",
+        "tag": "Статистика"
+      },
+      "en": {
+        "label": "Correlation",
+        "tag": "Statistics"
+      }
+    },
+    {
+      "section": "hard",
+      "subsection": "stats",
+      "slug": "monte-carlo",
+      "icon": "🎲",
+      "bg": "var(--bg-info)",
+      "color": "var(--text-info)",
+      "tags": ["statistics", "python"],
+      "ru": {
+        "label": "Метод Монте-Карло",
+        "tag": "Статистика / Python"
+      },
+      "en": {
+        "label": "Monte Carlo Method",
+        "tag": "Statistics / Python"
+      }
+    },
+    {
+      "section": "hard",
+      "subsection": "stats",
+      "slug": "simpsons-paradox",
+      "icon": "🔀",
+      "bg": "var(--bg-danger)",
+      "color": "var(--text-danger)",
+      "tags": ["statistics"],
+      "ru": {
+        "label": "Парадокс Симпсона",
+        "tag": "Статистика"
+      },
+      "en": {
+        "label": "Simpson's Paradox",
+        "tag": "Statistics"
+      }
+    },
+    {
+      "section": "hard",
+      "subsection": "experiments",
       "slug": "ab-test-design",
       "icon": "⚗️",
       "bg": "var(--bg-warning)",
       "color": "var(--text-warning)",
+      "tags": ["ab-testing", "statistics", "python"],
       "ru": {
         "label": "Дизайн А/Б теста",
         "tag": "Монте-Карло / Python"
@@ -264,10 +336,12 @@
     },
     {
       "section": "hard",
+      "subsection": "experiments",
       "slug": "sample-size-money-metric",
       "icon": "💰",
       "bg": "var(--bg-success)",
       "color": "var(--text-success)",
+      "tags": ["ab-testing", "statistics"],
       "ru": {
         "label": "Размер выборки: деньги",
         "tag": "Статистика / A/B-тесты"
@@ -279,10 +353,12 @@
     },
     {
       "section": "hard",
+      "subsection": "automation",
       "slug": "n8n",
       "icon": "🔗",
       "bg": "var(--bg-info)",
       "color": "var(--text-info)",
+      "tags": ["automation"],
       "ru": {
         "label": "n8n",
         "tag": "Автоматизация / Low-code"
@@ -293,26 +369,12 @@
       }
     },
     {
-      "section": "hard",
-      "slug": "simpsons-paradox",
-      "icon": "🔀",
-      "bg": "var(--bg-danger)",
-      "color": "var(--text-danger)",
-      "ru": {
-        "label": "Парадокс Симпсона",
-        "tag": "Статистика"
-      },
-      "en": {
-        "label": "Simpson's Paradox",
-        "tag": "Statistics"
-      }
-    },
-    {
       "section": "about",
       "slug": "me",
       "icon": "👤",
       "bg": "var(--bg-secondary)",
       "color": "var(--text-secondary)",
+      "tags": [],
       "ru": {
         "label": "Александр Грудинин",
         "tag": "Lead Data Analyst"
@@ -328,6 +390,7 @@
       "icon": "🧪",
       "bg": "var(--bg-warning)",
       "color": "var(--text-warning)",
+      "tags": ["ab-testing", "statistics"],
       "ru": {
         "label": "Размер выборки в A/B",
         "tag": "A/B-тесты"
@@ -343,6 +406,7 @@
       "icon": "💼",
       "bg": "var(--bg-info)",
       "color": "var(--text-info)",
+      "tags": ["sql"],
       "ru": {
         "label": "SQL на собеседованиях",
         "tag": "SQL / Собеседования"
@@ -358,6 +422,7 @@
       "icon": "🎲",
       "bg": "var(--bg-success)",
       "color": "var(--text-success)",
+      "tags": ["probability", "statistics"],
       "ru": {
         "label": "Парадокс Монти-Холла",
         "tag": "Вероятности"
