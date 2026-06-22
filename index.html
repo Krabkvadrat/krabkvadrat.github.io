@@ -186,6 +186,82 @@
 
   .nav-list { padding: 8px 0; }
 
+  /* tag filter chips */
+  .tag-filter {
+    padding: 12px 14px;
+    border-bottom: 0.5px solid var(--border);
+  }
+  .tag-filter-top {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 8px;
+  }
+  .tag-filter-label {
+    font-size: 10px;
+    font-weight: 600;
+    letter-spacing: 0.07em;
+    text-transform: uppercase;
+    color: var(--text-tertiary);
+  }
+  .tag-filter-reset {
+    font-size: 11px;
+    font-weight: 500;
+    color: var(--text-info);
+    background: none;
+    border: none;
+    padding: 0;
+    cursor: pointer;
+    font-family: inherit;
+  }
+  .tag-chips { display: flex; flex-wrap: wrap; gap: 6px; }
+  .tag-chip {
+    font-size: 11px;
+    font-weight: 500;
+    padding: 4px 11px;
+    border-radius: 20px;
+    border: 0.5px solid var(--border-md);
+    background: var(--bg);
+    color: var(--text-secondary);
+    cursor: pointer;
+    font-family: inherit;
+    white-space: nowrap;
+    transition: background 0.15s, color 0.15s, border-color 0.15s;
+  }
+  .tag-chip:hover { background: var(--bg-secondary); }
+  .tag-chip.active {
+    background: var(--text-primary);
+    color: var(--bg);
+    border-color: var(--text-primary);
+  }
+
+  /* second-level grouping inside a section */
+  .nav-subsection { margin-bottom: 2px; }
+  .nav-subsection-title {
+    font-size: 10px;
+    font-weight: 600;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: var(--text-tertiary);
+    padding: 8px 14px 4px 14px;
+  }
+  .nav-subsection .nav-item { padding-left: 22px; }
+
+  /* flat result group when a tag filter is active */
+  .nav-result-group-title {
+    font-size: 10px;
+    font-weight: 600;
+    letter-spacing: 0.07em;
+    text-transform: uppercase;
+    color: var(--text-tertiary);
+    padding: 10px 14px 4px 14px;
+  }
+  .nav-empty {
+    font-size: 13px;
+    color: var(--text-tertiary);
+    padding: 16px 14px;
+  }
+
   .nav-section-header {
     display: flex;
     align-items: center;
@@ -499,9 +575,16 @@
 
     .nav-section-header { padding: 12px 16px 8px; }
     .nav-item { padding: 12px 16px; gap: 12px; }
+    .nav-subsection .nav-item { padding-left: 26px; }
     .nav-label { font-size: 14px; }
     .nav-tag { font-size: 12px; }
     .nav-icon { width: 30px; height: 30px; font-size: 15px; }
+
+    .tag-filter { padding: 14px 16px; }
+    .tag-chips { gap: 8px; }
+    .tag-chip { font-size: 13px; padding: 7px 14px; }
+    .tag-filter-label { font-size: 11px; }
+    .tag-filter-reset { font-size: 13px; }
 
     .content {
       padding: 20px 18px 28px;
@@ -564,6 +647,7 @@
       <span id="sidebar-title">Навигация</span>
       <button class="drawer-close" aria-label="Закрыть меню" onclick="closeDrawer()">×</button>
     </div>
+    <div class="tag-filter" id="tag-filter"></div>
     <div class="nav-list" id="nav"></div>
   </div>
   <div class="content" id="content"></div>
@@ -578,6 +662,8 @@ var manifest = null;
 var sections = null;
 var sectionOpen = null;
 var navData = null;
+var tagsRegistry = null;
+var activeTags = [];
 var articleCache = {};
 var suppressHashChange = false;
 
@@ -590,14 +676,20 @@ function loadManifest() {
     sections = {};
     sectionOpen = {};
     navData = {};
+    tagsRegistry = m.tags || {};
     Object.keys(m.sections).forEach(function(key) {
-      sections[key] = { ru: { label: m.sections[key].ru }, en: { label: m.sections[key].en } };
+      sections[key] = {
+        ru: { label: m.sections[key].ru },
+        en: { label: m.sections[key].en },
+        subsections: m.sections[key].subsections || null
+      };
       sectionOpen[key] = !!m.sections[key].defaultOpen;
       navData[key] = [];
     });
     m.articles.forEach(function(a) {
       navData[a.section].push({
         slug: a.slug, icon: a.icon, bg: a.bg, color: a.color,
+        subsection: a.subsection || null, tags: a.tags || [],
         ru: a.ru, en: a.en
       });
     });
@@ -626,13 +718,76 @@ function loadArticle(section, idx) {
   });
 }
 
+function makeNavItem(sec, item, idx) {
+  var d = item[currentLang];
+  var div = document.createElement('div');
+  var isActive = currentSection === sec && currentArticle === idx;
+  div.className = 'nav-item' + (isActive ? ' active' : '');
+  div.onclick = (function(s2, i){ return function(){ showArticle(s2, i); }; })(sec, idx);
+  div.innerHTML = '<div class="nav-icon" style="background:' + item.bg + ';color:' + item.color + '">' + item.icon + '</div>' +
+    '<div><div class="nav-label">' + d.label + '</div><div class="nav-tag">' + d.tag + '</div></div>';
+  return div;
+}
+
+function itemMatchesTags(item) {
+  if (!activeTags.length) return true;
+  return item.tags && item.tags.some(function(t){ return activeTags.indexOf(t) >= 0; });
+}
+
+function renderChips() {
+  var box = document.getElementById('tag-filter');
+  if (!box) return;
+  box.innerHTML = '';
+  var keys = Object.keys(tagsRegistry);
+  if (!keys.length) { box.style.display = 'none'; return; }
+  box.style.display = '';
+
+  var top = document.createElement('div');
+  top.className = 'tag-filter-top';
+  var label = document.createElement('span');
+  label.className = 'tag-filter-label';
+  label.textContent = currentLang === 'ru' ? 'Фильтр по темам' : 'Filter by topic';
+  top.appendChild(label);
+  if (activeTags.length) {
+    var reset = document.createElement('button');
+    reset.className = 'tag-filter-reset';
+    reset.textContent = currentLang === 'ru' ? 'Сбросить' : 'Reset';
+    reset.onclick = function(){ activeTags = []; renderNav(); };
+    top.appendChild(reset);
+  }
+  box.appendChild(top);
+
+  var chips = document.createElement('div');
+  chips.className = 'tag-chips';
+  keys.forEach(function(key) {
+    var t = tagsRegistry[key];
+    var c = document.createElement('button');
+    c.className = 'tag-chip' + (activeTags.indexOf(key) >= 0 ? ' active' : '');
+    c.textContent = t[currentLang] || t.ru || key;
+    c.onclick = (function(k){ return function(){ toggleTag(k); }; })(key);
+    chips.appendChild(c);
+  });
+  box.appendChild(chips);
+}
+
+function toggleTag(key) {
+  var i = activeTags.indexOf(key);
+  if (i >= 0) activeTags.splice(i, 1); else activeTags.push(key);
+  renderNav();
+}
+
 function renderNav() {
+  renderChips();
   var el = document.getElementById('nav');
   el.innerHTML = '';
+
+  if (activeTags.length) { renderFilteredNav(el); return; }
+
   Object.keys(sections).forEach(function(sec) {
     var s = sections[sec][currentLang];
     var open = sectionOpen[sec];
     var items = navData[sec];
+    var subs = sections[sec].subsections;
 
     var header = document.createElement('div');
     header.className = 'nav-section-header';
@@ -643,19 +798,61 @@ function renderNav() {
     var wrap = document.createElement('div');
     wrap.className = 'nav-section-items';
     wrap.id = 'section-' + sec;
-    items.forEach(function(item, i) {
-      var d = item[currentLang];
-      var div = document.createElement('div');
-      var isActive = currentSection === sec && currentArticle === i;
-      div.className = 'nav-item' + (isActive ? ' active' : '');
-      div.onclick = (function(s2, idx){ return function(){ showArticle(s2, idx); }; })(sec, i);
-      div.innerHTML = '<div class="nav-icon" style="background:' + item.bg + ';color:' + item.color + '">' + item.icon + '</div>' +
-        '<div><div class="nav-label">' + d.label + '</div><div class="nav-tag">' + d.tag + '</div></div>';
-      wrap.appendChild(div);
-    });
+
+    if (subs) {
+      Object.keys(subs).forEach(function(subKey) {
+        var subItems = [];
+        items.forEach(function(item, i) {
+          if (item.subsection === subKey) subItems.push({ item: item, idx: i });
+        });
+        if (!subItems.length) return;
+        var group = document.createElement('div');
+        group.className = 'nav-subsection';
+        var title = document.createElement('div');
+        title.className = 'nav-subsection-title';
+        title.textContent = subs[subKey][currentLang] || subs[subKey].ru;
+        group.appendChild(title);
+        subItems.forEach(function(rec) {
+          group.appendChild(makeNavItem(sec, rec.item, rec.idx));
+        });
+        wrap.appendChild(group);
+      });
+    } else {
+      items.forEach(function(item, i) {
+        wrap.appendChild(makeNavItem(sec, item, i));
+      });
+    }
+
     el.appendChild(wrap);
     wrap.style.maxHeight = open ? wrap.scrollHeight + 'px' : '0px';
   });
+}
+
+function renderFilteredNav(el) {
+  var total = 0;
+  Object.keys(sections).forEach(function(sec) {
+    var matches = [];
+    navData[sec].forEach(function(item, i) {
+      if (itemMatchesTags(item)) matches.push({ item: item, idx: i });
+    });
+    if (!matches.length) return;
+    total += matches.length;
+
+    var title = document.createElement('div');
+    title.className = 'nav-result-group-title';
+    title.textContent = sections[sec][currentLang].label;
+    el.appendChild(title);
+    matches.forEach(function(rec) {
+      el.appendChild(makeNavItem(sec, rec.item, rec.idx));
+    });
+  });
+
+  if (!total) {
+    var empty = document.createElement('div');
+    empty.className = 'nav-empty';
+    empty.textContent = currentLang === 'ru' ? 'Ничего не найдено' : 'Nothing found';
+    el.appendChild(empty);
+  }
 }
 
 function toggleSection(sec) {
