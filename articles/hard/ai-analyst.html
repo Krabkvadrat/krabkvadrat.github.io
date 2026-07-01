@@ -1,0 +1,137 @@
+<section data-lang="ru">
+<div class="article-tag">AI</div>
+<h1>ИИ в работе аналитика</h1>
+<p class="lead">Большие языковые модели изменили не список задач аналитика, а время на каждую. Черновой SQL, отладка, разбор незнакомой библиотеки: всё ускорилось в разы. Освободившееся время уходит туда, где модель бесполезна: поставить правильный вопрос, усомниться в данных, объяснить результат бизнесу.</p>
+
+<h2>Профессия смещается, а не исчезает</h2>
+<p>Написание запроса это верхушка. Под ней постановка задачи, знание предметной области, проверка данных и перевод цифр в решение. Модель делает механическую часть, но не знает контекста бизнеса и не отвечает за вывод. Поэтому ценность смещается от того, кто быстрее пишет код, к тому, кто точнее формулирует вопрос и надёжнее проверяет ответ.</p>
+<p>У ускорения есть обратная сторона: модель уверенно выдаёт правдоподобный, но неверный результат, а проверять его, кроме вас, некому. Критическое мышление из дополнения становится основным навыком.</p>
+
+<h2>Где ускоряет</h2>
+<p>ИИ помогает не везде одинаково. Сильнее всего там, где задача механическая и легко проверяется, слабее там, где нужен контекст и ответственность за вывод.</p>
+<ul class="glossary">
+  <li><strong>Код.</strong> Черновой запрос, разбор чужого кода, отладка ошибки, регулярка, одноразовый скрипт: то, что раньше гуглил каждый раз заново.</li>
+  <li><strong>Незнакомое.</strong> Новая библиотека, синтаксис, чужой стек: быстрый ответ вместо часа в документации.</li>
+  <li><strong>Рутина.</strong> Комментарии, документация, описание витрины, черновик отчёта по готовым цифрам.</li>
+  <li><strong>Разведка данных.</strong> Первый набросок EDA, идеи гипотез, какие срезы посмотреть.</li>
+</ul>
+<p>Где почти не помогает: постановка задачи, выбор метрики, интерпретация результата и решение, можно ли ему доверять. Это остаётся на аналитике.</p>
+
+<h2>Инструменты, общий обзор</h2>
+<p>Инструментов много, но для аналитика они делятся на несколько типов по тому, насколько глубоко ИИ встроен в рабочий процесс.</p>
+<ul class="glossary">
+  <li><strong>Чат-ассистенты.</strong> ChatGPT, Claude, Gemini в браузере. Отдельное окно, копипаст туда и обратно, твой проект и данные они не видят.</li>
+  <li><strong>Десктоп с коннекторами.</strong> Claude Desktop. Тот же чат, но через коннекторы получает доступ к файлам, базам и таблицам, поэтому копипаста меньше.</li>
+  <li><strong>Ассистенты в IDE.</strong> Copilot, Cursor, JetBrains AI. Подсказки прямо в редакторе.</li>
+  <li><strong>Агенты в терминале.</strong> Claude Code. Видит проект целиком, сам правит файлы и запускает команды.</li>
+  <li><strong>Встроенный ИИ.</strong> Ноды в n8n, ассистенты в BI и ноутбуках.</li>
+</ul>
+<p>Разница в одном: сколько контекста инструмент видит сам. Чем больше видит, тем меньше копипаста. Поэтому дальше подробно про то, как я работаю с Claude: в чате и в коде.</p>
+
+<h2>Claude: чат и код</h2>
+<p>Claude умеет много, но в работе я использую два режима: чат и код. Они закрывают разные задачи, и понимание, когда какой брать, экономит больше всего времени.</p>
+<div class="accent-list">
+  <div class="accent-item info">
+    <span class="term">Чат (Claude Desktop)</span>
+    <p class="desc">Диалог с доступом к данным. Через коннекторы Claude сам достаёт цифры из базы, читает Google-документ или таблицу, ищет в вебе, и тут же может посчитать. Подходит для вопросов, объяснений, разведки и быстрой аналитики по подключённому источнику. Коннекторы это общая возможность доступа к данным: часть встроена в Claude, часть добавляешь свою (MCP).</p>
+  </div>
+  <div class="accent-item success">
+    <span class="term">Код (Claude Code)</span>
+    <p class="desc">Здесь Claude работает с проектом и кодом: видит репозиторий целиком, пишет и правит файлы, исполняет команды и запускает код. Не «вот тебе запрос», а сам меняет скрипт, гоняет его, читает ошибку и чинит. Подходит для работы с кодовой базой, пайплайнами, разбором и правкой реального кода.</p>
+  </div>
+</div>
+<p>Когда что:</p>
+<ul class="glossary">
+  <li><strong>Чат</strong> для вопроса, объяснения, разведки, быстрого расчёта по подключённым данным.</li>
+  <li><strong>Код</strong> когда нужно менять код в проекте, прогонять скрипты и команды, работать с репозиторием.</li>
+</ul>
+
+<h2>Как это работает</h2>
+<p>Для тех, кто ещё не работал с Claude, коротко про то, что под капотом.</p>
+<p><strong>Что такое Claude.</strong> ИИ-собеседник: пишешь обычными словами («посчитай», «объясни», «почини вот это»), он понимает и отвечает. Но сам по себе он просто эрудированный собеседник. Многое знает в общем, но не видит данные твоей компании и не подключён к её системам. Как толковый новичок в первый день: умный, но доступов ещё нет. Чтобы стать полезным, ему нужны две вещи: дотянуться до рабочих систем и знать правила твоей среды.</p>
+<p><strong>MCP: как дотягивается до данных.</strong> Чтобы достать цифру вручную, человек заходит в программу, кликает по меню, выставляет фильтры, выгружает таблицу, считает. Чтобы это делал ИИ, ему нужны «руки». MCP (Model Context Protocol) это стандартная розетка, через которую Claude подключается к рабочим системам. Подключил источник (базу, CRM, хранилище) и он сам заходит, выставляет фильтры, достаёт цифры. Разговор меняется: раньше «объясни, как посчитать», теперь «посчитай», и он считает по настоящим данным прямо в диалоге.</p>
+<p><strong>Skill: как учится правилам среды.</strong> У каждой системы свои тонкости: где что лежит, как правильно фильтровать, где грабли. Объяснять это заново в каждом разговоре утомительно. Skill это сохранённая памятка-инструкция, которую Claude читает сам, когда берётся за подходящую задачу. Как записка новичку: «считаешь выручку, бери эту таблицу, исключай тестовые записи». Написал один раз, дальше он делает правильно без напоминаний. Памятки копятся и переиспользуются: чем их больше, тем самостоятельнее ИИ именно в твоей среде.</p>
+<p><strong>Вторая сторона: код.</strong> До сих пор речь шла про данные. Второе применение: писать и менять сами программы. Программа это текст по строгим правилам, который компьютер выполняет буквально, и одна пропущенная запятая уже ломает работу. Claude читает и пишет этот текст сам, разговор так же словами: «добавь в отчёт новое поле», «здесь ошибка, найди и почини». Он читает существующий код, правит нужные куски в том же стиле, запускает тесты (автопроверки на поломки) и объясняет, что сделал. Отличие от простого чат-бота: он действует внутри реального проекта, меняет файлы и сразу проверяет, что результат живой, а не просто красиво выглядит в ответе.</p>
+<p><strong>Честно про границы.</strong> Без магии: доверия больше, когда виден и потолок. ИИ ограничен тем, к чему подключён: нет розетки, нет доступа к системе. Есть и технические потолки: объём данных, таймауты, сбои доступа. И за корректность нужно следить: ИИ быстрый, но может выбрать не ту таблицу или не тот способ подсчёта. Человек остаётся ведущим: ставит задачу, смотрит результат, поправляет. Из таких поправок и рождаются правила (skills), а тесты и ревью ловят промахи до того, как они дойдут до людей.</p>
+
+<h2>Реальные кейсы</h2>
+<p>Как это выглядит на моих задачах.</p>
+<ul class="glossary">
+  <li><strong>Операционные вопросы.</strong> «Сколько заявок создано за сегодня», динамика по дням и т.п. Раньше собрал бы запрос вручную, теперь считаю в диалоге за минуту и сразу проверяю всплески.</li>
+  <li><strong>Проверка гипотез.</strong> Не «посчитай», а «докажи или опровергни». Claude помогает не сделать ложный вывод, когда разрыв между группами объясняется не эффектом, а разницей в самой выборке.</li>
+  <li><strong>Готовые отчёты.</strong> Раньше аналитику требовалось несколько дней, чтобы собрать дашборд, сейчас можно сделать HTML-отчёт за минуты: метрики, дельты, алерты. Далее разовый запрос становится переиспользуемым артефактом.</li>
+  <li><strong>Несколько источников.</strong> Связывает данные из разных мест и перепроверяет, что цифра в дашборде значит именно то, что мы думаем.</li>
+  <li><strong>Разработка и ревью.</strong> Пишет сервисы целиком (airflow dags, код, тесты, документация) и разбирает пул-реквесты на ошибки.</li>
+  <li><strong>Инструменты для себя.</strong> Собирает переиспользуемые инструкции (skills), которые учат следующие сессии работать с системой правильно.</li>
+</ul>
+<div class="tip-box"><p>Главное не в длине списка. Чаще всего Claude ценен не тем, что быстро считает, а тем, что не даёт сделать ложный вывод.</p></div>
+</section>
+
+<section data-lang="en">
+<div class="article-tag">AI</div>
+<h1>AI in an Analyst's Work</h1>
+<p class="lead">Large language models changed not the analyst's list of tasks but the time each one takes. Draft SQL, debugging, figuring out an unfamiliar library: all of it got much faster. The freed-up time goes where the model is useless: framing the right question, doubting the data, explaining the result to the business.</p>
+
+<h2>The profession shifts, it does not disappear</h2>
+<p>Writing a query is the tip. Under it sit framing the task, domain knowledge, sanity-checking the data, and turning numbers into a decision. The model handles the mechanical part but does not know your business context and is not accountable for the conclusion. So value shifts from whoever writes code faster to whoever frames the question more precisely and verifies the answer more reliably.</p>
+<p>The speed-up has a flip side: the model confidently returns a plausible but wrong result, and there is no one but you to check it. Critical thinking moves from a nice-to-have to the core skill.</p>
+
+<h2>Where it speeds things up</h2>
+<p>AI does not help everywhere equally. It helps most where the task is mechanical and easy to verify, less where context and accountability for the conclusion are needed.</p>
+<ul class="glossary">
+  <li><strong>Code.</strong> A draft query, reading someone else's code, debugging an error, a regex, a one-off script: the things you used to google from scratch every time.</li>
+  <li><strong>The unfamiliar.</strong> A new library, syntax, someone else's stack: a quick answer instead of an hour in the docs.</li>
+  <li><strong>Routine.</strong> Comments, documentation, describing a data mart, a draft report from ready numbers.</li>
+  <li><strong>Data exploration.</strong> A first pass at EDA, hypothesis ideas, which cuts to look at.</li>
+</ul>
+<p>Where it barely helps: framing the task, choosing the metric, interpreting the result, and deciding whether you can trust it. That stays with the analyst.</p>
+
+<h2>Tools, an overview</h2>
+<p>There are many tools, but for an analyst they split into a few types by how deeply the AI is embedded in the workflow.</p>
+<ul class="glossary">
+  <li><strong>Chat assistants.</strong> ChatGPT, Claude, Gemini in the browser. A separate window, copy-paste back and forth, they do not see your project or data.</li>
+  <li><strong>Desktop with connectors.</strong> Claude Desktop. The same chat, but through connectors it reaches files, databases, and spreadsheets, so there is less copy-paste.</li>
+  <li><strong>IDE assistants.</strong> Copilot, Cursor, JetBrains AI. Suggestions right in the editor.</li>
+  <li><strong>Terminal agents.</strong> Claude Code. Sees the whole project, edits files itself, and runs commands.</li>
+  <li><strong>Built-in AI.</strong> Nodes in n8n, assistants in BI tools and notebooks.</li>
+</ul>
+<p>The difference comes down to one thing: how much context the tool sees on its own. The more it sees, the less copy-paste. So the rest is about how I work with Claude: in chat and in code.</p>
+
+<h2>Claude: chat and code</h2>
+<p>Claude can do a lot, but in practice I use two modes: chat and code. They cover different tasks, and knowing when to reach for which saves the most time.</p>
+<div class="accent-list">
+  <div class="accent-item info">
+    <span class="term">Chat (Claude Desktop)</span>
+    <p class="desc">A conversation with access to data. Through connectors Claude pulls numbers from a database, reads a Google Doc or spreadsheet, searches the web, and can compute on the spot. It fits questions, explanations, exploration, and quick analysis over a connected source. Connectors are the shared data-access capability: some are built into Claude, some you add yourself (MCP).</p>
+  </div>
+  <div class="accent-item success">
+    <span class="term">Code (Claude Code)</span>
+    <p class="desc">Here Claude works with the project and the code: it sees the whole repository, writes and edits files, runs commands, and executes code. Not "here is a query" but actually changing a script, running it, reading the error, and fixing it. It fits working with a codebase, pipelines, and reading and editing real code.</p>
+  </div>
+</div>
+<p>When to use which:</p>
+<ul class="glossary">
+  <li><strong>Chat</strong> for a question, an explanation, exploration, a quick calculation over connected data.</li>
+  <li><strong>Code</strong> when you need to change code in a project, run scripts and commands, work with the repository.</li>
+</ul>
+
+<h2>How it works</h2>
+<p>For anyone who has not worked with Claude yet, a short look under the hood.</p>
+<p><strong>What Claude is.</strong> An AI interlocutor: you write in plain words ("count this", "explain", "fix this"), and it understands and answers. But on its own it is just a well-read interlocutor. It knows a lot in general but does not see your company's data and is not connected to its systems. Like a sharp new hire on day one: smart, but without access yet. To become useful it needs two things: to reach your work systems and to know the rules of your environment.</p>
+<p><strong>MCP: how it reaches data.</strong> To pull a number by hand, a person opens a program, clicks through menus, sets filters, exports a table, counts. For an AI to do this, it needs "hands". MCP (Model Context Protocol) is a standard socket through which Claude plugs into work systems. Connect a source (a database, CRM, warehouse) and it goes in itself, sets filters, and pulls the numbers. The conversation changes: it used to be "explain how to count", now it is "count", and it counts over real data right in the dialogue.</p>
+<p><strong>Skill: how it learns the rules of your environment.</strong> Every system has its quirks: where the data sits, how to filter correctly, where the traps are. Explaining that from scratch in every conversation is tiring. A skill is a saved instruction note that Claude reads on its own when it takes on a fitting task. Like a note for a new hire: "when you count revenue, use this table, exclude test records". Write it once, and it does it right without reminders. The notes accumulate and get reused: the more of them, the more independent the AI is in your specific environment.</p>
+<p><strong>The other side: code.</strong> So far this was about data, where the AI pulls numbers from ready systems. The second use is writing and changing the programs themselves. A program is text written by strict rules that the computer executes literally, and one missing comma already breaks it. Claude reads and writes this text itself, and the conversation is the same plain words: "add a new field to the report", "there is a bug here, find and fix it". It reads the existing code, edits the needed parts in the same style, runs tests (automatic checks for breakage), and explains what it did. The difference from a plain chatbot: it acts inside a real project, changes files, and immediately verifies the result is alive, not just nice-looking in the reply.</p>
+<p><strong>Honest about the limits.</strong> No magic: trust grows when the ceiling is visible too. The AI is limited to what it is connected to: no socket, no access to the system. There are technical ceilings too: data volume, timeouts, access failures. And correctness needs watching: the AI is fast but can pick the wrong table or the wrong way to count. The human stays in the lead: sets the task, looks at the result, corrects. Those corrections are exactly where the rules (skills) come from, and tests and review catch the misses before they reach people.</p>
+
+<h2>Real cases</h2>
+<p>Here is how it looks on my tasks.</p>
+<ul class="glossary">
+  <li><strong>Operational questions.</strong> "How many requests were created today", day-by-day dynamics, and so on. I used to write the query by hand; now I count it in the dialogue in a minute and check the spikes right away.</li>
+  <li><strong>Testing hypotheses.</strong> Not "count it" but "prove or disprove it". Claude helps avoid a false conclusion when a gap between two groups comes not from an effect but from a difference in the sample itself.</li>
+  <li><strong>Ready reports.</strong> It used to take an analyst several days to build a dashboard; now an HTML report can be made in minutes: metrics, deltas, alerts. From there a one-off request becomes a reusable artifact.</li>
+  <li><strong>Multiple sources.</strong> It joins data from different places and double-checks that a number in the dashboard means exactly what we think.</li>
+  <li><strong>Development and review.</strong> It writes services end to end (airflow dags, code, tests, documentation) and reviews pull requests for bugs.</li>
+  <li><strong>Tools for myself.</strong> It builds reusable instructions (skills) that teach future sessions to work with the system correctly.</li>
+</ul>
+<div class="tip-box"><p>The point is not the length of the list. Most often Claude is valuable not for counting fast but for keeping you from a false conclusion.</p></div>
+</section>

@@ -28,7 +28,8 @@
         "python-ml": { "ru": "Python и ML", "en": "Python & ML" },
         "stats": { "ru": "Статистика", "en": "Statistics" },
         "experiments": { "ru": "Эксперименты", "en": "Experiments" },
-        "automation": { "ru": "Автоматизация", "en": "Automation" }
+        "automation": { "ru": "Автоматизация", "en": "Automation" },
+        "ai": { "ru": "ИИ", "en": "AI" }
       }
     }
   },
@@ -42,7 +43,8 @@
     "critical-thinking": { "ru": "Критическое мышление", "en": "Critical thinking" },
     "communication": { "ru": "Коммуникация", "en": "Communication" },
     "product": { "ru": "Продуктовое мышление", "en": "Product thinking" },
-    "probability": { "ru": "Вероятности", "en": "Probability" }
+    "probability": { "ru": "Вероятности", "en": "Probability" },
+    "ai": { "ru": "AI", "en": "AI" }
   },
   "articles": [
     {
@@ -366,6 +368,25 @@
       "en": {
         "label": "n8n",
         "tag": "Automation / Low-code"
+      }
+    },
+    {
+      "section": "hard",
+      "subsection": "ai",
+      "slug": "ai-analyst",
+      "icon": "🤖",
+      "bg": "var(--bg-info)",
+      "color": "var(--text-info)",
+      "tags": [
+        "ai"
+      ],
+      "ru": {
+        "label": "ИИ в работе аналитика",
+        "tag": "AI"
+      },
+      "en": {
+        "label": "AI in an Analyst's Work",
+        "tag": "AI"
       }
     },
     {
