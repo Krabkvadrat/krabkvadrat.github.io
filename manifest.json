@@ -321,6 +321,23 @@
     },
     {
       "section": "hard",
+      "subsection": "stats",
+      "slug": "confidence-intervals",
+      "icon": "📏",
+      "bg": "var(--bg-warning)",
+      "color": "var(--text-warning)",
+      "tags": ["statistics", "ab-testing"],
+      "ru": {
+        "label": "Доверительные интервалы",
+        "tag": "Статистика / A/B-тесты"
+      },
+      "en": {
+        "label": "Confidence Intervals",
+        "tag": "Statistics / A/B testing"
+      }
+    },
+    {
+      "section": "hard",
       "subsection": "experiments",
       "slug": "ab-test-design",
       "icon": "⚗️",

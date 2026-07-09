@@ -1,0 +1,159 @@
+<section data-lang="ru">
+<div class="article-tag">Статистика / A/B-тесты</div>
+<h1>Доверительные интервалы</h1>
+<p class="lead">Мы месяц крутили A/B-тест новой страницы оплаты: в контроле конверсия 5.00%, в тесте 5.45%, по 20 000 пользователей в группе, p-value = 0.043. Значимо, можно катить. Продакт задаёт один вопрос: «Сколько денег это принесёт?» И тут выясняется, что p-value на этот вопрос не отвечает в принципе. Отвечает доверительный интервал.</p>
+
+<h2>Что отвечает p-value</h2>
+<p>p-value отвечает ровно на один вопрос, и вопрос этот бинарный: похожа ли наблюдаемая разница на случайный шум, если на самом деле эффекта нет. Наши 0.043 означают «вряд ли это шум». Всё. Ни размера эффекта, ни точности измерения в этом числе нет: p = 0.043 может стоять и за микроскопическим приростом на огромной выборке, и за большим приростом на маленькой.</p>
+
+<h2>Что такое доверительный интервал</h2>
+<p>Доверительный интервал: диапазон значений эффекта, которые согласуются с собранными данными. Считается просто: точечная оценка плюс-минус запас на шум, для 95% интервала это 1.96 стандартной ошибки. Узкий интервал означает, что эффект измерен точно. Широкий: данных мало и правда может быть где угодно внутри диапазона.</p>
+
+<h2>Ключевые понятия</h2>
+<ul class="glossary">
+  <li><strong>Точечная оценка</strong>: одно число из данных, наш лучший прогноз эффекта. В примере это разница конверсий 0.45 п.п.</li>
+  <li><strong>Стандартная ошибка</strong>: мера того, насколько точечная оценка гуляет от выборки к выборке. Чем больше данных, тем она меньше.</li>
+  <li><strong>Уровень доверия</strong>: доля случаев, в которых интервал, построенный по такой процедуре, накрывает истинное значение. Обычно берут 95%.</li>
+</ul>
+
+<h2>Считаем на Python</h2>
+<p>Весь расчёт (стандартная ошибка, p-value и сам интервал) укладывается в несколько строк:</p>
+<pre><code>import numpy as np
+from scipy import stats
+
+n_a, conv_a = 20_000, 1000   # контроль: 5.00%
+n_b, conv_b = 20_000, 1090   # тест:    5.45%
+
+p_a, p_b = conv_a / n_a, conv_b / n_b
+diff = p_b - p_a                      # точечная оценка: 0.45 п.п.
+
+# стандартная ошибка разницы двух долей
+se = np.sqrt(p_a * (1 - p_a) / n_a + p_b * (1 - p_b) / n_b)
+
+# p-value двустороннего z-теста
+z = diff / se
+p_value = 2 * stats.norm.sf(abs(z))
+print(f"p-value: {p_value:.3f}")      # 0.043
+
+# 95% доверительный интервал
+lo, hi = diff - 1.96 * se, diff + 1.96 * se
+print(f"ДИ: [{lo:.2%}; {hi:.2%}]")    # [0.01%; 0.89%]
+
+# то же самое в деньгах
+users, value = 500_000, 3_000         # юзеров в месяц, руб. с конверсии
+print(f"от {lo*users*value/1e6:.1f} до {hi*users*value/1e6:.1f} млн ₽/мес")
+# от 0.2 до 13.3 млн ₽/мес</code></pre>
+
+<h2>Зачем интервал, если есть p-value</h2>
+<p>Одно и то же p = 0.043 в нашем тесте разворачивается в интервал от +0.01 до +0.89 п.п. То есть данные согласуются и с «эффект почти нулевой», и с «эффект почти вдвое больше ожидаемого». В деньгах: от 0.2 до 13.3 млн рублей в месяц при точечной оценке 6.8 млн (0.45 п.п. от 500 000 пользователей это 2 250 дополнительных оплат по 3 000 ₽). Обещать продакту 6.8 млн, когда данные допускают 0.2 млн, легкомысленно. Именно эту неопределённость p-value прячет, а интервал показывает.</p>
+<p>Сведём в одну таблицу вопросы, которые обычно задаёт заказчик, и посмотрим, какой из двух инструментов на них отвечает:</p>
+<table class="cmp-table">
+  <thead>
+    <tr><th>Вопрос</th><th>p-value</th><th>95% ДИ</th></tr>
+  </thead>
+  <tbody>
+    <tr><td>Эффект отличим от нуля?</td><td>да</td><td>да: интервал не накрывает ноль</td></tr>
+    <tr><td>Какого размера эффект?</td><td>нет</td><td>да: границы интервала</td></tr>
+    <tr><td>Насколько точно измерили?</td><td>нет</td><td>да: ширина интервала</td></tr>
+    <tr><td>Сколько это в деньгах?</td><td>нет</td><td>да: пересчёт границ</td></tr>
+  </tbody>
+</table>
+<p>Связь между ними простая: 95% интервал не накрывает ноль тогда и только тогда, когда двусторонний p-value меньше 0.05. Ответ p-value уже содержится в интервале, а вот обратное неверно. Считая только p-value, вы выбрасываете информацию о размере и точности, ничего не получая взамен.</p>
+
+<h2>Когда «не значимо» не значит «эффекта нет»</h2>
+<p>Второй тест: по 3 000 пользователей в группе, конверсия 5.0% против 5.6%, p = 0.30. Соблазн отчитаться «эффекта нет» велик. Но интервал разницы: от -0.5 до +1.7 п.п. Он накрывает и ноль, и эффект втрое больше, чем в первом тесте. Такой тест не показал отсутствие эффекта, он вообще ничего не показал: выборки не хватило. Про то, как заранее посчитать нужный размер выборки, есть отдельная статья про <a href="#ab-test-design">дизайн A/B-теста</a>, а для денежных метрик про <a href="#sample-size-money-metric">размер выборки для денег</a>.</p>
+
+<h2>Как читать интервал</h2>
+<ul class="checklist">
+  <li>В отчёте рядом с p-value всегда показывайте интервал, в п.п. и в деньгах</li>
+  <li>Результат значимый? Смотрите на нижнюю границу: окупается ли изменение даже в худшем совместимом с данными сценарии</li>
+  <li>Результат не значимый? Смотрите, что накрывает интервал: если и ноль, и ценный эффект, тесту не хватило выборки, а не эффекта</li>
+  <li>Интервал сузился недостаточно к концу теста: это аргумент продлить тест, p-value такого сигнала не даёт</li>
+</ul>
+<div class="tip-box">
+  <p>Формально «с вероятностью 95% истина лежит в этом интервале» сказать нельзя: конкретный интервал либо накрыл истину, либо нет. Уровень доверия описывает процедуру: из ста интервалов, построенных таким способом, истину накроют примерно 95. Для рабочих решений разница несущественна, но на собеседовании этот вопрос любят.</p>
+</div>
+
+<h2>Главный вывод</h2>
+<p>p-value отвечает на вопрос «есть ли эффект», доверительный интервал: «какой он и насколько точно мы его знаем». Бизнес-решения принимаются по размеру эффекта, поэтому голого p-value почти никогда не достаточно. Посчитать интервал стоит три строки кода, а прячет он ровно ту неопределённость, за которую потом приходится отвечать перед заказчиком.</p>
+</section>
+
+<section data-lang="en">
+<div class="article-tag">Statistics / A/B testing</div>
+<h1>Confidence Intervals</h1>
+<p class="lead">We ran an A/B test of a new checkout page for a month: control converts at 5.00%, treatment at 5.45%, 20,000 users per group, p-value = 0.043. Significant, ship it. Then the product manager asks one question: "How much money will this bring?" And it turns out the p-value does not answer that question at all. The confidence interval does.</p>
+
+<h2>What a p-value answers</h2>
+<p>A p-value answers one question, and that question is binary: does the observed difference look like random noise, assuming there is no real effect. Our 0.043 means "unlikely to be noise". That is all. The number says nothing about the size of the effect or the precision of the measurement: p = 0.043 can stand for a microscopic uplift on a huge sample or a large uplift on a small one.</p>
+
+<h2>What a confidence interval is</h2>
+<p>A confidence interval is the range of effect sizes that agree with the data you collected. The calculation is simple: the point estimate plus or minus a noise margin, which for a 95% interval is 1.96 standard errors. A narrow interval means you have pinned the effect down. A wide one means the data is thin and the truth can sit anywhere inside the range.</p>
+
+<h2>Key terms</h2>
+<ul class="glossary">
+  <li><strong>Point estimate</strong>: a single number from the data, your best guess at the effect. In our example it is the 0.45 pp difference in conversion.</li>
+  <li><strong>Standard error</strong>: how much the point estimate drifts from sample to sample. More data makes it smaller.</li>
+  <li><strong>Confidence level</strong>: the share of cases in which an interval built by this procedure covers the true value. The usual choice is 95%.</li>
+</ul>
+
+<h2>Computing it in Python</h2>
+<p>The whole calculation (standard error, p-value, and the interval itself) fits in a few lines:</p>
+<pre><code>import numpy as np
+from scipy import stats
+
+n_a, conv_a = 20_000, 1000   # control:   5.00%
+n_b, conv_b = 20_000, 1090   # treatment: 5.45%
+
+p_a, p_b = conv_a / n_a, conv_b / n_b
+diff = p_b - p_a                      # point estimate: 0.45 pp
+
+# standard error of the difference of two proportions
+se = np.sqrt(p_a * (1 - p_a) / n_a + p_b * (1 - p_b) / n_b)
+
+# two-sided z-test p-value
+z = diff / se
+p_value = 2 * stats.norm.sf(abs(z))
+print(f"p-value: {p_value:.3f}")      # 0.043
+
+# 95% confidence interval
+lo, hi = diff - 1.96 * se, diff + 1.96 * se
+print(f"CI: [{lo:.2%}; {hi:.2%}]")    # [0.01%; 0.89%]
+
+# the same in money
+users, value = 500_000, 3_000         # users per month, ₽ per purchase
+print(f"{lo*users*value/1e6:.1f} to {hi*users*value/1e6:.1f} mln ₽ per month")
+# 0.2 to 13.3 mln ₽ per month</code></pre>
+
+<h2>Why an interval when you have a p-value</h2>
+<p>The same p = 0.043 in our test unfolds into an interval from +0.01 to +0.89 pp. The data agrees both with "the effect is near zero" and with "the effect is almost twice what we hoped for". In money: 0.2 to 13.3 mln ₽ per month, with a point estimate of 6.8 mln (0.45 pp of 500,000 users is 2,250 extra purchases at 3,000 ₽ each). Promising the product manager 6.8 mln when the data allows 0.2 mln is reckless. This is the uncertainty the p-value hides and the interval shows.</p>
+<p>Put the questions a stakeholder asks into one table and see which of the two tools answers them:</p>
+<table class="cmp-table">
+  <thead>
+    <tr><th>Question</th><th>p-value</th><th>95% CI</th></tr>
+  </thead>
+  <tbody>
+    <tr><td>Is the effect distinguishable from zero?</td><td>yes</td><td>yes: the interval misses zero</td></tr>
+    <tr><td>How big is the effect?</td><td>no</td><td>yes: the interval bounds</td></tr>
+    <tr><td>How precise is the measurement?</td><td>no</td><td>yes: the interval width</td></tr>
+    <tr><td>How much money is it?</td><td>no</td><td>yes: convert the bounds</td></tr>
+  </tbody>
+</table>
+<p>The link between the two is simple: a 95% interval misses zero exactly when the two-sided p-value is below 0.05. The p-value verdict is already contained in the interval, and the reverse does not hold. Reporting only a p-value throws away the size and the precision and gets nothing back.</p>
+
+<h2>When "not significant" does not mean "no effect"</h2>
+<p>A second test: 3,000 users per group, conversion 5.0% against 5.6%, p = 0.30. The temptation to report "no effect" is strong. But the interval for the difference runs from -0.5 to +1.7 pp. It covers zero, and it covers an effect three times larger than in the first test. This test did not show the absence of an effect, it showed nothing at all: the sample was too small. To size a test up front, see the article on <a href="#ab-test-design">A/B test design</a>, and for money metrics, <a href="#sample-size-money-metric">sample size for money</a>.</p>
+
+<h2>How to read an interval</h2>
+<ul class="checklist">
+  <li>Next to every p-value in a report, show the interval, in pp and in money</li>
+  <li>Significant result? Look at the lower bound: does the change pay off even in the worst scenario the data allows</li>
+  <li>Not significant? Look at what the interval covers: if it includes both zero and a valuable effect, the test lacked sample, not effect</li>
+  <li>The interval is still wide at the end of the test? That is an argument to keep it running, and a p-value gives no such signal</li>
+</ul>
+<div class="tip-box">
+  <p>In strict terms you cannot say "the truth lies in this interval with 95% probability": a specific interval either covered the truth or it did not. The confidence level describes the procedure: out of a hundred intervals built this way, about 95 will cover the truth. For everyday decisions the distinction changes little, but interviewers love this question.</p>
+</div>
+
+<h2>Bottom line</h2>
+<p>A p-value answers "is there an effect"; a confidence interval answers "how big is it and how well do we know it". Business decisions ride on the size of the effect, so a bare p-value is almost never enough. The interval costs three lines of code and exposes exactly the uncertainty you will otherwise have to answer for in front of the stakeholder.</p>
+</section>
