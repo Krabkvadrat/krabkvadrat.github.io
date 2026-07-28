@@ -236,6 +236,23 @@
     },
     {
       "section": "hard",
+      "subsection": "sql",
+      "slug": "islands-and-gaps",
+      "icon": "🏝️",
+      "bg": "var(--bg-success)",
+      "color": "var(--text-success)",
+      "tags": ["sql"],
+      "ru": {
+        "label": "Острова и промежутки",
+        "tag": "SQL / Оконные функции"
+      },
+      "en": {
+        "label": "Islands and Gaps",
+        "tag": "SQL / Window functions"
+      }
+    },
+    {
+      "section": "hard",
       "subsection": "python-ml",
       "slug": "eda",
       "icon": "🔬",

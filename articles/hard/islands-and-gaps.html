@@ -1,0 +1,251 @@
+<section data-lang="ru">
+<div class="article-tag">SQL / Оконные функции</div>
+<h1>Острова и промежутки</h1>
+<p class="lead">Продакт хочет наградить лояльных: бонус всем, кто заходил в сервис пять дней подряд. В таблице <code>user_logins</code> 12 млн строк вида «пользователь, таймстемп», поля «серия» там нет. Первая мысль обычно про самосоединение таблицы с собой на пять сдвигов, и от неё становится нехорошо. Рабочая мысль короче: вычесть из даты её порядковый номер. Приём называется islands and gaps, «острова и промежутки».</p>
+
+<h2>Смотрим на даты одного пользователя</h2>
+<p>Пользователь заходил 3, 4, 5, 6 и 7 января, потом пропал на день и вернулся 9 и 10. Пронумеруем его дни по порядку и вычтем номер из даты:</p>
+<table class="cmp-table">
+  <thead>
+    <tr><th>login_dt</th><th>rn</th><th>login_dt - rn</th></tr>
+  </thead>
+  <tbody>
+    <tr><td>2024-01-03</td><td>1</td><td>2024-01-02</td></tr>
+    <tr><td>2024-01-04</td><td>2</td><td>2024-01-02</td></tr>
+    <tr><td>2024-01-05</td><td>3</td><td>2024-01-02</td></tr>
+    <tr><td>2024-01-06</td><td>4</td><td>2024-01-02</td></tr>
+    <tr><td>2024-01-07</td><td>5</td><td>2024-01-02</td></tr>
+    <tr><td>2024-01-09</td><td>6</td><td>2024-01-03</td></tr>
+    <tr><td>2024-01-10</td><td>7</td><td>2024-01-03</td></tr>
+  </tbody>
+</table>
+<p>Глазами острова видно сразу: первый на пять дней, второй на два. Третья колонка говорит то же самое, но так, что понимает SQL.</p>
+
+<h2>В чём фокус</h2>
+<p>Номер строки растёт ровно на 1 на каждом шаге. Пока дата тоже растёт на 1, разность не меняется. 8 января пользователь не заходил: дата скакнула с 7 на 9, то есть на 2, а номер по-прежнему на 1. Разность выросла на единицу и осталась такой до конца. Каждый новый пропуск снова её сдвигает. Получается константа, одинаковая внутри непрерывной серии и разная у разных серий: готовый ключ для <code>group by</code>.</p>
+
+<h2>Ключевые понятия</h2>
+<ul class="glossary">
+  <li><strong>Остров</strong>: непрерывная серия строк без пропусков, у нас это подряд идущие дни входов одного пользователя.</li>
+  <li><strong>Промежуток</strong>: разрыв между островами, один или несколько пропущенных дней (8 января в примере).</li>
+  <li><strong>Ключ группы</strong>: разность даты и порядкового номера, постоянная внутри острова. По ней и группируем.</li>
+</ul>
+
+<h2>Решение</h2>
+<pre><code>with base as (
+    select
+        user_id,
+        login_ts::date as login_dt
+    from user_logins
+    group by 1, 2                    -- одна строка на пользователя и день
+),
+grps as (
+    select
+        user_id,
+        login_dt,
+        row_number() over (partition by user_id order by login_dt) as rn,
+        login_dt - row_number() over (partition by user_id order by login_dt)::int as grp
+    from base
+)
+select
+    user_id,
+    min(login_dt) as streak_start,
+    max(login_dt) as streak_end,
+    count(*)      as days
+from grps
+group by user_id, grp
+having count(*) &gt;= 5</code></pre>
+
+<div class="step">
+  <div class="step-num">1</div>
+  <div>
+    <div class="step-title">Схлопнуть таймстемпы до дат</div>
+    <div class="step-desc">Десять входов за 5 января это всё равно один день. Про приведение таймстемпа к дате и часовые пояса есть <a href="#working-with-dates">отдельная статья</a>.</div>
+  </div>
+</div>
+<div class="step">
+  <div class="step-num">2</div>
+  <div>
+    <div class="step-title">Пронумеровать и вычесть</div>
+    <div class="step-desc"><code>row_number()</code> внутри пользователя, разность с датой даёт <code>grp</code>, идентификатор острова. Колонка <code>rn</code> в результате не нужна, она оставлена, чтобы можно было посмотреть глазами.</div>
+  </div>
+</div>
+<div class="step">
+  <div class="step-num">3</div>
+  <div>
+    <div class="step-title">Сгруппировать по пользователю и острову</div>
+    <div class="step-desc"><code>count(*)</code> это длина серии, <code>having</code> оставляет серии от пяти дней, <code>min</code> и <code>max</code> показывают, когда серия шла.</div>
+  </div>
+</div>
+
+<h2>Когда промежуток можно простить</h2>
+<p>Требования редко бывают такими чистыми. «Серия не рвётся, если пропущен один день». «События одного пользователя, между которыми меньше 30 минут, считаем одной сессией». Разность с номером тут не поможет, она держится на том, что шаг равен ровно единице. Общий вариант: сравнить строку с предыдущей через <code>lag</code>, поставить 1 там, где начался новый остров, и накопительно сложить флаги.</p>
+<pre><code>with flagged as (
+    select
+        user_id,
+        event_ts,
+        case
+            when event_ts - lag(event_ts) over (partition by user_id order by event_ts)
+                 &lt;= interval '30 minutes' then 0
+            else 1                       -- разрыв больше 30 минут или первая строка
+        end as is_new
+    from events
+),
+grps as (
+    select
+        user_id,
+        event_ts,
+        sum(is_new) over (partition by user_id order by event_ts) as session_id
+    from flagged
+)
+select
+    user_id,
+    session_id,
+    min(event_ts) as started_at,
+    max(event_ts) as finished_at,
+    count(*)      as events
+from grps
+group by 1, 2</code></pre>
+<p>У первой строки пользователя <code>lag</code> возвращает null, сравнение тоже даёт null, <code>case</code> уходит в <code>else</code> и открывает первый остров. Меняя одно условие в <code>case</code>, тем же скелетом закрываете серии дней с допуском в один пропуск, сессии по 30 минут и непрерывные периоды подписки.</p>
+
+<h2>Где легко ошибиться</h2>
+<ul class="checklist">
+  <li>Не схлопнули дубликаты: два входа за 5 января получат два номера подряд и разорвут остров. Гранулярность решает всё, см. <a href="#tabular-thinking">табличное мышление</a></li>
+  <li>Забыли <code>partition by user_id</code>: нумерация поедет сквозь пользователей и склеит чужие дни в один остров</li>
+  <li><code>order by</code> не по той колонке: остров определяется порядком, а порядок задаёте вы</li>
+  <li>Шаг не равен единице (недели, месяцы, часы): либо приводите к целым единицам, либо берите вариант с <code>lag</code></li>
+  <li>Диалект: в PostgreSQL и ClickHouse дата минус целое работает как есть, в BigQuery нужен <code>date_sub(login_dt, interval rn day)</code>, в остальных случаях проще перевести дату в число дней и вычитать номер уже из числа</li>
+</ul>
+<div class="tip-box">
+  <p>Задача «найди тех, кто заходил N дней подряд» стабильно попадается на собеседованиях, обычно без подсказки про приём. Кандидат уходит в рекурсивный CTE или пять self join, тратит двадцать минут и всё равно упирается в дубликаты по дню. Тут же вся логика умещается в одну арифметическую строку.</p>
+</div>
+
+<h2>Главный вывод</h2>
+<p>За словом «подряд» в требованиях почти всегда прячутся острова. Пронумеруйте строки, вычтите номер из даты, получите ключ группы, дальше обычный <code>group by</code>. Один скелет закрывает серии дней, сессии и любые непрерывные интервалы, меняется только правило, по которому вы решаете, что промежуток начался.</p>
+</section>
+
+<section data-lang="en">
+<div class="article-tag">SQL / Window functions</div>
+<h1>Islands and Gaps</h1>
+<p class="lead">The product manager wants to reward loyal users: a bonus for everyone who logged in five days in a row. The <code>user_logins</code> table holds 12 million rows of "user, timestamp", and nothing in it says "streak". The first idea is usually to join the table to itself five times, which starts to hurt before you finish typing it. The shorter idea: subtract the row number from the date. The technique is called islands and gaps.</p>
+
+<h2>Look at one user's dates</h2>
+<p>This user logged in on January 3, 4, 5, 6 and 7, went quiet for a day, then came back on the 9th and the 10th. Number the days in order and subtract the number from the date:</p>
+<table class="cmp-table">
+  <thead>
+    <tr><th>login_dt</th><th>rn</th><th>login_dt - rn</th></tr>
+  </thead>
+  <tbody>
+    <tr><td>2024-01-03</td><td>1</td><td>2024-01-02</td></tr>
+    <tr><td>2024-01-04</td><td>2</td><td>2024-01-02</td></tr>
+    <tr><td>2024-01-05</td><td>3</td><td>2024-01-02</td></tr>
+    <tr><td>2024-01-06</td><td>4</td><td>2024-01-02</td></tr>
+    <tr><td>2024-01-07</td><td>5</td><td>2024-01-02</td></tr>
+    <tr><td>2024-01-09</td><td>6</td><td>2024-01-03</td></tr>
+    <tr><td>2024-01-10</td><td>7</td><td>2024-01-03</td></tr>
+  </tbody>
+</table>
+<p>Your eye picks out the islands right away: five days in the first one, two in the second. The third column says the same thing in a form SQL understands.</p>
+
+<h2>Where the trick sits</h2>
+<p>The row number grows by exactly 1 at every step. As long as the date also grows by 1, the difference stays put. On January 8 the user did not log in: the date jumped from 7 to 9, that is by 2, while the number still moved by 1. The difference grew by one and kept the new value from there on. Every later skip shifts it again. What you get is a constant, the same inside one unbroken run and different across runs: a ready key for <code>group by</code>.</p>
+
+<h2>Key terms</h2>
+<ul class="glossary">
+  <li><strong>Island</strong>: an unbroken run of rows with no skips, here the consecutive login days of one user.</li>
+  <li><strong>Gap</strong>: the break between islands, one or more missing days (January 8 in the example).</li>
+  <li><strong>Group key</strong>: the date minus the row number, constant inside an island. That is what you group by.</li>
+</ul>
+
+<h2>The query</h2>
+<pre><code>with base as (
+    select
+        user_id,
+        login_ts::date as login_dt
+    from user_logins
+    group by 1, 2                    -- one row per user per day
+),
+grps as (
+    select
+        user_id,
+        login_dt,
+        row_number() over (partition by user_id order by login_dt) as rn,
+        login_dt - row_number() over (partition by user_id order by login_dt)::int as grp
+    from base
+)
+select
+    user_id,
+    min(login_dt) as streak_start,
+    max(login_dt) as streak_end,
+    count(*)      as days
+from grps
+group by user_id, grp
+having count(*) &gt;= 5</code></pre>
+
+<div class="step">
+  <div class="step-num">1</div>
+  <div>
+    <div class="step-title">Collapse timestamps into dates</div>
+    <div class="step-desc">Ten logins on January 5 still make one day. Casting timestamps to dates and handling time zones has its <a href="#working-with-dates">own article</a>.</div>
+  </div>
+</div>
+<div class="step">
+  <div class="step-num">2</div>
+  <div>
+    <div class="step-title">Number the days and subtract</div>
+    <div class="step-desc"><code>row_number()</code> inside each user, and the difference with the date gives <code>grp</code>, the group key that identifies an island. The <code>rn</code> column does no work in the result, it is there so you can eyeball the arithmetic.</div>
+  </div>
+</div>
+<div class="step">
+  <div class="step-num">3</div>
+  <div>
+    <div class="step-title">Group by user and island</div>
+    <div class="step-desc"><code>count(*)</code> is the length of the run, <code>having</code> keeps runs of five days and longer, <code>min</code> and <code>max</code> show when the run happened.</div>
+  </div>
+</div>
+
+<h2>When a gap is forgivable</h2>
+<p>Requirements are rarely that clean. "The streak survives one missed day." "Events of one user less than 30 minutes apart count as a single session." Subtracting the row number will not carry you here, it relies on a step of exactly one unit. The general form: compare each row with the previous one through <code>lag</code>, mark 1 where a new island starts, and add the flags up cumulatively.</p>
+<pre><code>with flagged as (
+    select
+        user_id,
+        event_ts,
+        case
+            when event_ts - lag(event_ts) over (partition by user_id order by event_ts)
+                 &lt;= interval '30 minutes' then 0
+            else 1                       -- gap over 30 minutes, or the first row
+        end as is_new
+    from events
+),
+grps as (
+    select
+        user_id,
+        event_ts,
+        sum(is_new) over (partition by user_id order by event_ts) as session_id
+    from flagged
+)
+select
+    user_id,
+    session_id,
+    min(event_ts) as started_at,
+    max(event_ts) as finished_at,
+    count(*)      as events
+from grps
+group by 1, 2</code></pre>
+<p>On a user's first row <code>lag</code> returns null, the comparison returns null too, <code>case</code> falls through to <code>else</code> and opens the first island. Change that one condition and the same skeleton covers day streaks with one skip allowed, 30-minute sessions, and unbroken subscription periods.</p>
+
+<h2>Where this goes wrong</h2>
+<ul class="checklist">
+  <li>Duplicates left in place: two logins on January 5 take two consecutive numbers and tear the island apart. Granularity decides everything here, see <a href="#tabular-thinking">tabular thinking</a></li>
+  <li><code>partition by user_id</code> missing: the numbering runs across users and glues someone else's days into your island</li>
+  <li><code>order by</code> on the wrong column: an island is defined by the order, and you set the order</li>
+  <li>The step is not one unit (weeks, months, hours): either normalize to whole units or take the <code>lag</code> version</li>
+  <li>Dialects: in PostgreSQL and ClickHouse a date minus an integer works as is, BigQuery needs <code>date_sub(login_dt, interval rn day)</code>, elsewhere it is easier to turn the date into a day number and subtract from that</li>
+</ul>
+<div class="tip-box">
+  <p>"Find users who logged in N days in a row" shows up in interviews regularly, and nobody hints at the technique. The candidate reaches for a recursive CTE or five self joins, burns twenty minutes, and still trips over duplicate rows per day. The whole thing fits into one line of arithmetic instead.</p>
+</div>
+
+<h2>Bottom line</h2>
+<p>The word "consecutive" in a requirement almost always hides islands. Number the rows, subtract the number from the date, take the group key, then run an ordinary <code>group by</code>. One skeleton handles day streaks, sessions and any unbroken intervals; the only thing that changes is the rule you use to decide that a gap has started.</p>
+</section>
