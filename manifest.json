@@ -424,6 +424,25 @@
       }
     },
     {
+      "section": "hard",
+      "subsection": "ai",
+      "slug": "ai-task-design",
+      "icon": "🔥",
+      "bg": "var(--bg-info)",
+      "color": "var(--text-info)",
+      "tags": [
+        "ai"
+      ],
+      "ru": {
+        "label": "Дизайн задачи с помощью ИИ",
+        "tag": "AI"
+      },
+      "en": {
+        "label": "Designing a Task with AI",
+        "tag": "AI"
+      }
+    },
+    {
       "section": "about",
       "slug": "me",
       "icon": "👤",
