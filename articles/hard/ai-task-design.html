@@ -1,180 +1,180 @@
 <section data-lang="ru">
 <div class="article-tag">AI</div>
 <h1>Дизайн задачи с помощью ИИ</h1>
-<p class="lead">Приходит запрос: «посчитай конверсию в оплату по новой фиче». Соблазн большой — открыть редактор и писать SQL. Через полчаса готово число, красивое и неправильное: под коротким запросом пряталась дюжина развилок, и вы молча выбрали не те. Проблема не в коде, а в том, что задачу никто не спроектировал. И самый дешёвый способ это починить — не решать задачу с ИИ, а заставить ИИ прожарить вас вопросами, пока формулировка не станет однозначной.</p>
+<p class="lead">Приходит запрос: «посчитай конверсию в оплату по новой фиче». Рука тянется к редактору и к SQL. Через полчаса готово число, красивое и неправильное: под коротким запросом лежала дюжина развилок, и вы прошли их не глядя. Задачу никто не спроектировал. Дешевле всего это чинится до первой строки кода: велите ИИ отложить решение и допрашивать вас вопросами, пока формулировка не станет однозначной.</p>
 
-<h2>Зачем вообще проектировать задачу</h2>
-<p>Запрос, который до вас дошёл, это ещё не задача. Под «посчитай конверсию» лежат вопросы, на которые никто не ответил: конверсия из чего во что, за какой период, кто в знаменателе — пользователи или сессии, что делать с повторными оплатами, исключаем ли тестовые аккаунты, и главное — какое решение будут принимать по этому числу. Пока эти развилки не закрыты, задачи нет, есть намерение.</p>
-<p>Ошибка проектирования дороже ошибки в коде. Кривой SQL ловится ревью, тестом, глазами: он падает или выдаёт очевидную дичь. Неверно поставленная задача даёт правильно посчитанный неправильный ответ — он проходит все проверки, попадает в дашборд и живёт там месяцами, потому что придраться не к чему. Ловить такое приходится по последствиям, когда по числу уже приняли решение. Про то, что вопрос стоит дороже кода, есть <a href="#asking-questions">отдельная статья</a>, а про сбор требований — <a href="#gathering-requirements">ещё одна</a>.</p>
+<h2>Зачем проектировать задачу</h2>
+<p>Запрос, который до вас дошёл, это ещё не задача. Под «посчитай конверсию» лежат вопросы, на которые заказчик не ответил: конверсия из чего во что, за какой период, кто в знаменателе (пользователи или сессии), что делать с повторными оплатами, исключаем ли тестовые аккаунты. И главный вопрос: какое решение будут принимать по этому числу. Пока эти развилки открыты, у вас на руках намерение заказчика.</p>
+<p>Ошибка проектирования обходится дороже ошибки в коде. Кривой SQL вы поймаете на ревью или глазами: он падает или выдаёт очевидную дичь. Неверно поставленная задача даёт правильно посчитанный неправильный ответ. Он проходит проверки, попадает в дашборд и остаётся там месяцами, потому что придраться не к чему. Заметите вы это по последствиям, когда по числу уже приняли решение. Про то, что вопрос стоит дороже кода, есть <a href="#asking-questions">отдельная статья</a>, про сбор требований <a href="#gathering-requirements">ещё одна</a>.</p>
 
 <h2>Ловушка режима «реши за меня»</h2>
-<p>По умолчанию с ИИ работают так: дают задачу, получают решение. Модель услужлива и не любит переспрашивать — пробел в постановке она заполняет правдоподобным допущением и молчит об этом. Вы просите конверсию, она берёт какое-то разумное определение конверсии, какое-то окно, какой-то знаменатель и уверенно выдаёт запрос. Скорость маскирует пропущенный шаг: решение выглядит готовым ровно потому, что все спорные развилки закрыли за вас и не показали.</p>
-<p>Тот самый навык, который у аналитика на первом месте — усомниться, уточнить, поставить вопрос — в этом режиме отключён. ИИ ускоряет механику и незаметно съедает проектирование.</p>
+<p>По умолчанию с ИИ работают так: даёте задачу, получаете решение. Модель услужлива и не любит переспрашивать, поэтому пробел в постановке она заполняет правдоподобным допущением и молчит об этом. Вы просите конверсию, она берёт разумное определение конверсии, какое-то окно, какой-то знаменатель и выдаёт запрос. За скоростью вы не увидите пропущенный шаг: решение выглядит готовым потому, что спорные развилки модель закрыла за вас и не показала какие.</p>
+<p>В этом режиме вы не пользуетесь главным навыком аналитика: усомниться и уточнить. Механику ИИ ускоряет, а проектирование вы пропускаете и не замечаете этого.</p>
 
 <h2>Режим прожарки</h2>
-<p>Приём простой: поменять роли. Не «реши задачу», а «пока не решай — допрашивай меня, пока задача не станет однозначной». ИИ из решателя превращается в скептичного сеньора, который не верит на слово и вытаскивает наружу всё, что вы оставили неявным.</p>
-<p>Почему это хорошо получается именно у модели. У неё нет эго и нет желания выглядеть догадливой — ей не стыдно спросить очевидное. Она не устаёт на двадцатом вопросе и не считает, что и так знает, что вы имели в виду. И она методично проходит по скучным крайним случаям, которые живой человек пропускает, потому что «ну это и так понятно». Именно в «и так понятно» и прячутся ошибки проектирования.</p>
-<pre><code>Контекст. Я аналитик в &lt;компания&gt;, продукт — &lt;что это&gt;.
+<p>Приём простой: поменять роли. Вместо «реши задачу» вы пишете «пока не решай, допрашивай меня, пока задача не станет однозначной». Дальше модель работает скептичным сеньором, который не верит на слово и вытаскивает наружу то, что вы оставили неявным.</p>
+<p>У модели нет эго и нет желания выглядеть догадливой, ей не стыдно спросить очевидное. Она не устаёт на двадцатом вопросе и не считает, что и так знает, что вы имели в виду. Она проходит по скучным крайним случаям, которые ваш коллега пропустит со словами «ну это и так понятно». Ошибки проектирования вы найдёте как раз в этом «и так понятно».</p>
+<pre><code>Контекст. Я аналитик в &lt;компания&gt;, продукт: &lt;что это&gt;.
 Запрос пришёл дословно так: «&lt;вставить запрос&gt;».
 Данные: &lt;таблицы, гранулярность, примеры строк, известные грязные места&gt;.
 Ограничения: &lt;диалект SQL, срок, нужная точность&gt;.
 
-Не решай задачу. Сначала прожарь меня вопросами: найди всё, что я
-оставил неявным — определения, границы, крайние случаи, и какое
-решение вообще принимают по этому числу. Задавай вопросы пачкой,
+Не решай задачу. Сначала прожарь меня вопросами: найди то, что я
+оставил неявным, определения, границы, крайние случаи, и какое
+решение принимают по этому числу. Задавай вопросы пачкой,
 пронумеруй и к каждому дай свой рекомендованный ответ.
-Продолжай, пока не останется ни одного молчаливого допущения.
+Продолжай, пока не останется невысказанных допущений.
 Решение не пиши, пока я не скажу, что задача сформулирована.</code></pre>
 
 <h2>Что дать на вход</h2>
-<p>Качество прожарки прямо зависит от контекста. Прожарка на пустом месте задаёт общие вопросы из учебника; прожарка на богатом контексте задаёт те вопросы, которые реально решают. Не жалейте входных данных:</p>
+<p>Качество прожарки зависит от контекста. На пустом месте модель задаст общие вопросы из учебника, на богатом контексте те, от которых зависит результат. Не жалейте входных данных:</p>
 <ul class="glossary">
-  <li><strong>Бизнес-контекст.</strong> Какое решение висит на этом числе. «Решаем, катить ли фичу на всех» и «готовим слайд для ретро» — это две разные задачи с одним запросом.</li>
-  <li><strong>Запрос дословно.</strong> Не ваш пересказ, а как сформулировал заказчик. Кривизна формулировки — это сигнал, и модель её заметит.</li>
-  <li><strong>Данные.</strong> Схема, гранулярность, пара примеров строк, известные грязные места. Половина хороших вопросов рождается из структуры таблиц, а не из текста запроса.</li>
+  <li><strong>Бизнес-контекст.</strong> Какое решение висит на этом числе. «Решаем, катить ли фичу на всех» и «готовим слайд для ретро» это две разные задачи с одним запросом.</li>
+  <li><strong>Запрос дословно.</strong> Скопируйте формулировку заказчика вместо своего пересказа. Кривизна формулировки это сигнал, и модель её заметит.</li>
+  <li><strong>Данные.</strong> Схема, гранулярность, пара примеров строк, известные грязные места. Структура таблиц подскажет модели половину хороших вопросов.</li>
   <li><strong>Ограничения.</strong> Диалект, срок, требуемая точность. Оценка «на глаз за час» и «цифра в годовой отчёт» проектируются по-разному.</li>
 </ul>
 
 <h2>Как это выглядит</h2>
-<p>На запрос «посчитай конверсию в оплату по новой фиче» с нормальным контекстом модель возвращает не запрос, а раунд вопросов:</p>
+<p>На запрос «посчитай конверсию в оплату по новой фиче» с нормальным контекстом модель возвращает раунд вопросов вместо запроса:</p>
 <ul class="glossary">
   <li><strong>1. Из чего во что конверсия?</strong> Из первого показа фичи в оплату, из клика по ней, или из регистрации? ➡️ Рекомендую: из первого показа в первую оплату.</li>
-  <li><strong>2. Знаменатель — пользователи или сессии?</strong> ➡️ Уникальные пользователи.</li>
+  <li><strong>2. Знаменатель: пользователи или сессии?</strong> ➡️ Уникальные пользователи.</li>
   <li><strong>3. Окно атрибуции.</strong> Оплата засчитывается в любой момент после показа или в течение N дней? ➡️ 7 дней.</li>
   <li><strong>4. Когорта.</strong> Все, кто видел фичу, или только новые пользователи? ➡️ Все, с разбивкой по новизне.</li>
   <li><strong>5. Тестовые и внутренние аккаунты.</strong> Исключаем? ➡️ Да, тем же фильтром, что в витрине выручки.</li>
-  <li><strong>6. С чем сравниваем?</strong> Есть контроль без фичи или это абсолютное число? Если сравнение — это уже A/B-тест, и дизайн другой.</li>
+  <li><strong>6. С чем сравниваем?</strong> Есть контроль без фичи или это абсолютное число? Если сравниваем, то это уже A/B-тест, и дизайн другой.</li>
 </ul>
-<p>Шестой вопрос — тот, ради чего всё затевалось. Он вскрывает, что за «посчитай конверсию» мог прятаться эксперимент, а это <a href="#ab-test-design">совсем другая задача</a>. Такую развилку в режиме «реши за меня» вы бы увидели в лучшем случае постфактум.</p>
+<p>Ради шестого вопроса всё и затевалось: за «посчитай конверсию» мог прятаться эксперимент, а это <a href="#ab-test-design">совсем другая задача</a>. В режиме «реши за меня» вы бы дошли до этой развилки в лучшем случае постфактум.</p>
 
 <div class="step">
   <div class="step-num">1</div>
   <div>
     <div class="step-title">Загрузить контекст, а не задачу</div>
-    <div class="step-desc">Сначала бизнес, данные, ограничения и дословный запрос. Задача пока не ставится — ставится сцена.</div>
+    <div class="step-desc">Сначала бизнес, данные, ограничения и дословный запрос. Вы пока описываете обстановку, задачу поставите позже.</div>
   </div>
 </div>
 <div class="step">
   <div class="step-num">2</div>
   <div>
     <div class="step-title">Попросить прожарку</div>
-    <div class="step-desc">Явно запретить решать и потребовать вопросы пачкой, с рекомендованными ответами. Пройти несколько раундов, пока вопросы не иссякнут.</div>
+    <div class="step-desc">Запретить решать и потребовать вопросы пачкой, с рекомендованными ответами. Пройти несколько раундов, пока вопросы не иссякнут.</div>
   </div>
 </div>
 <div class="step">
   <div class="step-num">3</div>
   <div>
     <div class="step-title">Зафиксировать формулировку</div>
-    <div class="step-desc">Когда развилки закрыты, попросить собрать всё в короткое ТЗ: определения, границы, крайние случаи. Вот теперь можно решать — и уже с ним.</div>
+    <div class="step-desc">Когда развилки закрыты, попросить собрать итог в короткое ТЗ с определениями и границами. Решать теперь можно, и уже по нему.</div>
   </div>
 </div>
 
 <h2>Где легко смошенничать</h2>
 <ul class="checklist">
-  <li>Отвечать «да, согласен» на все рекомендованные ответы: тогда прожарка вырождается в то же молчаливое допущение, только чужое. На каждый вопрос отвечайте своим ответом, а не кивком</li>
-  <li>Давать ИИ решать раньше времени: попросили прожарку — держите модель в ней, пока формулировка не готова</li>
+  <li>Отвечать «да, согласен» на рекомендованные ответы: тогда допущение остаётся необсуждённым, просто теперь оно чужое. Отвечайте своими словами, кивок не считается</li>
+  <li>Давать ИИ решать раньше времени: попросили прожарку, держите в ней модель, пока формулировка не готова</li>
   <li>Ждать, что прожарка заменит знание предметной области: модель задаёт вопрос, но ответ на «как у нас считается выручка» есть только у вас</li>
-  <li>Растягивать бесконечно: цель — закрыть развилки, а не выдумать новые. Пустой раунд вопросов это сигнал остановиться</li>
+  <li>Растягивать бесконечно: пустой раунд вопросов это сигнал остановиться</li>
 </ul>
 
 <h2>Скиллы для прожарки и ревью</h2>
-<p>Прожарку можно каждый раз собирать промптом, а можно оформить как <a href="#ai-analyst">skill</a> — сохранённую инструкцию, которую ИИ подхватывает сам. Я для этого использую готовый набор Мэтта Покока: <a href="https://github.com/mattpocock/skills">mattpocock/skills</a>, его собственные инженерные скиллы «для настоящей разработки, а не вайб-кодинга». Как минимум два в моём обиходе:</p>
+<p>Прожарку можно каждый раз собирать промптом, а можно оформить как <a href="#ai-analyst">skill</a>, сохранённую инструкцию, которую ИИ подхватывает сам. Я беру готовый набор Мэтта Покока: <a href="https://github.com/mattpocock/skills">mattpocock/skills</a>, его инженерные скиллы «для настоящей разработки, а не вайб-кодинга». Два из них у меня в обиходе:</p>
 <ul class="glossary">
-  <li><strong>grill-me / grilling.</strong> Ровно тот приём, но с методом. Решения раскладываются в дерево, где каждый выбор открывает следующие. «Фронтир» — это вопросы, чьи предпосылки уже закрыты, их можно задать прямо сейчас без гаданий. Модель задаёт весь фронтир одним раундом: нумерует вопросы и к каждому даёт рекомендованный ответ. Ваши ответы двигают фронтир дальше. Сессия закончена, когда «фронтир пуст: все ветки дерева пройдены, ничего не осталось молча предположённым» — и до этого момента решать модель не начинает.</li>
-  <li><strong>code-review.</strong> Ревью по двум осям, которые намеренно не смешивают. Первая — стандарты: соответствует ли код принятым в репозитории правилам и базовому набору «запахов» (feature envy, дублирование, мутные имена). Вторая — спецификация: делает ли реализация ровно то, что просили в задаче. По второй оси ищут пропущенные требования, лишнее сверх задачи (scope creep) и места, где вроде сделано, но, похоже, неверно. Итог — два отдельных списка, чтобы одна ось не маскировала другую.</li>
+  <li><strong>grill-me / grilling.</strong> Тот же приём, но с методом. Модель раскладывает решения в дерево, где каждый выбор открывает следующие. За один раунд она задаёт те вопросы, предпосылки которых вы уже закрыли, то есть на которые можно ответить без гаданий: нумерует их и к каждому даёт рекомендованный ответ. Ваши ответы открывают следующий слой вопросов. Сессия закончена, когда новых вопросов не остаётся и ни одна ветка дерева не закрыта догадкой. До этого решать модель не начинает.</li>
+  <li><strong>code-review.</strong> Ревью по двум осям, которые скилл держит раздельно. Первая ось, стандарты: соответствует ли код правилам репозитория и типовым признакам плохого кода (дублирование, мутные имена, логика лежит не в том модуле). Вторая ось, сама задача: делает ли реализация то, что просили. По второй ищут пропущенные требования, сделанное сверх задачи и места, где вроде готово, но похоже, что неверно. На выходе два отдельных списка, чтобы одна ось не закрывала другую.</li>
 </ul>
-<div class="tip-box"><p>Это инженерные скиллы, заточенные под код и трекеры задач, так что часть механики (тикеты, домовые модели) аналитику не пригодится. Но приём прожарки и разделение ревью на «по стандартам» и «по спеке» — общие, и переносятся на дизайн любой задачи с данными почти без изменений.</p></div>
+<div class="tip-box"><p>Это инженерные скиллы, заточенные под код и трекеры задач, так что часть механики (тикеты, описание предметной области) аналитику не пригодится. Зато приём прожарки и разделение ревью на «по стандартам» и «по задаче» переносятся на дизайн любой задачи с данными почти без изменений.</p></div>
 
 <h2>Главный вывод</h2>
-<p>Запрос — это не задача, а намерение с дырами. Дешевле всего эти дыры видно до первой строки кода, и ИИ отлично их подсвечивает — если развернуть его из решателя в допросчика. Загрузите контекст, велите прожарить вас вопросами, доведите до формулировки, где ничего не предположено молча, и только потом решайте. Правильно посчитать неправильную задачу — самая дорогая ошибка аналитика, и именно её прожарка снимает.</p>
+<p>Запрос это намерение с дырами. Дешевле всего вы увидите эти дыры до первой строки кода, и модель поможет их найти, если развернуть её из решателя в допросчика. Загрузите контекст, велите прожарить вас вопросами, доведите формулировку до состояния, где ни одно допущение не осталось за кадром, и только потом решайте. Правильно посчитанная неправильная задача обходится аналитику дороже любой ошибки в SQL, и прожарка снимает как раз этот риск.</p>
 </section>
 
 <section data-lang="en">
 <div class="article-tag">AI</div>
 <h1>Designing a Task with AI</h1>
-<p class="lead">A request comes in: "measure the payment conversion for the new feature." The temptation is to open the editor and start writing SQL. Half an hour later you have a number, clean and wrong: a dozen forks hid under that short request, and you silently picked the wrong ones. The problem is not the code, it is that nobody designed the task. And the cheapest way to fix it is not to solve the task with AI, but to make the AI grill you with questions until the wording is unambiguous.</p>
+<p class="lead">A request comes in: "measure the payment conversion for the new feature." Your hand reaches for the editor and for SQL. Half an hour later you have a number, clean and wrong: a dozen forks sat under that short request, and you walked past them without looking. Nobody designed the task. The cheapest place to fix that is before the first line of code: tell the AI to hold off on the solution and grill you with questions until the wording is unambiguous.</p>
 
-<h2>Why design a task at all</h2>
-<p>The request that reached you is not yet a task. Under "measure conversion" sit questions no one answered: conversion from what into what, over which period, who is in the denominator — users or sessions, what to do with repeat payments, whether to exclude test accounts, and above all — what decision rides on this number. Until those forks are closed, there is no task, only an intent.</p>
-<p>A design mistake costs more than a coding mistake. A broken query gets caught by review, a test, your own eyes: it fails or spits out obvious nonsense. A misframed task returns a correctly computed wrong answer — it passes every check, lands in the dashboard, and lives there for months because there is nothing to object to. You catch it by its consequences, once the number has already driven a decision. That a question costs more than code has <a href="#asking-questions">its own article</a>, and gathering requirements has <a href="#gathering-requirements">another</a>.</p>
+<h2>Why design the task</h2>
+<p>The request that reached you is not yet a task. Under "measure conversion" sit questions the stakeholder left unanswered: conversion from what into what, over which period, who goes in the denominator (users or sessions), what to do with repeat payments, whether to exclude test accounts. And the question that matters most: what decision rides on this number. While those forks stay open, what you hold is the stakeholder's intent.</p>
+<p>A design mistake costs more than a coding mistake. You catch a broken query at review or by eye: it fails or spits out obvious nonsense. A misframed task returns a correctly computed wrong answer. It passes the checks, lands in the dashboard and stays there for months, because there is nothing to object to. You notice it by its consequences, once the number has already driven a decision. That a question costs more than code has <a href="#asking-questions">its own article</a>, and gathering requirements has <a href="#gathering-requirements">another</a>.</p>
 
 <h2>The trap of "just solve it for me"</h2>
-<p>The default way to work with AI: hand it a task, get a solution. The model is eager and dislikes pushing back — it fills a gap in the framing with a plausible assumption and says nothing about it. You ask for conversion, it takes some reasonable definition of conversion, some window, some denominator, and confidently produces a query. Speed masks the missing step: the solution looks finished precisely because every contested fork was closed for you and never shown.</p>
-<p>The very skill that comes first for an analyst — to doubt, to clarify, to raise the question — is switched off in this mode. The AI speeds up the mechanics and quietly eats the design.</p>
+<p>The default way to work with AI: you hand over a task, you get a solution. The model is eager and dislikes pushing back, so it fills a gap in the framing with a plausible assumption and says nothing about it. You ask for conversion, it takes a reasonable definition of conversion, some window, some denominator, and produces a query. Behind the speed you miss the skipped step: the solution looks finished because the model closed the contested forks for you and never showed which ones.</p>
+<p>In this mode you leave the core analyst skill unused: to doubt and to clarify. The AI speeds up the mechanics, and you skip the design without noticing.</p>
 
 <h2>The grilling mode</h2>
-<p>The move is simple: swap the roles. Not "solve the task" but "don't solve it yet — interrogate me until the task is unambiguous." The AI turns from a solver into a skeptical senior who takes nothing on faith and drags out everything you left implicit.</p>
-<p>Why the model is good at this. It has no ego and no urge to look clever — it is not embarrassed to ask the obvious. It does not tire on the twentieth question and does not assume it already knows what you meant. And it works methodically through the boring edge cases a human skips because "well, that's obvious." The design mistakes hide exactly inside "that's obvious."</p>
+<p>The move is simple: swap the roles. Instead of "solve the task" you write "don't solve it yet, interrogate me until the task is unambiguous." From there the model works as a skeptical senior who takes nothing on faith and drags out what you left implicit.</p>
+<p>The model has no ego and no urge to look clever, so it is not embarrassed to ask the obvious. It does not tire on the twentieth question and does not assume it already knows what you meant. It works through the boring edge cases your colleague skips with a "well, that's obvious." Design mistakes are what you find inside that "that's obvious."</p>
 <pre><code>Context. I'm an analyst at &lt;company&gt;, the product is &lt;what it is&gt;.
 The request came in verbatim as: "&lt;paste the request&gt;".
 Data: &lt;tables, granularity, sample rows, known dirty spots&gt;.
 Constraints: &lt;SQL dialect, deadline, precision needed&gt;.
 
-Do not solve the task. First grill me with questions: find everything
-I left implicit — definitions, boundaries, edge cases, and what decision
-this number actually drives. Ask the questions in one batch, number them,
-and give your recommended answer to each. Keep going until nothing is left
-silently assumed. Don't write the solution until I say the task is framed.</code></pre>
+Do not solve the task. First grill me with questions: find what I left
+implicit, the definitions, the boundaries, the edge cases, and what
+decision this number drives. Ask the questions in one batch, number them,
+and give your recommended answer to each. Keep going until no assumption
+is left unspoken. Don't write the solution until I say the task is framed.</code></pre>
 
 <h2>What to feed it</h2>
-<p>The quality of the grilling depends directly on the context. A grilling on nothing asks generic textbook questions; a grilling on rich context asks the questions that actually decide the outcome. Don't skimp on the input:</p>
+<p>The quality of the grilling depends on the context. With nothing to go on the model asks generic textbook questions; with rich context it asks the ones that decide the outcome. Don't skimp on the input:</p>
 <ul class="glossary">
   <li><strong>Business context.</strong> What decision hangs on this number. "Deciding whether to roll the feature out to everyone" and "prepping a slide for the retro" are two different tasks behind one request.</li>
-  <li><strong>The request verbatim.</strong> Not your paraphrase, but how the stakeholder put it. A crooked wording is a signal, and the model will notice it.</li>
-  <li><strong>The data.</strong> Schema, granularity, a couple of sample rows, known dirty spots. Half of the good questions come from the shape of the tables, not from the text of the request.</li>
-  <li><strong>Constraints.</strong> Dialect, deadline, precision needed. A "rough number in an hour" and a "figure for the annual report" are designed differently.</li>
+  <li><strong>The request verbatim.</strong> Paste the stakeholder's wording instead of your paraphrase. A crooked wording is a signal, and the model will catch it.</li>
+  <li><strong>The data.</strong> Schema, granularity, a couple of sample rows, known dirty spots. The shape of the tables will hand the model half of the good questions.</li>
+  <li><strong>Constraints.</strong> Dialect, deadline, precision needed. A "rough number in an hour" and a "figure for the annual report" get designed differently.</li>
 </ul>
 
 <h2>What it looks like</h2>
-<p>For "measure the payment conversion for the new feature," given real context, the model returns not a query but a round of questions:</p>
+<p>For "measure the payment conversion for the new feature," given real context, the model comes back with a round of questions instead of a query:</p>
 <ul class="glossary">
   <li><strong>1. Conversion from what into what?</strong> From the first feature impression to a payment, from a click on it, or from signup? ➡️ Recommend: from first impression to first payment.</li>
-  <li><strong>2. Denominator — users or sessions?</strong> ➡️ Unique users.</li>
+  <li><strong>2. Denominator: users or sessions?</strong> ➡️ Unique users.</li>
   <li><strong>3. Attribution window.</strong> Does a payment count at any time after the impression, or within N days? ➡️ 7 days.</li>
   <li><strong>4. Cohort.</strong> Everyone who saw the feature, or new users only? ➡️ Everyone, split by newness.</li>
   <li><strong>5. Test and internal accounts.</strong> Exclude them? ➡️ Yes, with the same filter as the revenue mart.</li>
-  <li><strong>6. Compared against what?</strong> Is there a control without the feature, or is this an absolute number? If it's a comparison, this is already an A/B test, and the design is different.</li>
+  <li><strong>6. Compared against what?</strong> Is there a control without the feature, or is this an absolute number? If you are comparing, this is already an A/B test, and the design is different.</li>
 </ul>
-<p>Question six is the one the whole thing was for. It exposes that "measure conversion" may have hidden an experiment, and that is <a href="#ab-test-design">a wholly different task</a>. In the "just solve it" mode you would have seen that fork after the fact, at best.</p>
+<p>Question six is what the whole thing was for: an experiment may have been hiding behind "measure conversion," and that is <a href="#ab-test-design">a different task altogether</a>. In "just solve it" mode you would have reached that fork after the fact, at best.</p>
 
 <div class="step">
   <div class="step-num">1</div>
   <div>
     <div class="step-title">Load the context, not the task</div>
-    <div class="step-desc">First the business, the data, the constraints, and the verbatim request. You are not setting the task yet — you are setting the stage.</div>
+    <div class="step-desc">First the business, the data, the constraints, and the verbatim request. You are describing the setting, and the task comes later.</div>
   </div>
 </div>
 <div class="step">
   <div class="step-num">2</div>
   <div>
     <div class="step-title">Ask for the grilling</div>
-    <div class="step-desc">Explicitly forbid solving and demand questions in a batch, with recommended answers. Run a few rounds until the questions run out.</div>
+    <div class="step-desc">Forbid solving and demand questions in a batch, with recommended answers. Run a few rounds until the questions run out.</div>
   </div>
 </div>
 <div class="step">
   <div class="step-num">3</div>
   <div>
     <div class="step-title">Pin down the wording</div>
-    <div class="step-desc">Once the forks are closed, ask it to fold everything into a short spec: definitions, boundaries, edge cases. Now you can solve it — and with that spec in hand.</div>
+    <div class="step-desc">Once the forks are closed, ask it to fold the result into a short spec with definitions and boundaries. Now you can solve it, and you solve it from that.</div>
   </div>
 </div>
 
 <h2>Where it's easy to cheat</h2>
 <ul class="checklist">
-  <li>Answering "yes, agreed" to every recommended answer: then the grilling collapses back into a silent assumption, just someone else's. Answer each question with your own answer, not a nod</li>
-  <li>Letting the AI solve too early: you asked for a grilling — keep the model in it until the wording is ready</li>
+  <li>Answering "yes, agreed" to the recommended answers: the assumption stays undiscussed, it is now someone else's. Answer in your own words, a nod does not count</li>
+  <li>Letting the AI solve too early: you asked for a grilling, keep the model in it until the wording is ready</li>
   <li>Expecting the grilling to replace domain knowledge: the model asks the question, but the answer to "how do we count revenue here" lives only with you</li>
-  <li>Stretching it forever: the goal is to close forks, not invent new ones. An empty round of questions is the signal to stop</li>
+  <li>Stretching it forever: an empty round of questions is the signal to stop</li>
 </ul>
 
 <h2>Skills for grilling and review</h2>
-<p>You can assemble the grilling with a prompt each time, or package it as a <a href="#ai-analyst">skill</a> — a saved instruction the AI picks up on its own. For this I use Matt Pocock's ready-made set: <a href="https://github.com/mattpocock/skills">mattpocock/skills</a>, his own engineering skills "for real engineering, not vibe coding." At least two are in my regular use:</p>
+<p>You can assemble the grilling with a prompt each time, or package it as a <a href="#ai-analyst">skill</a>, a saved instruction the AI picks up on its own. I use Matt Pocock's ready-made set: <a href="https://github.com/mattpocock/skills">mattpocock/skills</a>, his engineering skills "for real engineering, not vibe coding." Two of them are in my regular use:</p>
 <ul class="glossary">
-  <li><strong>grill-me / grilling.</strong> Exactly this move, but with a method. Decisions are laid out as a tree where each choice unlocks the next. The "frontier" is the questions whose prerequisites are already settled, the ones you can ask right now without guessing. The model asks the whole frontier in one round: it numbers the questions and gives a recommended answer to each. Your answers push the frontier outward. The session is done when "the frontier is empty: every branch of the design tree visited, nothing left silently assumed" — and the model does not start solving until then.</li>
-  <li><strong>code-review.</strong> Review along two axes kept deliberately separate. The first is standards: does the code follow the repository's conventions and a baseline of code "smells" (feature envy, duplication, mysterious names). The second is the spec: does the implementation do exactly what the task asked. Along the second axis it looks for missing requirements, work beyond the ask (scope creep), and places that look done but appear wrong. The output is two separate lists, so one axis doesn't mask the other.</li>
+  <li><strong>grill-me / grilling.</strong> The same move, but with a method. The model lays the decisions out as a tree where each choice unlocks the next. In one round it asks the questions whose prerequisites you have already settled, the ones it can ask without guessing: it numbers them and gives a recommended answer to each. Your answers open the next layer. The session ends when no new questions are left and no branch of the tree was closed by a guess. Until then the model does not start solving.</li>
+  <li><strong>code-review.</strong> A review along two axes the skill keeps apart. The first axis, standards: does the code follow the repository's conventions and the common markers of bad code (duplication, mysterious names, logic sitting in the wrong module). The second axis, the task itself: does the implementation do what was asked. Along the second it looks for missing requirements, work done beyond the ask, and places that look finished but appear wrong. The output is two separate lists, so one axis does not cover for the other.</li>
 </ul>
-<div class="tip-box"><p>These are engineering skills, tuned for code and issue trackers, so some of the machinery (tickets, domain models) won't serve an analyst. But the grilling move, and splitting review into "against standards" and "against the spec," are general, and carry over to designing any data task almost unchanged.</p></div>
+<div class="tip-box"><p>These are engineering skills, tuned for code and issue trackers, so some of the machinery (tickets, writing up the domain) won't serve an analyst. The grilling move and the split between "against standards" and "against the task" carry over to designing any data task almost unchanged.</p></div>
 
 <h2>Bottom line</h2>
-<p>A request is not a task, it is an intent with holes. The holes are cheapest to see before the first line of code, and AI is excellent at lighting them up — once you turn it from a solver into an interrogator. Load the context, tell it to grill you, drive it to a wording where nothing is silently assumed, and only then solve. Correctly computing the wrong task is an analyst's most expensive mistake, and the grilling is what takes it off the table.</p>
+<p>A request is an intent with holes. You see those holes most cheaply before the first line of code, and the model helps you find them once you turn it from a solver into an interrogator. Load the context, tell it to grill you, push the wording to the point where no assumption is left off the record, and only then solve. A correctly computed wrong task costs an analyst more than any bug in SQL, and the grilling is what removes that risk.</p>
 </section>
